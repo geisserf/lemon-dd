@@ -11,7 +11,6 @@ int main() {
 
   std::cout << "\033[1;33m 10-5\033[0m" << '\n';
   expression e1 = sub({cst(10), cst(5)});
-
   std::cout << eval({}, e1) << '\n';
 
   std::cout << "\033[1;33m 10+5\033[0m" << '\n';
