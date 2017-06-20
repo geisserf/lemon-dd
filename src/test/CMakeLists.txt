@@ -9,5 +9,5 @@ set(TEST_SOURCES
 
 add_executable(Test ${TEST_SOURCES})
 
-target_link_libraries(Test Catch)
+target_link_libraries(Test NumericCatamorph Catch)
 add_test(NAME MyTest COMMAND Test)

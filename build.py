@@ -6,6 +6,7 @@ import subprocess
 import sys
 
 CMAKE = "cmake"
+MAKE = "make"
 CMAKE_GENERATOR = "Unix Makefiles"
 CONFIGS = {}
 script_dir = os.path.dirname(__file__)
@@ -43,7 +44,7 @@ def try_run(cmd, cwd):
             raise
 
 
-def build(config_name, cmake_parameters):
+def build(config_name, cmake_parameters,make_parameters):
     print("Building configuration " + config_name)
     build_path = get_build_path(config_name)
     rel_src_path = os.path.relpath(get_src_path(), build_path)
@@ -58,10 +59,14 @@ def build(config_name, cmake_parameters):
     try_run([CMAKE, "-G", CMAKE_GENERATOR] + cmake_parameters + [rel_src_path],
             cwd=build_path)
 
+
+    try_run([MAKE] + make_parameters, cwd=build_path)
+
     print("Built configuration " + config_name + " successfully")
 
 
 def main():
+    make_parameters = []
     config_names = set()
     for arg in sys.argv[1:]:
         if arg == "--debug":
@@ -71,7 +76,7 @@ def main():
         config_names.add(DEFAULT_CONFIG_NAME)
 
     for config_name in config_names:
-        build(config_name, CONFIGS[config_name])
+        build(config_name, CONFIGS[config_name],make_parameters)
 
 
 if __name__ == "__main__":
