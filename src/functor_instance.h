@@ -5,10 +5,6 @@
 
 using namespace boost::adaptors;
 
-void throw_missing_pattern_matching_clause() {
-  throw std::logic_error("Missing case in pattern matching");
-}
-
 template <typename A, typename M> auto fmap(M map, expression_r<A> const &e) {
 
   using B = decltype(map(std::declval<A>()));
@@ -36,7 +32,8 @@ template <typename A, typename M> auto fmap(M map, expression_r<A> const &e) {
     return Out(*i);
   if (auto *v = get_as_var(e))
     return Out(*v);
-  throw_missing_pattern_matching_clause();
+
+    throw std::logic_error("Missing case in pattern matching");
 }
 
 #endif // CATAMORPH_FUNCTOR_INSTANCE_H

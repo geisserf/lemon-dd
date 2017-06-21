@@ -66,7 +66,7 @@ def build(config_name, cmake_parameters,make_parameters):
 
 
 def main():
-    make_parameters = []
+    make_parameters = ["VERBOSE=0"]
     config_names = set()
     for arg in sys.argv[1:]:
         if arg == "--debug":

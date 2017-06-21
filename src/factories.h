@@ -2,9 +2,9 @@
 #define CATAMORPH_FACTORIES_H
 #include "expression.h"
 
-expression cst(float i) { return expression(i); };
+expression cst(float i) { return expression(i); }
 
-expression var(id id) { return expression(id); };
+expression var(id id) { return expression(id); }
 
 expression add(std::vector<expression> const &rands) {
   return expression(add_op<expression>{rands});

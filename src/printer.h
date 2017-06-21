@@ -29,7 +29,7 @@ std::string print_alg(expression_r<std::string> const &e) {
     return std::to_string(*i);
   if (auto *v = get_as_var(e))
     return *v;
-  throw_missing_pattern_matching_clause();
+  throw std::logic_error("Missing case in pattern matching");
 }
 
 #endif // CATAMORPH_PRINTER_H

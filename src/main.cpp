@@ -1,6 +1,6 @@
-#include "catamorphism.h"
+
 #include "eval.h"
-#include "factories.h"
+
 #include "printer.h"
 #include <iostream>
 
@@ -9,18 +9,7 @@ using id = std::string;
 
 int main() {
 
-  std::cout << "\033[1;33m 10-5\033[0m" << '\n';
-  expression e1 = sub({cst(10), cst(5)});
-  std::cout << eval({}, e1) << '\n';
 
-  std::cout << "\033[1;33m 10+5\033[0m" << '\n';
-  expression e2 = add({cst(10), cst(5)});
-
-  std::cout << eval({}, e2) << '\n';
-
-  std::cout << "\033[1;33m 10/2\033[0m" << '\n';
-  expression e3 = div({cst(10), cst(2)});
-  std::cout << eval({}, e3) << '\n';
 
   std::cout << "\033[1;33m 10*2\033[0m" << '\n';
   expression e4 = mul({cst(10), cst(2)});
