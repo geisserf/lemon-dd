@@ -1,13 +1,13 @@
 #include "Catch/include/catch.hpp"
-#include "../eval.h"
+#include "../catamorph/interpreters/evaluate.h"
 
-SCENARIO("Testing basic numeric functions and evaluations") {
+SCENARIO("Testing basic logic expressions and evaluations") {
   GIVEN("The expression x==2") {
-    expression e = equals({var((id) "x"), cst(2)});
+    expression e = factories::equals({factories::var((id) "x"), factories::cst(2)});
     WHEN("empty environment") {
       env partial_env = {};
       THEN("Result should be 5") {
-        auto o =partial_eval(partial_env, e);
+        auto o =evaluate::partial_eval(partial_env, e);
         FAIL("missing compare");
       }
     }
@@ -15,7 +15,7 @@ SCENARIO("Testing basic numeric functions and evaluations") {
     WHEN("environment: x==2") {
       env partial_env = {{"x",2}};
       THEN("Result should be 5") {
-        auto o =partial_eval(partial_env, e);
+        auto o =evaluate::partial_eval(partial_env, e);
         FAIL("missing compare");
       }
     }

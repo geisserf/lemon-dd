@@ -28,9 +28,18 @@ include_directories(boost_dependencies)
 add_subdirectory(boost_dependencies/libs)
 
 
-set(SOURCE_FILES expression.h factories.h accessors.h
-        functor_instance.h catamorphism.h printer.h eval.h
-        dependencies.h optimizations.h partial_eval.h iverson.h)
+set(SOURCE_FILES catamorph/catamorph.cpp
+        catamorph/catamorph.h
+        catamorph/factories.cpp
+        catamorph/factories.h
+        catamorph/interpreters/optimizations.cpp
+        catamorph/interpreters/optimizations.h
+        catamorph/interpreters/evaluate.cpp
+        catamorph/interpreters/evaluate.h
+        catamorph/interpreters/dependencies.cpp
+        catamorph/interpreters/dependencies.h
+        catamorph/interpreters/iverson.cpp
+        catamorph/interpreters/iverson.h catamorph/expression.h)
 
 add_library(NumericCatamorph_lib ${SOURCE_FILES})
 target_link_libraries(NumericCatamorph_lib MiniBoost)
