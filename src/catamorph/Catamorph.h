@@ -3,16 +3,16 @@
 #include <string>
 #include <vector>
 
-#include "factories.h"
-#include "expression.h"
+#include "Factories.h"
+#include "Expression.h"
 
 
 
-class catamorph {
+class Catamorph {
 public:
     template <typename Out, typename Algebra>
-     static Out cata(Algebra f, expression const &ast) {
-      return f(fmap([f](expression const &e) -> Out { return cata<Out>(f, e); },
+     static Out cata(Algebra f, Expression const &ast) {
+      return f(fmap([f](Expression const &e) -> Out { return cata<Out>(f, e); },
                     ast.get()));
     }
 
@@ -22,27 +22,27 @@ public:
       using B = decltype(map(std::declval<A>()));
       using Out = expression_r<B>;
 
-      if (auto *o = factories::get_as_add(e))
+      if (auto *o = Factories::get_as_add(e))
         return Out(add_op<B>(o->rands() | transformed(map)));
 
-      if (auto *o = factories::get_as_sub(e))
+      if (auto *o = Factories::get_as_sub(e))
         return Out(sub_op<B>(o->rands() | transformed(map)));
 
-      if (auto *o = factories::get_as_mul(e))
+      if (auto *o = Factories::get_as_mul(e))
         return Out(mul_op<B>(o->rands() | transformed(map)));
 
-      if (auto *o = factories::get_as_div(e))
+      if (auto *o = Factories::get_as_div(e))
         return Out(div_op<B>(o->rands() | transformed(map)));
 
-      if (auto *o = factories::get_as_and(e))
+      if (auto *o = Factories::get_as_and(e))
         return Out(and_op<B>(o->rands() | transformed(map)));
 
-      if (auto *o = factories::get_as_equals(e))
+      if (auto *o = Factories::get_as_equals(e))
         return Out(equals_op<B>(o->rands() | transformed(map)));
 
-      if (auto *i = factories::get_as_cst(e))
+      if (auto *i = Factories::get_as_cst(e))
         return Out(*i);
-      if (auto *v = factories::get_as_var(e))
+      if (auto *v = Factories::get_as_var(e))
         return Out(*v);
 
       throw std::logic_error("Missing case in pattern matching");

@@ -1,19 +1,19 @@
 #ifndef NUMERIC_CATAMORPH_FACTORIES_H
 #define NUMERIC_CATAMORPH_FACTORIES_H
 
-#include "expression.h"
+#include "Expression.h"
 
 
-class factories {
+class Factories {
 public:
-    static expression cst(float i);
-    static expression var(id id);
-    static expression add(std::vector<expression> const &rands);
-    static expression sub(std::vector<expression> const &rands);
-    static expression mul(std::vector<expression> const &rands);
-    static expression div(std::vector<expression> const &rands);
-    static expression land(std::vector<expression> const &rands);
-    static expression equals(std::vector<expression> const &rands);
+    static Expression cst(float i);
+    static Expression var(ID id);
+    static Expression add(std::vector<Expression> const &rands);
+    static Expression sub(std::vector<Expression> const &rands);
+    static Expression mul(std::vector<Expression> const &rands);
+    static Expression div(std::vector<Expression> const &rands);
+    static Expression land(std::vector<Expression> const &rands);
+    static Expression equals(std::vector<Expression> const &rands);
 
 
     template<typename T>
@@ -22,8 +22,8 @@ public:
     }
 
     template<typename T>
-    static id const *get_as_var(expression_r<T> const &e) {
-      return (id *)boost::get<id>(&e);
+    static ID const *get_as_var(expression_r<T> const &e) {
+      return (ID *)boost::get<ID>(&e);
     }
 
     template<typename T>

@@ -5,10 +5,10 @@
 #include "../boost_dependencies/boost/variant.hpp"
 
 
-using nb = float;
-using id = std::string;
+using NBR = float;
+using ID = std::string;
 using namespace boost::adaptors;
-using env = std::map<id, nb>;
+using Env = std::map<ID, NBR>;
 
 struct add_tag {};
 struct sub_tag {};
@@ -40,11 +40,11 @@ template <typename R> using equals_op = op<equals_tag, R>;
 
 
 template <typename R>
-using expression_r = boost::variant<float, id, add_op<R>, mul_op<R>, sub_op<R>,
+using expression_r = boost::variant<float, ID, add_op<R>, mul_op<R>, sub_op<R>,
     div_op<R>, and_op<R>, equals_op<R>>;
 
-struct expression : boost::recursive_wrapper<expression_r<expression>> {
-    using boost::recursive_wrapper<expression_r<expression>>::recursive_wrapper;
+struct Expression : boost::recursive_wrapper<expression_r<Expression>> {
+    using boost::recursive_wrapper<expression_r<Expression>>::recursive_wrapper;
 };
 
 #endif //NUMERIC_CATAMORPH_EXPRESSION_H

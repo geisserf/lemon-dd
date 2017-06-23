@@ -1,8 +1,8 @@
 
 #include <iostream>
 
-using nb = float;
-using id = std::string;
+using NBR = float;
+using ID = std::string;
 
 int main() {
 
@@ -14,8 +14,8 @@ int main() {
   dependencies(e4);
 
   expression e5 =
-      add({cst(1), cst(2), mul({cst(0), var((id) "x"), var((id) "y")}),
-           mul({cst(1), var((id) "y"), cst(2)}), add({cst(0), var((id) "x")})});
+      add({cst(1), cst(2), mul({cst(0), var((ID) "x"), var((ID) "y")}),
+           mul({cst(1), var((ID) "y"), cst(2)}), add({cst(0), var((ID) "x")})});
   // Environment of evaluation
   env full_env = {{"x", 1}, {"y", 2}};
   env partial_env = {{"y", 2}};
@@ -44,25 +44,25 @@ int main() {
   std::cout << eval({}, e6) << '\n';
 
   std::cout << "\033[1;33m x==2\033[0m" << '\n';
-  expression e7 = equals({var((id) "x"), cst(2)});
+  expression e7 = equals({var((ID) "x"), cst(2)});
   o = partial_eval({}, e7);
   std::cout << cata<std::string>(print_alg, o) << '\n';
 
   std::cout << "\033[1;33m x==2, x=2\033[0m" << '\n';
-  expression e8 = equals({var((id) "x"), cst(2)});
+  expression e8 = equals({var((ID) "x"), cst(2)});
   o = partial_eval({{"x", 2}}, e8);
   std::cout << cata<std::string>(print_alg, o) << '\n';
 
   std::cout << "\033[1;33m x==2 ^ y==4\033[0m" << '\n';
   expression e9 =
-      land({equals({var((id) "x"), cst(2)}), equals({var((id) "y"), cst(4)})});
+      land({equals({var((ID) "x"), cst(2)}), equals({var((ID) "y"), cst(4)})});
 
   o = partial_eval({}, e9);
   std::cout << cata<std::string>(print_alg, o) << '\n';
 
   std::cout << "\033[1;33m x==2 ^ y==4, x=2,y=4\033[0m" << '\n';
   expression e10 =
-      land({equals({var((id) "x"), cst(2)}), equals({var((id) "y"), cst(4)})});
+      land({equals({var((ID) "x"), cst(2)}), equals({var((ID) "y"), cst(4)})});
 
   o = partial_eval({{"x", 2}, {"y", 4}}, e10);
   std::cout << cata<std::string>(print_alg, o) << '\n';

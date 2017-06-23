@@ -1,21 +1,21 @@
 #include "Catch/include/catch.hpp"
-#include "../catamorph/interpreters/evaluate.h"
+#include "../catamorph/interpreters/Evaluate.h"
 
 SCENARIO("Testing basic logic expressions and evaluations") {
-  GIVEN("The expression x==2") {
-    expression e = factories::equals({factories::var((id) "x"), factories::cst(2)});
+  GIVEN("The Expression x==2") {
+    Expression e = Factories::equals({Factories::var((ID) "x"), Factories::cst(2)});
     WHEN("empty environment") {
-      env partial_env = {};
+      Env partial_env = {};
       THEN("Result should be 5") {
-        auto o =evaluate::partial_eval(partial_env, e);
+        auto o =Evaluate::partial_eval(partial_env, e);
         FAIL("missing compare");
       }
     }
 
     WHEN("environment: x==2") {
-      env partial_env = {{"x",2}};
+      Env partial_env = {{"x",2}};
       THEN("Result should be 5") {
-        auto o =evaluate::partial_eval(partial_env, e);
+        auto o =Evaluate::partial_eval(partial_env, e);
         FAIL("missing compare");
       }
     }

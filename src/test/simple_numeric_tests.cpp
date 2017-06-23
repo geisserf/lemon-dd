@@ -1,66 +1,66 @@
 #include "Catch/include/catch.hpp"
-#include "../catamorph/interpreters/evaluate.h"
+#include "../catamorph/interpreters/Evaluate.h"
 
 
 
 SCENARIO("Testing basic numeric functions and evaluations") {
 
-  GIVEN("The expression 10-5") {
-    expression e = factories::sub({factories::cst(10), factories::cst(5)});
+  GIVEN("The Expression 10-5") {
+    Expression e = Factories::sub({Factories::cst(10), Factories::cst(5)});
     WHEN("empty environment") {
       THEN("Result should be 5") {
-        REQUIRE(evaluate::eval({}, e) == 5);
+        REQUIRE(Evaluate::eval({}, e) == 5);
       }
     }
   }
-  GIVEN("The expression 10+5") {
-    expression e = factories::add({factories::cst(10), factories::cst(5)});
+  GIVEN("The Expression 10+5") {
+    Expression e = Factories::add({Factories::cst(10), Factories::cst(5)});
     WHEN("empty environment") {
       THEN("Result should be 15") {
-        REQUIRE(evaluate::eval({}, e) == 15);
+        REQUIRE(Evaluate::eval({}, e) == 15);
       }
     }
   }
-  GIVEN("The expression 10/2") {
-    expression e = factories::div({factories::cst(10), factories::cst(2)});
+  GIVEN("The Expression 10/2") {
+    Expression e = Factories::div({Factories::cst(10), Factories::cst(2)});
     WHEN("empty environment") {
       THEN("Result should be 5") {
-        REQUIRE(evaluate::eval({}, e) == 5);
+        REQUIRE(Evaluate::eval({}, e) == 5);
       }
     }
   }
 
-  GIVEN("The expression 10*2") {
-    expression e = factories::mul({factories::cst(10), factories::cst(2)});
+  GIVEN("The Expression 10*2") {
+    Expression e = Factories::mul({Factories::cst(10), Factories::cst(2)});
     WHEN("empty environment") {
       THEN("Result should be 20") {
-        REQUIRE(evaluate::eval({}, e) == 20);
+        REQUIRE(Evaluate::eval({}, e) == 20);
       }
     }
   }
 
-  GIVEN("The expression 9/2") {
-    expression e = factories::div({factories::cst(9), factories::cst(2)});
+  GIVEN("The Expression 9/2") {
+    Expression e = Factories::div({Factories::cst(9), Factories::cst(2)});
     WHEN("empty environment") {
       THEN("Result should be 4,5") {
-        REQUIRE(evaluate::eval({}, e) == 4.5);
+        REQUIRE(Evaluate::eval({}, e) == 4.5);
       }
     }
   }
 
-  GIVEN("The expression (+ 1 2 (* 0 x y) (* 1 y 2) (+ 0 x))") {
-    expression e = factories::add({factories::cst(1), factories::cst(2), factories::mul({factories::cst(0), factories::var((id) "x"), factories::var((id) "y")}),
-                                   factories::mul({factories::cst(1), factories::var((id) "y"), factories::cst(2)}), factories::add({factories::cst(0), factories::var((id) "x")})});
+  GIVEN("The Expression (+ 1 2 (* 0 x y) (* 1 y 2) (+ 0 x))") {
+    Expression e = Factories::add({Factories::cst(1), Factories::cst(2), Factories::mul({Factories::cst(0), Factories::var((ID) "x"), Factories::var((ID) "y")}),
+                                   Factories::mul({Factories::cst(1), Factories::var((ID) "y"), Factories::cst(2)}), Factories::add({Factories::cst(0), Factories::var((ID) "x")})});
     WHEN("Environment: x=1,y=2") {
-      env full_env = {{"x", 1}, {"y", 2}};
+      Env full_env = {{"x", 1}, {"y", 2}};
       THEN("Result should be 8.0") {
-        REQUIRE(evaluate::eval(full_env, e) == 8.0);
+        REQUIRE(Evaluate::eval(full_env, e) == 8.0);
       }
     }
     WHEN("Environment: y=2") {
-      env partial_env = {{"y", 2}};
+      Env partial_env = {{"y", 2}};
       THEN("Result should be 8.0") {
-        auto o =evaluate::partial_eval(partial_env, e);
+        auto o =Evaluate::partial_eval(partial_env, e);
         FAIL("missing compare");
       }
     }
