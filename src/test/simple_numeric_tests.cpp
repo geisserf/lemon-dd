@@ -3,7 +3,7 @@
 
 
 
-SCENARIO("Testing basic numeric functions and evaluations") {
+SCENARIO("Testing basic numeric functions and evaluations", "[numeric]") {
 
   GIVEN("The Expression 10-5") {
     Expression e = Factories::sub({Factories::cst(10), Factories::cst(5)});

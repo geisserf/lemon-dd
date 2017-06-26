@@ -12,7 +12,7 @@ public:
     Polynomial(std::string expression);
     Polynomial(const Polynomial& e);
     Polynomial(Expression e);
-    void evaluate(const Env *environment);
+    void evaluate(const Env& environment);
     void print();
 };
 

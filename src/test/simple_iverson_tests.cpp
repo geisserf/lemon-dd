@@ -1,7 +1,7 @@
 #include "Catch/include/catch.hpp"
 #include "../catamorph/interpreters/Evaluate.h"
 
-SCENARIO("Testing basic logic expressions and evaluations") {
+SCENARIO("Testing basic logic expressions and evaluations", "[iverson]") {
   GIVEN("The Expression x==2") {
     Expression e = Factories::equals({Factories::var((ID) "x"), Factories::cst(2)});
     WHEN("empty environment") {
