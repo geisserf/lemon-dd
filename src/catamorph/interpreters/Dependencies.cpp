@@ -1,9 +1,8 @@
 #include "Dependencies.h"
-#include "../Factories.h"
 #include "../Catamorph.h"
+#include "../Factories.h"
 
-
-template<typename Tag>
+template <typename Tag>
 std::set<ID> Dependency::join_sets(op<Tag, std::set<ID>> const &op) {
   std::set<ID> out;
   for (auto r : op.rands())
@@ -11,8 +10,7 @@ std::set<ID> Dependency::join_sets(op<Tag, std::set<ID>> const &op) {
   return out;
 }
 
-std::set<ID>
-Dependency::dependencies_alg(expression_r<std::set<ID>> const &e) {
+std::set<ID> Dependency::dependencies_alg(expression_r<std::set<ID>> const &e) {
   if (auto *o = Factories::get_as_add(e))
     return Dependency::join_sets(*o);
   if (auto *o = Factories::get_as_mul(e))
@@ -29,4 +27,3 @@ Dependency::dependencies_alg(expression_r<std::set<ID>> const &e) {
 std::set<ID> Dependency::dependencies(Expression const &e) {
   return Catamorph::cata<std::set<ID>>(Dependency::dependencies_alg, e);
 }
-

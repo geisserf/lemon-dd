@@ -1,70 +1,74 @@
-#include "Catch/include/catch.hpp"
 #include "../catamorph/interpreters/Evaluate.h"
-
-
+#include "Catch/include/catch.hpp"
+#include "../Polynomial.h"
 
 SCENARIO("Testing basic numeric functions and evaluations", "[numeric]") {
 
   GIVEN("The Expression 10-5") {
     Expression e = Factories::sub({Factories::cst(10), Factories::cst(5)});
+    Polynomial p = Polynomial(e);
     WHEN("empty environment") {
-      THEN("Result should be 5") {
-        REQUIRE(Evaluate::eval({}, e) == 5);
-      }
+      p.evaluate({});
+      THEN("Result should be 5") { REQUIRE(p.toString() == "5.000000"); }
     }
   }
   GIVEN("The Expression 10+5") {
     Expression e = Factories::add({Factories::cst(10), Factories::cst(5)});
+    Polynomial p = Polynomial(e);
     WHEN("empty environment") {
-      THEN("Result should be 15") {
-        REQUIRE(Evaluate::eval({}, e) == 15);
-      }
+      p.evaluate({});
+      THEN("Result should be 15") { REQUIRE(p.toString() == "15.000000"); }
     }
   }
   GIVEN("The Expression 10/2") {
     Expression e = Factories::div({Factories::cst(10), Factories::cst(2)});
+    Polynomial p = Polynomial(e);
     WHEN("empty environment") {
-      THEN("Result should be 5") {
-        REQUIRE(Evaluate::eval({}, e) == 5);
-      }
+      p.evaluate({});
+      THEN("Result should be 5") { REQUIRE(p.toString() == "5.000000"); }
     }
   }
 
   GIVEN("The Expression 10*2") {
     Expression e = Factories::mul({Factories::cst(10), Factories::cst(2)});
+    Polynomial p = Polynomial(e);
     WHEN("empty environment") {
-      THEN("Result should be 20") {
-        REQUIRE(Evaluate::eval({}, e) == 20);
-      }
+      p.evaluate({});
+      THEN("Result should be 20") { REQUIRE (p.toString()== "20.000000"); }
     }
   }
 
   GIVEN("The Expression 9/2") {
     Expression e = Factories::div({Factories::cst(9), Factories::cst(2)});
+    Polynomial p = Polynomial(e);
     WHEN("empty environment") {
-      THEN("Result should be 4,5") {
-        REQUIRE(Evaluate::eval({}, e) == 4.5);
-      }
+      p.evaluate({});
+      THEN("Result should be 4,5") { REQUIRE( p.toString()== "4.500000"); }
     }
   }
 
   GIVEN("The Expression (+ 1 2 (* 0 x y) (* 1 y 2) (+ 0 x))") {
-    Expression e = Factories::add({Factories::cst(1), Factories::cst(2), Factories::mul({Factories::cst(0), Factories::var((ID) "x"), Factories::var((ID) "y")}),
-                                   Factories::mul({Factories::cst(1), Factories::var((ID) "y"), Factories::cst(2)}), Factories::add({Factories::cst(0), Factories::var((ID) "x")})});
+    Expression e = Factories::add(
+        {Factories::cst(1), Factories::cst(2),
+         Factories::mul({Factories::cst(0), Factories::var((ID) "x"),
+                         Factories::var((ID) "y")}),
+         Factories::mul(
+             {Factories::cst(1), Factories::var((ID) "y"), Factories::cst(2)}),
+         Factories::add({Factories::cst(0), Factories::var((ID) "x")})});
+    Polynomial p = Polynomial(e);
     WHEN("Environment: x=1,y=2") {
       Env full_env = {{"x", 1}, {"y", 2}};
       THEN("Result should be 8.0") {
-        REQUIRE(Evaluate::eval(full_env, e) == 8.0);
+        p.evaluate(full_env);
+        REQUIRE(p.toString()== "8.000000");
       }
     }
     WHEN("Environment: y=2") {
       Env partial_env = {{"y", 2}};
-      THEN("Result should be 8.0") {
-        auto o =Evaluate::partial_eval(partial_env, e);
-        FAIL("missing compare");
+      THEN("Result should be (+ x 7.000000)") {
+        p.evaluate(partial_env);
+        REQUIRE(p.toString()=="(+ x 7.000000)");
       }
     }
   }
-
-
 }

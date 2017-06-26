@@ -22,7 +22,7 @@ void Polynomial::evaluate(const Env &environment) {
       Evaluate::partial_eval(environment, *(this->expression.get())));
 }
 
-NBR Polynomial::getAndSubtactConst() {
+NBR Polynomial::getAndSubtractConst() {
   std::cout << "\033[1;33m WARNING! no environment provided! try provding "
                "environment All = 0 for better performance \033[0m"
             << '\n';
@@ -33,10 +33,10 @@ NBR Polynomial::getAndSubtactConst() {
   for (auto f : dependencies) {
     environment.insert(std::pair<ID, NBR>(f, 0));
   }
-  return this->getAndSubtactConst(environment);
+  return this->getAndSubtractConst(environment);
 }
 
-NBR Polynomial::getAndSubtactConst(const Env &environment) {
+NBR Polynomial::getAndSubtractConst(const Env &environment) {
   Expression res =
       Evaluate::partial_eval(environment, *(this->expression.get()));
 
