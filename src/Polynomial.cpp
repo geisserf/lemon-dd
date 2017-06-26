@@ -1,6 +1,7 @@
 #include "Polynomial.h"
 #include "catamorph/Expression.h"
 #include "catamorph/Printer.h"
+#include "catamorph/interpreters/Dependencies.h"
 #include "catamorph/interpreters/Evaluate.h"
 #include <string>
 
@@ -21,4 +22,31 @@ void Polynomial::evaluate(const Env &environment) {
       Evaluate::partial_eval(environment, *(this->expression.get())));
 }
 
+NBR Polynomial::getAndSubtactConst() {
+  std::cout << "\033[1;33m WARNING! no environment provided! try provding "
+               "environment All = 0 for better performance \033[0m"
+            << '\n';
+
+  std::set<ID> dependencies =
+      Dependency::dependencies(*(this->expression.get()));
+  Env environment = Env();
+  for (auto f : dependencies) {
+    environment.insert(std::pair<ID, NBR>(f, 0));
+  }
+  return this->getAndSubtactConst(environment);
+}
+
+NBR Polynomial::getAndSubtactConst(const Env &environment) {
+  Expression res =
+      Evaluate::partial_eval(environment, *(this->expression.get()));
+
+  this->expression = std::make_shared<Expression>(
+      Factories::sub({*(this->expression.get()), res.get()}));
+  return *(Factories::get_as_cst(res.get()));
+}
+
 void Polynomial::print() { Printer::print(*(this->expression.get())); }
+
+std::string Polynomial::toString() {
+  return Printer::asString(*(this->expression.get()));
+}

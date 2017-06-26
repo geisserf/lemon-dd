@@ -13,7 +13,11 @@ public:
     Polynomial(const Polynomial& e);
     Polynomial(Expression e);
     void evaluate(const Env& environment);
+    NBR getAndSubtactConst();
+    NBR getAndSubtactConst(const Env& environment);
     void print();
+    std::string toString();
+
 };
 
 

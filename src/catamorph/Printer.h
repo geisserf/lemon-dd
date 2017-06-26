@@ -38,6 +38,10 @@ public:
     static void print(Expression const &e){
       std::cout << Catamorph::cata<std::string>(Printer::print_alg, e) << '\n';
     }
+
+    static std::string asString(Expression const &e){
+      return  Catamorph::cata<std::string>(Printer::print_alg, e);
+    }
 };
 
 

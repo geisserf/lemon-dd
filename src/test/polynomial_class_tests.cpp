@@ -12,8 +12,23 @@ SCENARIO("Testing Polynomial Interface Class", "[poly]") {
     Polynomial p = Polynomial(e);
     WHEN("Environment is empty") {
       const Env empty_env = {};
-      THEN("Result should be same as input") {
+      THEN("Result should be (+ (* y 2) x 3)") {
         p.evaluate(empty_env);
+        p.print();
+        REQUIRE(p.toString()=="(+ (* y 2.000000) x 3.000000)");
+      }
+    }
+
+    WHEN("Environment: x=1"){
+      const Env partial_env = {{"x",1}};
+      THEN("Result should be (+(* y 2) 4)"){
+        p.evaluate(partial_env);
+        p.print();
+        REQUIRE(p.toString()=="(+ (* y 2.000000) 4.000000)");
+        NBR const_ = p.getAndSubtactConst();
+        REQUIRE(const_==4);
+        p.print();
+        REQUIRE(p.toString()=="(- (+ (* y 2.000000) 4.000000) 4.000000)");
       }
     }
   }
