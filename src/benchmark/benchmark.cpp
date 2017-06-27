@@ -12,14 +12,7 @@ int main() {
                          Factories::var((ID) "y")}),
          Factories::mul(
              {Factories::cst(1), Factories::var((ID) "y"), Factories::cst(2)}),
-
-
-
-
-
-
          
-
          Factories::add({Factories::cst(0), Factories::var((ID) "x")})});
 
     Env env = {{"x", 0}, {"y", 0}};
