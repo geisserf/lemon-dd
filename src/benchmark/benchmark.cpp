@@ -17,6 +17,7 @@ int main() {
 
 
 
+
          Factories::add({Factories::cst(0), Factories::var((ID) "x")})});
 
     Env env = {{"x", 0}, {"y", 0}};
