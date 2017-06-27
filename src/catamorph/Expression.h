@@ -1,5 +1,6 @@
 #ifndef NUMERIC_CATAMORPH_EXPRESSION_H
 #define NUMERIC_CATAMORPH_EXPRESSION_H
+
 #include "../boost_dependencies/boost/algorithm/string/join.hpp"
 #include "../boost_dependencies/boost/range/adaptors.hpp"
 #include "../boost_dependencies/boost/variant.hpp"

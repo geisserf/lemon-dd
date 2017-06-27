@@ -1,6 +1,6 @@
 #include "../catamorph/interpreters/Evaluate.h"
-#include "Catch/include/catch.hpp"
 #include "../Polynomial.h"
+#include "Catch/include/catch.hpp"
 
 SCENARIO("Testing basic numeric functions and evaluations", "[numeric]") {
 

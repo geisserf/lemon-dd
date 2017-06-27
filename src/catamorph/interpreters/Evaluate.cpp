@@ -1,11 +1,10 @@
 #include "Optimizations.h"
-#include "Evaluate.h"
-#include "../Expression.h"
-#include "Dependencies.h"
-#include "Iverson.h"
-#include "../Factories.h"
 #include "../Catamorph.h"
-
+#include "../Expression.h"
+#include "../Factories.h"
+#include "Dependencies.h"
+#include "Evaluate.h"
+#include "Iverson.h"
 
 float Evaluate::eval(Env const &env, Expression const &e) {
   auto reduced = partial_eval(env, e);

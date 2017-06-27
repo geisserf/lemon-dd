@@ -1,13 +1,9 @@
-
 #include <iostream>
 
 using NBR = float;
 using ID = std::string;
 
 int main() {
-
-
-
   std::cout << "\033[1;33m 10*2\033[0m" << '\n';
   expression e4 = mul({cst(10), cst(2)});
   std::cout << eval({}, e4) << '\n';

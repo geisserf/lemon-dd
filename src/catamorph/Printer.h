@@ -1,5 +1,6 @@
 #ifndef NUMERIC_CATAMORPH_PRINTER_H
 #define NUMERIC_CATAMORPH_PRINTER_H
+
 #include "Catamorph.h"
 #include "Expression.h"
 #include "Factories.h"

@@ -1,12 +1,11 @@
 #ifndef NUMERIC_CATAMORPH_CATAMORPH_H
 #define NUMERIC_CATAMORPH_CATAMORPH_H
+
 #include <string>
 #include <vector>
 
 #include "Factories.h"
 #include "Expression.h"
-
-
 
 class Catamorph {
 public:
