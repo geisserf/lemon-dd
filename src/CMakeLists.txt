@@ -21,8 +21,8 @@ set(CMAKE_CXX_FLAGS_PROFILE ${CMAKE_CXX_FLAGS_DEBUG})
 set(CMAKE_EXE_LINKER_FLAGS_PROFILE "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -pg")
 
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG -fomit-frame-pointer")
-set(CMAKE_CXX_FLAGS_DEBUG "-O3")
-set(CMAKE_CXX_FLAGS_PROFILE "-O3 -pg")
+#set(CMAKE_CXX_FLAGS_DEBUG "-O3")
+#set(CMAKE_CXX_FLAGS_PROFILE "-O3 -pg")
 
 include_directories(boost_dependencies)
 add_subdirectory(boost_dependencies/libs)
@@ -43,3 +43,4 @@ add_library(NumericCatamorph_lib ${SOURCE_FILES})
 target_link_libraries(NumericCatamorph_lib MiniBoost)
 
 add_subdirectory(test)
+add_subdirectory(benchmark)
