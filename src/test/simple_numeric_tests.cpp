@@ -71,4 +71,31 @@ SCENARIO("Testing basic numeric functions and evaluations", "[numeric]") {
       }
     }
   }
+  GIVEN("The Expression (+ 1 2 (* 0 VAR1 VAR2) (* 1 VAR2 2) (+ 0 VAR1))") {
+    Expression e = Factories::add(
+        {Factories::cst(1), Factories::cst(2),
+         Factories::mul({Factories::cst(0), Factories::var((ID) "VAR1"),
+                         Factories::var((ID) "VAR2")}),
+         Factories::mul(
+             {Factories::cst(1), Factories::var((ID) "VAR2"), Factories::cst(2)}),
+         Factories::add({Factories::cst(0), Factories::var((ID) "VAR1")})});
+    Polynomial p = Polynomial(e);
+    WHEN("Environment: VAR1=1,VAR2=2") {
+      Env full_env = {{"VAR1", 1}, {"VAR2", 2}};
+      THEN("Result should be 8.0") {
+        p.evaluate(full_env);
+        REQUIRE(p.toString()== "8.000000");
+      }
+    }
+    WHEN("Environment: VAR2=2") {
+      Env partial_env = {{"VAR2", 2}};
+      THEN("Result should be (+ VAR1 7.000000)") {
+        p.evaluate(partial_env);
+        REQUIRE(p.toString()=="(+ VAR1 7.000000)");
+      }
+    }
+  }
+
+
+
 }

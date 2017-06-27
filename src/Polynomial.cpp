@@ -4,10 +4,11 @@
 #include "catamorph/interpreters/Dependencies.h"
 #include "catamorph/interpreters/Evaluate.h"
 #include <string>
+#include "InfixParser.h"
 
 Polynomial::Polynomial(std::string expression) {
   this->s_expression = expression;
-  std::logic_error("Parser not implemented");
+  this->parseExpressionString();
 }
 
 Polynomial::Polynomial(const Polynomial &e) { this->expression = e.expression; }
@@ -49,4 +50,11 @@ void Polynomial::print() { Printer::print(*(this->expression.get())); }
 
 std::string Polynomial::toString() {
   return Printer::asString(*(this->expression.get()));
+}
+
+
+
+void Polynomial::parseExpressionString() {
+  InfixParser parser = InfixParser();
+  this->expression = std::make_shared<Expression>(parser.parse(this->s_expression));
 }
