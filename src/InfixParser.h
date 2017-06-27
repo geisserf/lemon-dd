@@ -1,9 +1,9 @@
 #ifndef NUMERIC_CATAMORPH_INFIXPARSER_H
 #define NUMERIC_CATAMORPH_INFIXPARSER_H
 
+#include "catamorph/Expression.h"
 #include <string>
 #include <vector>
-#include "catamorph/Expression.h"
 
 class InfixParser {
 private:
@@ -11,11 +11,8 @@ private:
     std::size_t currentIndex;
     std::string getNextToken();
 
-
 public:
     Expression parse(std::string expression);
-
 };
 
-
-#endif //NUMERIC_CATAMORPH_INFIXPARSER_H
+#endif // NUMERIC_CATAMORPH_INFIXPARSER_H

@@ -1,7 +1,6 @@
 #ifndef NUMERIC_CATAMORPH_IVERSON_H
 #define NUMERIC_CATAMORPH_IVERSON_H
 
-
 #include "../Catamorph.h"
 
 class Iverson {
@@ -12,5 +11,4 @@ public:
     static Expression iverson_alg(expression_r<Expression> const &e);
 };
 
-
-#endif //NUMERIC_CATAMORPH_IVERSON_H
+#endif // NUMERIC_CATAMORPH_IVERSON_H
