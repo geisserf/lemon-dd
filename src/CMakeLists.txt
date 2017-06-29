@@ -44,3 +44,4 @@ target_link_libraries(NumericCatamorph_lib MiniBoost)
 
 add_subdirectory(test)
 add_subdirectory(benchmark)
+add_subdirectory(evmdd)

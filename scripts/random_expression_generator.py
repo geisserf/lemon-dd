@@ -22,10 +22,10 @@ vars = ["Var0", "Var1", "Var2", "Var3", "Var4", "Var5", "Var6", "Var7", "Var8",
         "Var89", "Var99"];
 
 operators = {
-    '*': {'prec': 20, 'prob': .2, 'eval': lambda a, b: a * b},
-    '/': {'prec': 20, 'prob': .2, 'eval': lambda a, b: a / b},
-    '+': {'prec': 30, 'prob': .3, 'eval': lambda a, b: a + b},
-    '-': {'prec': 30, 'prob': .3, 'eval': lambda a, b: a - b}}
+    '*': {'prec': 20, 'prob': .2},
+    '/': {'prec': 20, 'prob': .2},
+    '+': {'prec': 30, 'prob': .3},
+    '-': {'prec': 30, 'prob': .3}}
 
 max_levels = 3
 integer_range = (0, 100)
@@ -39,8 +39,6 @@ class expression(object):
     def precedence(self):
         return -1
 
-    def eval(self):
-        return 0
 
     @classmethod
     def create_random(cls, level):
@@ -75,9 +73,6 @@ class integer_expression(expression):
     def precedence(self):
         return 0
 
-    def eval(self):
-        return self.value
-
     @classmethod
     def create_random(cls, level):
         return integer_expression(randint(integer_range[0],
@@ -92,9 +87,6 @@ class binary_expression(expression):
         self.left = left_expression
         self.right = right_expression
 
-    def eval(self):
-        f = operators[self.symbol]['eval']
-        return f(self.left.eval(), self.right.eval())
 
     @classmethod
     def create_random(cls, level):
