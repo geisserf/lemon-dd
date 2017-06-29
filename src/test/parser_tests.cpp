@@ -154,7 +154,7 @@ SCENARIO("Testing the lexer on an expression with weird input", "[lexer]") {
     }
 }
 
-SCENARIO("Testing the parser on arithmetic expressions", "[parser]") {
+SCENARIO("Testing the prefixparser on arithmetic expressions", "[parser]") {
     GIVEN("The expression (+ 2 x)") {
         Parser parser;
         WHEN("We parse the expression") {
@@ -184,6 +184,65 @@ SCENARIO("Testing the parser on arithmetic expressions", "[parser]") {
         WHEN("We parse the expression") {
             THEN("We get an invalid argument error") {
                 REQUIRE_THROWS_AS(parser.parse("("), std::invalid_argument);
+            }
+        }
+    }
+}
+
+SCENARIO("Testing the infixparser on arithmetic expressions", "[parser]") {
+    GIVEN("The expression 2 + x") {
+        InfixParser parser;
+        WHEN("We parse the expression") {
+            Expression expr = parser.parse("2 + x)");
+            AND_WHEN("We print the expression") {
+                string result = Printer::asString(expr);
+                THEN("the result is (+ 2.000000 x)") {
+                    REQUIRE(result == "(+ 2.000000 x)");
+                }
+            }
+        }
+    }
+    GIVEN("The expression a * b") {
+        InfixParser parser;
+        WHEN("We parse the expression") {
+            Expression expr = parser.parse("a * b");
+            AND_WHEN("We print the expression") {
+                string result = Printer::asString(expr);
+                THEN("the result is (* a b)") {
+                    REQUIRE(result == "(* a b)");
+                }
+            }
+        }
+    }
+    GIVEN("The expression (") {
+        InfixParser parser;
+        WHEN("We parse the expression") {
+            THEN("We get an invalid argument error") {
+                REQUIRE_THROWS_AS(parser.parse("("), std::invalid_argument);
+            }
+        }
+    }
+    GIVEN("The expression 2 + (5 * c)") {
+        InfixParser parser;
+        WHEN("We parse the expression") {
+            Expression expr = parser.parse("2 + (5 * c)");
+            AND_WHEN("We print the expression") {
+                string result = Printer::asString(expr);
+                THEN("the result is (+ 2.000000 (* 5.000000 c))") {
+                    REQUIRE(result == "(+ 2.000000 (* 5.000000 c))");
+                }
+            }
+        }
+    }
+    GIVEN("The expression a * (b + c)") {
+        InfixParser parser;
+        WHEN("We parse the expression") {
+            Expression expr = parser.parse("a * (b + c)");
+            AND_WHEN("We print the expression") {
+                string result = Printer::asString(expr);
+                THEN("the result is (* a (+ b c))") {
+                    REQUIRE(result == "(* a (+ b c))");
+                }
             }
         }
     }
