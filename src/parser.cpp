@@ -23,6 +23,7 @@ Token Lexer::getNextToken() {
     std::regex addRegex("\\+([^[:alnum:]](.*))"); // Regex for arithmetic +
     std::regex subRegex("-([^[:alnum:]](.*))");   // Regex for arithmetic -
     std::regex multRegex("\\*(.*)");              // Regex for arithmetic *
+    std::regex divRegex("\\/(.*)");               // Regex for arithmetic /
     // Regex for constants. Constants are a number, optionally preceded by + or
     // -.
     // Note that we use the passive group (?:subpattern) here, so that we only
@@ -49,6 +50,10 @@ Token Lexer::getNextToken() {
         token.type = Token::OP;
         token.value = "*";
         input = std::regex_replace(input, multRegex, "$1");
+    } else if (std::regex_match(input, divRegex)) {
+        token.type = Token::OP;
+        token.value = "/";
+        input = std::regex_replace(input, divRegex, "$1");
     } else if (std::regex_match(input, constantRegex)) {
         token.type = Token::CONST;
         token.value = std::regex_replace(input, constantRegex, "$1");

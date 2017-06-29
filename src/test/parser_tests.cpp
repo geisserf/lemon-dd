@@ -214,6 +214,18 @@ SCENARIO("Testing the infixparser on arithmetic expressions", "[parser]") {
             }
         }
     }
+    GIVEN("The expression a / b") {
+        InfixParser parser;
+        WHEN("We parse the expression") {
+            Expression expr = parser.parse("a / b");
+            AND_WHEN("We print the expression") {
+                string result = Printer::asString(expr);
+                THEN("the result is (/ a b)") {
+                    REQUIRE(result == "(/ a b)");
+                }
+            }
+        }
+    }
     GIVEN("The expression (") {
         InfixParser parser;
         WHEN("We parse the expression") {
