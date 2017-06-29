@@ -38,7 +38,7 @@ set(SOURCE_FILES
         catamorph/Expression.h
         Polynomial.cpp Polynomial.h
         parser.cpp parser.h
-        catamorph/Printer.h InfixParser.cpp InfixParser.h)
+        catamorph/Printer.h)
 
 add_library(NumericCatamorph_lib ${SOURCE_FILES})
 target_link_libraries(NumericCatamorph_lib MiniBoost)

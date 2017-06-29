@@ -1,9 +1,9 @@
 #include "Polynomial.h"
-#include "InfixParser.h"
 #include "catamorph/Expression.h"
 #include "catamorph/Printer.h"
 #include "catamorph/interpreters/Dependencies.h"
 #include "catamorph/interpreters/Evaluate.h"
+#include "parser.h"
 #include <string>
 
 Polynomial::Polynomial(std::string expression) {
@@ -57,7 +57,7 @@ std::string Polynomial::toString() {
 }
 
 void Polynomial::parseExpressionString() {
-    InfixParser parser = InfixParser();
+    InfixParser parser;
     this->expression =
         std::make_shared<Expression>(parser.parse(this->s_expression));
 }

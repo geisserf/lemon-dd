@@ -4,10 +4,6 @@
 #include <limits>
 #include <string>
 
-#include <cctype>
-#include <functional>
-#include <locale>
-
 struct Token {
     enum Type { OP, CONST, LPAREN, RPAREN, VAR, END, INVALID };
 
