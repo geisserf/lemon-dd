@@ -37,6 +37,7 @@ set(SOURCE_FILES
         catamorph/interpreters/Iverson.cpp catamorph/interpreters/Iverson.h
         catamorph/Expression.h
         Polynomial.cpp Polynomial.h
+        parser.cpp parser.h
         catamorph/Printer.h InfixParser.cpp InfixParser.h)
 
 add_library(NumericCatamorph_lib ${SOURCE_FILES})

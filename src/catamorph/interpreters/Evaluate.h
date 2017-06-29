@@ -1,7 +1,6 @@
 #ifndef NUMERIC_CATAMORPH_EVAOL_H
 #define NUMERIC_CATAMORPH_EVAOL_H
 
-
 #include "../Catamorph.h"
 
 class Evaluate {
@@ -11,5 +10,4 @@ public:
     static Expression partial_eval(Env const &env, Expression const &e);
 };
 
-
-#endif //NUMERIC_CATAMORPH_EVAOL_H
+#endif // NUMERIC_CATAMORPH_EVAOL_H
