@@ -20,8 +20,6 @@ Token Lexer::getNextToken() {
     // trim surrounding parantheses
     trim(input);
 
-    // StringUtils::trim(input);
-
     std::regex addRegex("\\+([^[:alnum:]](.*))"); // Regex for arithmetic +
     std::regex subRegex("-([^[:alnum:]](.*))");   // Regex for arithmetic -
     std::regex multRegex("\\*(.*)");              // Regex for arithmetic *
@@ -145,7 +143,7 @@ Expression Parser::parseExpression(Lexer &lexer) const {
                                     lexer.input);
         break;
     default:
-        throw std::invalid_argument("Illegal expression");
+        throw std::invalid_argument("Illegal expression: " + lexer.input);
         break;
     }
 }
