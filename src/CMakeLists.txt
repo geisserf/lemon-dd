@@ -43,6 +43,6 @@ set(SOURCE_FILES
 add_library(NumericCatamorph_lib ${SOURCE_FILES})
 target_link_libraries(NumericCatamorph_lib MiniBoost)
 
+add_subdirectory(evmdd)
 add_subdirectory(test)
 add_subdirectory(benchmark)
-add_subdirectory(evmdd)
