@@ -12,9 +12,12 @@ public:
     }
 
     template <typename A, typename M>
-    static auto fmap(M map, Evmdd_r<A> const $e) {
-        using B = decltype(map(std::declval<A>()));
-        using Out = Evmdd_r<B>;
+    static auto fmap(M map, Evmdd_r<A> const &e) {
+        using Out = Evmdd_r<A>;
+
+        // Base case Evmdd is constant leading to terminal Node
+        if (e.child.variable == nullptr)
+            return e;
     };
 };
 

@@ -77,21 +77,22 @@ void run_benchmark_from_file_single_evlauation(int domain_size,
 
                 try {
                     p.evaluate(env);
+                    end = std::chrono::system_clock::now();
+                    int elapsed_seconds =
+                        std::chrono::duration_cast<std::chrono::milliseconds>(
+                            end - start)
+                            .count();
+
+                    r_file << benchmark_file << "," << l_count << ","
+                           << variables.size() << "," << elapsed_seconds
+                           << std::endl;
+                    r_file.flush();
+                    l_count++;
                 } catch (...) {
                     r_file << benchmark_file << "," << l_count << ","
                            << variables.size() << ", ERROR " << std::endl;
+                    r_file.flush();
                 }
-
-                end = std::chrono::system_clock::now();
-                int elapsed_seconds =
-                    std::chrono::duration_cast<std::chrono::seconds>(end -
-                                                                     start)
-                        .count();
-
-                r_file << benchmark_file << "," << l_count << ","
-                       << variables.size() << "," << elapsed_seconds
-                       << std::endl;
-                l_count++;
             }
         } else {
             std::cout << "unable to open benchmark file" << std::endl;
@@ -114,7 +115,8 @@ int main() {
 
     for (std::string benchmark_file : benchmark_files) {
         run_benchmark_from_file_single_evlauation(
-            default_domain_size, benchmark_file, "benchmarkfiles/result.csv");
+            default_domain_size, benchmark_file,
+            benchmark_file + "_result.csv");
     }
 
     return 0;
