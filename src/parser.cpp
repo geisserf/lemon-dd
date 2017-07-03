@@ -30,18 +30,14 @@ Token Lexer::getNextToken() {
     // have one backreference for the whole constant and not multiple
     // backreferences for individual constant parts
     std::regex constantRegex(
-        "((?:(?:\\+|-)?[[:digit:]]+)(?:\\.(?:(?:[[:digit:]]+)?))?)"
-        "([^[:alpha:]].*)");
+        "((?:(?:\\+|-)?[[:digit:]]+)(?:\\.(?:(?:[[:digit:]]+)?))?)(.*)");
     std::regex lParenRegex("\\((.*)"); // Regex for (
     std::regex rParenRegex("\\)(.*)"); // Regex for )
-    // Variables can contain constants or numbers or "_" and can be 
-    // positive or negative
-    std::regex varRegex("((?:\\+|-)?(?:[[:alnum:]]|_)+)(.*)");
-
-    // IMPORTANT: due to variables being more expressive than constants, it is
-    // important that the lexer first checks if the expression is a constant
-    // before it checks variables (since a constant regex also matches the
-    // variable regex pattern
+    // Variables contain numbers, letters or "_", they may be 
+    // positive or negative, but must not start with a number
+    std::regex varRegex("((?:(?:\\+|-)?[[:alpha:]|_]+)(?:[[:alnum:]|_]*))(.*)");
+        
+        //((([[:alpha:]]|_)+(([[:alnum:]]|_)*))))(.*)");
 
     Token token;
     if (std::regex_match(input, addRegex)) {
