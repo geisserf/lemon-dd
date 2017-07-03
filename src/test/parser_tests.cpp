@@ -5,6 +5,23 @@
 using std::string;
 using std::vector;
 
+SCENARIO("Testing the lexer on single expressions", "[lexer]") {
+    WHEN("We parse VAR1") {
+        Lexer lexer("VAR1");
+        THEN("We get a token representing a variable") {
+            Token token = lexer.getNextToken();
+            REQUIRE(token.type == Token::VAR);
+        }
+    }
+    WHEN("We parse 1VAR") {
+        Lexer lexer("1VAR");
+        THEN("We get a token representing a variable") {
+            Token token = lexer.getNextToken();
+            REQUIRE(token.type == Token::VAR);
+        }
+    }
+}
+
 SCENARIO("Testing the lexer on a simple expression", "[lexer]") {
     GIVEN("The expression (+ +12.5 -2 p_i_g)") {
         Lexer lexer("(+ +12.5 -2 p_i_g)");
@@ -101,12 +118,8 @@ SCENARIO("Testing the lexer on an expression without whitespace", "[lexer]") {
         REQUIRE("-" == token.value);
 
         token = lexer.getNextToken();
-        REQUIRE(Token::CONST == token.type);
-        REQUIRE("2" == token.value);
-
-        token = lexer.getNextToken();
         REQUIRE(Token::VAR == token.type);
-        REQUIRE("pig" == token.value);
+        REQUIRE("2pig" == token.value);
 
         token = lexer.getNextToken();
         REQUIRE(Token::RPAREN == token.type);
@@ -142,15 +155,7 @@ SCENARIO("Testing the lexer on an expression with weird input", "[lexer]") {
 
         token = lexer.getNextToken();
         REQUIRE(Token::VAR == token.type);
-        REQUIRE("co" == token.value);
-
-        token = lexer.getNextToken();
-        REQUIRE(Token::CONST == token.type);
-        REQUIRE("3" == token.value);
-
-        token = lexer.getNextToken();
-        REQUIRE(Token::VAR == token.type);
-        REQUIRE("w" == token.value);
+        REQUIRE("co3w" == token.value);
     }
 }
 
@@ -189,23 +194,24 @@ SCENARIO("Testing the prefixparser on arithmetic expressions", "[parser]") {
     }
 }
 
-SCENARIO("Testing the infixparser on arithmetic expressions", "[parser]") {
-    GIVEN("The expression 2 + x") {
+SCENARIO("Testing the infixparser on valid arithmetic expressions",
+         "[parser]") {
+    GIVEN("The expression 2 + var1") {
         InfixParser parser;
         WHEN("We parse the expression") {
-            Expression expr = parser.parse("2 + x)");
+            Expression expr = parser.parse("2 + var1)");
             AND_WHEN("We print the expression") {
                 string result = Printer::asString(expr);
                 THEN("the result is (+ 2.000000 x)") {
-                    REQUIRE(result == "(+ 2.000000 x)");
+                    REQUIRE(result == "(+ 2.000000 var1)");
                 }
             }
         }
     }
-    GIVEN("The expression a * b") {
+    GIVEN("The expression (a * b)") {
         InfixParser parser;
         WHEN("We parse the expression") {
-            Expression expr = parser.parse("a * b");
+            Expression expr = parser.parse("(a * b)");
             AND_WHEN("We print the expression") {
                 string result = Printer::asString(expr);
                 THEN("the result is (* a b)") {
@@ -226,14 +232,6 @@ SCENARIO("Testing the infixparser on arithmetic expressions", "[parser]") {
             }
         }
     }
-    GIVEN("The expression (") {
-        InfixParser parser;
-        WHEN("We parse the expression") {
-            THEN("We get an invalid argument error") {
-                REQUIRE_THROWS_AS(parser.parse("("), std::invalid_argument);
-            }
-        }
-    }
     GIVEN("The expression 2 + (5 * c)") {
         InfixParser parser;
         WHEN("We parse the expression") {
@@ -246,15 +244,56 @@ SCENARIO("Testing the infixparser on arithmetic expressions", "[parser]") {
             }
         }
     }
-    GIVEN("The expression a * (b + c)") {
+    GIVEN("The expression (a * (b + c))") {
         InfixParser parser;
         WHEN("We parse the expression") {
-            Expression expr = parser.parse("a * (b + c)");
+            Expression expr = parser.parse("(a * (b + c))");
             AND_WHEN("We print the expression") {
                 string result = Printer::asString(expr);
                 THEN("the result is (* a (+ b c))") {
                     REQUIRE(result == "(* a (+ b c))");
                 }
+            }
+        }
+    }
+}
+
+SCENARIO("Testing the infixparser on invalid expressions", "[parser]") {
+    GIVEN("The expression (") {
+        InfixParser parser;
+        WHEN("We parse the expression") {
+            THEN("We get an invalid argument error") {
+                REQUIRE_THROWS_AS(parser.parse("("), std::invalid_argument);
+            }
+        }
+    }
+    GIVEN("The expression )") {
+        InfixParser parser;
+        WHEN("We parse the expression") {
+            THEN("We get an invalid argument error") {
+                REQUIRE_THROWS_AS(parser.parse(")"), std::invalid_argument);
+            }
+        }
+    }
+    GIVEN("The expression a / b)") {
+        InfixParser parser;
+        WHEN("We parse the expression") {
+            THEN("We get an invalid argument error") {
+                // TODO this test currently fails, since it is not checked if
+                // ")" has a matching "(", as long as the expression before ")"
+                // is valid. This could actually be ok and not be an invalid
+                // argument, thus allowing more errors on the user side.
+                REQUIRE_THROWS_AS(parser.parse("a / b)"),
+                                  std::invalid_argument);
+            }
+        }
+    }
+    GIVEN("The expression --") {
+        InfixParser parser;
+        WHEN("We parse the expression") {
+            THEN("We get an invalid argument error") {
+                REQUIRE_THROWS_AS(parser.parse("--)"),
+                                  std::invalid_argument);
             }
         }
     }

@@ -30,12 +30,18 @@ Token Lexer::getNextToken() {
     // have one backreference for the whole constant and not multiple
     // backreferences for individual constant parts
     std::regex constantRegex(
-        "((?:(?:\\+|-)?[[:digit:]]+)(?:\\.(?:(?:[[:digit:]]+)?))?)(.*)");
+        "((?:(?:\\+|-)?[[:digit:]]+)(?:\\.(?:(?:[[:digit:]]+)?))?)"
+        "([^[:alpha:]].*)");
     std::regex lParenRegex("\\((.*)"); // Regex for (
     std::regex rParenRegex("\\)(.*)"); // Regex for )
-    // Variables start with a letter or "_" character and can be positive or
-    // negative
-    std::regex varRegex("((?:\\+|-)?(?:[[:alpha:]]|_)+)(.*)");
+    // Variables can contain constants or numbers or "_" and can be 
+    // positive or negative
+    std::regex varRegex("((?:\\+|-)?(?:[[:alnum:]]|_)+)(.*)");
+
+    // IMPORTANT: due to variables being more expressive than constants, it is
+    // important that the lexer first checks if the expression is a constant
+    // before it checks variables (since a constant regex also matches the
+    // variable regex pattern
 
     Token token;
     if (std::regex_match(input, addRegex)) {
@@ -237,7 +243,7 @@ Expression InfixParser::parseTerm(Lexer &lexer) const {
 }
 
 Expression InfixParser::parseFactor(Lexer &lexer) const {
-    // factor = constant | {"+"|"-"} variable | "(" expression ")"
+    // factor = constant | {"+"|"-"}variable | "(" expression ")"
     Token token = lexer.getNextToken();
     switch (token.type) {
     case Token::CONST:

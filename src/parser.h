@@ -57,7 +57,7 @@ class Parser {
     // op =  sign | "*"
     // digit = "0"|...|"9"
     // number = [sign] {digit}[.{digit}]
-    // variable = {"a"|"A",...,"z"|"Z"|"_"}
+    // variable = [{digit}]{"a"|"A",...,"z"|"Z"|"_"}[{digit}]
     // expression = number | [sign] variable | "(" op {expression} ")"
     // paranthExpression = "(" expression ")"
 
@@ -71,11 +71,11 @@ private:
 
 class InfixParser {
     // EBNF
-    // expression = term { ("+" | "-") term}
+    // expression = [(] term { ("+" | "-") term} [)]
     // term = factor { ("*" | "/") factor}
     // factor = constant | {"+"|"-"} variable | "(" expression ")"
-    // variable = {"a"|"A",...,"z"|"Z"|"_"}
-    // number = {digit}[.{digit}]
+    // variable = [{digit}]{"a"|"A",...,"z"|"Z"|"_"}[{digit}]
+    // number = [{"+"|"-"}]{digit}[.{digit}]
     // digit = "0"|...|"9"
 
 public:
