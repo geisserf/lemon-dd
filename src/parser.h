@@ -1,12 +1,7 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-#include <limits>
 #include <string>
-
-#include <cctype>
-#include <functional>
-#include <locale>
 
 struct Token {
     enum Type { OP, CONST, LPAREN, RPAREN, VAR, END, INVALID };
@@ -72,6 +67,29 @@ public:
 private:
     Expression parseExpression(Lexer &lexer) const;
     Expression parseOpExpression(Lexer &lexer) const;
+};
+
+class InfixParser {
+    // EBNF
+    // expression = term { ("+" | "-") term}
+    // term = factor { ("*" | "/") factor}
+    // factor = constant | {"+"|"-"} variable | "(" expression ")"
+    // variable = {"a"|"A",...,"z"|"Z"|"_"}
+    // number = {digit}[.{digit}]
+    // digit = "0"|...|"9"
+
+public:
+    // Parses the string and returns an expression or throws an error
+    Expression parse(std::string const &input) const;
+
+private:
+    // Parse functions for BNF parts
+    Expression parseExpression(Lexer &lexer) const;
+    Expression parseTerm(Lexer &lexer) const;
+    Expression parseFactor(Lexer &lexer) const;
+    // Creates an expression of type op(lhs, rhs)
+    Expression createExpression(Expression const &lhs, Token op,
+                                Expression const &rhs) const;
 };
 
 #endif /* PARSER_H */

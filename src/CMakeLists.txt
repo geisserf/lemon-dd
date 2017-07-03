@@ -29,7 +29,7 @@ add_subdirectory(boost_dependencies/libs)
 
 
 set(SOURCE_FILES
-        catamorph/Catamorph.cpp catamorph/Catamorph.h
+        catamorph/Catamorph.h
         catamorph/Factories.cpp catamorph/Factories.h
         catamorph/interpreters/Optimizations.cpp catamorph/interpreters/Optimizations.h
         catamorph/interpreters/Evaluate.cpp catamorph/interpreters/Evaluate.h
@@ -38,7 +38,7 @@ set(SOURCE_FILES
         catamorph/Expression.h
         Polynomial.cpp Polynomial.h
         parser.cpp parser.h
-        catamorph/Printer.h InfixParser.cpp InfixParser.h)
+        catamorph/Printer.h)
 
 add_library(NumericCatamorph_lib ${SOURCE_FILES})
 target_link_libraries(NumericCatamorph_lib MiniBoost)

@@ -2,35 +2,35 @@
 #define NUMERIC_CATAMORPH_POLYNOMIAL_H
 
 #include "catamorph/Expression.h"
+
 #include <string>
 
 class Polynomial {
-private:
-    std::shared_ptr<const Expression> expression;
-    std::string s_expression;
-    Polynomial() = delete;
-    void parseExpressionString();
-
 public:
-    // Create a Polynomial from a string representation of an infix expression
-    Polynomial(std::string expression);
-    Polynomial(const Polynomial &e);
-    Polynomial(Expression e);
+    // Create a polynomial from a string representation of an infix expression
+    Polynomial(std::string const &expression);
+
+    // Wraps the expression into a polynomial
+    Polynomial(Expression const &e);
 
     // Evaluates the given polynomial expression regarding the passed
-    // environment
-    // partial evaluation is supported
-    void evaluate(const Env &environment);
-    // Identifies and subtracts any constant coefficient, by setting all
-    // variables
-    // to 0.
-    NBR getAndSubtractConst();
-    // Identifies and subtracts any constant coefficient after application of
-    // environment
-    // For this all variables must be set.
-    NBR getAndSubtractConst(const Env &environment);
-    void print();
-    std::string toString();
+    // environment. Partial evaluation is supported
+    Expression evaluate(const Env &environment) const;
+
+    // Returns the constant part of an expression
+    Expression getConstantPart() const;
+
+    // Returns an expression which is the polynomial minus a constant
+    Expression subtractConstant(Expression const &constant) const;
+
+    // Helper functions to print and show polynomial as a string
+    void print() const;
+    std::string toString() const;
+
+    Expression getExpression();
+
+private:
+    Expression expression;
 };
 
 #endif // NUMERIC_CATAMORPH_POLYNOMIAL_H

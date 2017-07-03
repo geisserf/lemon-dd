@@ -27,7 +27,7 @@ operators = {
     '+': {'prec': 30, 'prob': .3},
     '-': {'prec': 30, 'prob': .3}}
 
-max_levels = 3
+max_levels = 24
 integer_range = (0, 100)
 
 
@@ -127,7 +127,8 @@ class binary_expression(expression):
         if operators[self.symbol]['prec'] >= 30:
             op_str = ' ' + op_str + ' '
 
-        return left_str + op_str + right_str
+        #return left_str + op_str + right_str
+        return "("+left_str + op_str + right_str+")"
 
 
 for i in range(100):
