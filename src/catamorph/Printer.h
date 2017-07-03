@@ -8,6 +8,8 @@
 #include <iostream>
 #include <string>
 
+#include "../boost_dependencies/boost/algorithm/string/join.hpp"
+
 class Printer {
 private:
     template <typename Tag>
