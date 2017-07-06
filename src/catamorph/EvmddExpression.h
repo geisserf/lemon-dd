@@ -13,7 +13,7 @@ class VariableAssignment {
 public:
     std::string variable;
     int value;
-
+    std::string toString();
     bool operator==(const VariableAssignment &rhs) const;
     bool operator!=(const VariableAssignment &rhs) const;
     bool operator<(const VariableAssignment &rhs) const;
@@ -29,24 +29,24 @@ public:
     bool operator==(const EvmddExpression<T> &right);
 
     bool operator!=(const EvmddExpression<T> &right);
+
+    std::string toString();
 };
 
 template <class T>
 struct greates_lower_bound { // min
-    std::vector<std::shared_ptr<T>> operator()(
-        const T &a, const std::vector<std::shared_ptr<T>> &b) const;
+    std::vector<T> operator()(const T &a, const std::vector<T> &b) const;
     typedef T first_argument_type;
     typedef T second_argument_type;
-    typedef std::vector<std::shared_ptr<T>> result_type;
+    typedef std::vector<T> result_type;
 };
 
 template <class T>
 struct least_upper_bound { // max
-    std::vector<std::shared_ptr<T>> operator()(
-        const T &a, const std::vector<std::shared_ptr<T>> &b) const;
+    std::vector<T> operator()(const T &a, const std::vector<T> &b) const;
     typedef T first_argument_type;
     typedef T second_argument_type;
-    typedef std::vector<std::shared_ptr<T>> result_type;
+    typedef std::vector<T> result_type;
 };
 
 using NumericExpression = EvmddExpression<float>;

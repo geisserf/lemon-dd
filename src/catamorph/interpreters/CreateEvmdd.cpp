@@ -3,23 +3,63 @@
 #include "../EvmddExpression.h"
 
 template <>
-Evmdd<EvmddExpression<float>>
-CreateEvmdd<EvmddExpression<float>>::makeConstEvmdd(const float *weight) {
-    auto edge = std::shared_ptr<Edge<EvmddExpression<float>>>(
-        new Edge<EvmddExpression<float>>());
-    auto l = std::unique_ptr<Label<EvmddExpression<float>>>(
-        new Label<EvmddExpression<float>>());
-    auto expression =
-        std::unique_ptr<NumericExpression>(new EvmddExpression<float>());
-    expression.get()->value = *weight;
-    l.get()->expression = std::move(expression);
-    edge.get()->label = std::move(l);
+Evmdd<EvmddExpression<float>> CreateEvmdd<EvmddExpression<float>>::makeVarEvmdd(
+    const std::string var, unsigned int domain) {
+    // terminal node
+    Node<EvmddExpression<float>> terminal;
 
-    edge.get()->successor = std::shared_ptr<Node<EvmddExpression<float>>>(
-        new Node<EvmddExpression<float>>());
-    Evmdd<EvmddExpression<float>>
-        result; // = new Evmdd<EvmddExpression<float>>();
-    result.terminal = edge.get()->successor;
+    // Incoming Edge
+    Label<EvmddExpression<float>> incoming_label;
+    EvmddExpression<float> expression;
+    expression.value = 0;
+    incoming_label.expression = expression;
+    Edge<EvmddExpression<float>> incoming_edge;
+    incoming_edge.label = incoming_label;
+    incoming_edge.value = 0;
+
+    // Variable Node
+    Node<EvmddExpression<float>> variable_node;
+    variable_node.variable = var;
+    variable_node.incoming.push_back(incoming_edge);
+
+    // for each domain value add edge from incoming_edge.get()->successor to
+    // terminal with weight = domain value
+    for (unsigned int d = 0; d < domain; d++) {
+        Label<EvmddExpression<float>> edge_label;
+        EvmddExpression<float> edge_expression;
+        edge_expression.value = d;
+        edge_label.expression = edge_expression;
+        Edge<EvmddExpression<float>> edge;
+        edge.label = edge_label;
+        edge.value = d;
+        edge.successor = terminal;
+        edge.predecessor = variable_node;
+        variable_node.outgoing.push_back(edge);
+    }
+
+    incoming_edge.successor = variable_node;
+    Evmdd<EvmddExpression<float>> result;
+    result.evmdd = incoming_edge;
+    result.terminal = terminal;
+
+    return result;
+}
+
+template <>
+Evmdd<EvmddExpression<float>>
+CreateEvmdd<EvmddExpression<float>>::makeConstEvmdd(const float weight) {
+    Edge<EvmddExpression<float>> edge;
+    Label<EvmddExpression<float>> l;
+    EvmddExpression<float> expression;
+    expression.value = weight;
+    l.expression = std::move(expression);
+    edge.label = std::move(l);
+    edge.value = 0;
+
+    Node<EvmddExpression<float>> successor;
+    edge.successor = successor;
+    Evmdd<EvmddExpression<float>> result;
+    result.terminal = successor;
     result.evmdd = edge;
     return result;
 }
@@ -31,7 +71,10 @@ auto CreateEvmdd<EvmddExpression<float>>::create_evmdd_alg(
         [&domains, this](expression_r<Evmdd<EvmddExpression<float>>> const &e)
             -> Evmdd<EvmddExpression<float>> {
                 if (auto *o = Factories::get_as_cst(e)) {
-                    return makeConstEvmdd(o);
+                    return makeConstEvmdd(*o);
+                }
+                if (auto *o = Factories::get_as_var(e)) {
+                    return makeVarEvmdd(*o, domains.find(*o)->second);
                 }
                 // not implemented :-)
                 return makeConstEvmdd(0);

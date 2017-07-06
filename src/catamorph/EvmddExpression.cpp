@@ -7,6 +7,11 @@
  */
 
 template <>
+std::string EvmddExpression<float>::toString() {
+    return std::to_string(this->value);
+}
+
+template <>
 bool EvmddExpression<float>::operator==(const EvmddExpression<float> &right) {
     return this->value == right.value;
 }
@@ -25,45 +30,38 @@ EvmddExpression<float> &EvmddExpression<float>::operator+(
 }
 
 template <>
-std::vector<std::shared_ptr<NumericExpression>>
-greates_lower_bound<NumericExpression>::operator()(
-    const NumericExpression &a,
-    const std::vector<std::shared_ptr<NumericExpression>> &b) const {
-    std::vector<std::shared_ptr<EvmddExpression<float>>> result;
-    auto e =
-        std::shared_ptr<EvmddExpression<float>>(new EvmddExpression<float>());
+std::vector<NumericExpression> greates_lower_bound<NumericExpression>::
+operator()(const NumericExpression &a,
+           const std::vector<NumericExpression> &b) const {
+    std::vector<EvmddExpression<float>> result;
+    EvmddExpression<float> e;
     if (b.size() == 1) {
-        if (b.front()->value < a.value) {
-            e->value = b.front()->value;
+        if (b.front().value < a.value) {
+            e.value = b.front().value;
         } else {
-            e->value = a.value;
+            e.value = a.value;
         }
     } else {
-        e->value = a.value;
+        e.value = a.value;
     }
     result.push_back(e);
     return result;
 }
 
 template <>
-std::vector<std::shared_ptr<NumericExpression>>
-least_upper_bound<NumericExpression>::operator()(
-    const NumericExpression &a,
-    const std::vector<std::shared_ptr<NumericExpression>> &b) const {
-    std::vector<std::shared_ptr<EvmddExpression<float>>> result;
-    auto e =
-        std::shared_ptr<EvmddExpression<float>>(new EvmddExpression<float>());
-    // std::cout<<"b.size:"<<b.size()<<"a.val:"<<a.value<<std::endl;
+std::vector<NumericExpression> least_upper_bound<NumericExpression>::operator()(
+    const NumericExpression &a, const std::vector<NumericExpression> &b) const {
+    std::vector<EvmddExpression<float>> result;
+    EvmddExpression<float> e;
     if (b.size() == 1) {
-        if (b.front()->value > a.value) {
-            e->value = b.front()->value;
+        if (b.front().value > a.value) {
+            e.value = b.front().value;
         } else {
-            e->value = a.value;
+            e.value = a.value;
         }
     } else {
-        e->value = a.value;
+        e.value = a.value;
     }
-    // std::cout<<"   e.val "<<e->value<<std::endl;
     result.push_back(e);
     return result;
 }
@@ -71,6 +69,15 @@ least_upper_bound<NumericExpression>::operator()(
 /*
  * Expression Variable Assignment
  */
+
+template <>
+std::string EvmddExpression<std::vector<VariableAssignment>>::toString() {
+    std::string result = "{";
+    for (size_t i = 0; i < this->value.size(); i++) {
+        result = result + " " + value[i].toString();
+    }
+    return result + "}";
+}
 
 template <>
 EvmddExpression<std::vector<VariableAssignment>>
@@ -103,51 +110,46 @@ bool EvmddExpression<std::vector<VariableAssignment>>::operator!=(
 }
 
 template <>
-std::vector<std::shared_ptr<VariableAssignementExpression>>
+std::vector<VariableAssignementExpression>
 greates_lower_bound<VariableAssignementExpression>::operator()(
     const VariableAssignementExpression &a,
-    const std::vector<std::shared_ptr<VariableAssignementExpression>> &b)
-    const {
-    auto e = std::shared_ptr<VariableAssignementExpression>(
-        new EvmddExpression<std::vector<VariableAssignment>>());
+    const std::vector<VariableAssignementExpression> &b) const {
+    VariableAssignementExpression e;
     // union
     std::vector<VariableAssignment> result;
     // add own variable assignments to new result
     for (VariableAssignment va : a.value) {
-        VariableAssignment *a = new VariableAssignment();
-        a->value = va.value;
-        a->variable = va.variable;
-        result.push_back(*a);
+        VariableAssignment a;
+        a.value = va.value;
+        a.variable = va.variable;
+        result.push_back(a);
     }
 
     if (!b.empty()) {
-        for (VariableAssignment va : b.front()->value) {
+        for (VariableAssignment va : b.front().value) {
             if (std::find(result.begin(), result.end(), va) == result.end()) {
-                VariableAssignment *nva = new VariableAssignment();
-                nva->value = va.value;
-                nva->variable = va.variable;
-                result.push_back(*nva);
+                VariableAssignment nva;
+                nva.value = va.value;
+                nva.variable = va.variable;
+                result.push_back(nva);
             }
         }
     }
-    std::vector<std::shared_ptr<VariableAssignementExpression>> r;
-    auto va_exp =
-        std::shared_ptr<EvmddExpression<std::vector<VariableAssignment>>>(
-            new EvmddExpression<std::vector<VariableAssignment>>());
-    va_exp->value = result;
+    std::vector<VariableAssignementExpression> r;
+    EvmddExpression<std::vector<VariableAssignment>> va_exp;
+    va_exp.value = result;
     r.push_back(va_exp);
     return r;
 }
 
 template <>
-std::vector<std::shared_ptr<VariableAssignementExpression>>
+std::vector<VariableAssignementExpression>
 least_upper_bound<VariableAssignementExpression>::operator()(
     const VariableAssignementExpression &a,
-    const std::vector<std::shared_ptr<VariableAssignementExpression>> &b)
-    const {
+    const std::vector<VariableAssignementExpression> &b) const {
     (void)a;
     (void)b;
-    std::vector<std::shared_ptr<VariableAssignementExpression>> result;
+    std::vector<VariableAssignementExpression> result;
     return result;
 }
 
@@ -169,20 +171,18 @@ operator+(const EvmddExpression<
 }
 
 template <>
-std::vector<std::shared_ptr<TupleExpression>>
-greates_lower_bound<TupleExpression>::operator()(
-    const TupleExpression &a,
-    const std::vector<std::shared_ptr<TupleExpression>> &b) const {
-    std::vector<std::shared_ptr<TupleExpression>> new_t;
+std::vector<TupleExpression> greates_lower_bound<TupleExpression>::operator()(
+    const TupleExpression &a, const std::vector<TupleExpression> &b) const {
+    std::vector<TupleExpression> new_t;
     // bool add_this = false;
     bool added = false;
     if (b.size() > 0) {
-        for (const std::shared_ptr<TupleExpression> tuple_in : b) {
+        for (const TupleExpression tuple_in : b) {
             // std::cout<<"check if this.variable_assignments =
             // tuple_in.variable_assignments"<<std::endl;
-            bool subset = tuple_in->value.first.value.size() > 0;
+            bool subset = tuple_in.value.first.value.size() > 0;
 
-            for (VariableAssignment tuple_va : tuple_in->value.first.value) {
+            for (VariableAssignment tuple_va : tuple_in.value.first.value) {
                 bool found = false;
                 for (VariableAssignment this_va : a.value.first.value) {
                     if (this_va.variable == tuple_va.variable &&
@@ -198,18 +198,15 @@ greates_lower_bound<TupleExpression>::operator()(
                 }
             }
 
-            if (subset || (tuple_in->value.first.value.size() == 0 &&
+            if (subset || (tuple_in.value.first.value.size() == 0 &&
                            a.value.first.value.size() == 0)) {
                 //  std::cout<<"check true"<<std::endl;
-                std::shared_ptr<TupleExpression> n =
-                    std::shared_ptr<TupleExpression>(
-                        new EvmddExpression<std::pair<
-                            VariableAssignementExpression, NumericExpression>>);
-                n->value.first = a.value.first;
-                n->value.second =
-                    (a.value.second.value < tuple_in->value.second.value)
+                TupleExpression n;
+                n.value.first = a.value.first;
+                n.value.second =
+                    (a.value.second.value < tuple_in.value.second.value)
                         ? a.value.second
-                        : tuple_in->value.second;
+                        : tuple_in.value.second;
                 // std::cout << "Add this to with lower value: " <<
                 // n->toString()
                 //          << std::endl;
@@ -217,12 +214,9 @@ greates_lower_bound<TupleExpression>::operator()(
                 added = true;
             } else {
                 // std::cout<<"check false"<<std::endl;
-                std::shared_ptr<TupleExpression> n =
-                    std::shared_ptr<TupleExpression>(
-                        new EvmddExpression<std::pair<
-                            VariableAssignementExpression, NumericExpression>>);
-                n->value.first = tuple_in->value.first;
-                n->value.second = tuple_in->value.second;
+                TupleExpression n;
+                n.value.first = tuple_in.value.first;
+                n.value.second = tuple_in.value.second;
                 new_t.push_back(n);
                 // std::cout << "Add other to result : " << n->toString()
                 //          << std::endl;
@@ -231,11 +225,9 @@ greates_lower_bound<TupleExpression>::operator()(
     }
 
     if (!added) {
-        std::shared_ptr<TupleExpression> n = std::shared_ptr<TupleExpression>(
-            new EvmddExpression<
-                std::pair<VariableAssignementExpression, NumericExpression>>);
-        n->value.first = a.value.first;
-        n->value.second = a.value.second;
+        TupleExpression n;
+        n.value.first = a.value.first;
+        n.value.second = a.value.second;
         // std::cout << "Add this to result (not in in): " << n->toString()
         //          << std::endl;
         new_t.push_back(n);
@@ -244,14 +236,19 @@ greates_lower_bound<TupleExpression>::operator()(
     return new_t;
 }
 template <>
-std::vector<std::shared_ptr<TupleExpression>>
-least_upper_bound<TupleExpression>::operator()(
-    const TupleExpression &a,
-    const std::vector<std::shared_ptr<TupleExpression>> &b) const {
+std::vector<TupleExpression> least_upper_bound<TupleExpression>::operator()(
+    const TupleExpression &a, const std::vector<TupleExpression> &b) const {
     (void)a;
     (void)b;
-    std::vector<std::shared_ptr<TupleExpression>> result;
+    std::vector<TupleExpression> result;
     return result;
+}
+
+template <>
+std::string EvmddExpression<
+    std::pair<VariableAssignementExpression, NumericExpression>>::toString() {
+    return "(" + this->value.first.toString() + ", " +
+           this->value.second.toString() + ")";
 }
 
 /* Variable Assignment */
@@ -266,6 +263,10 @@ bool VariableAssignment::operator!=(const VariableAssignment &rhs) const {
 
 bool VariableAssignment::operator<(const VariableAssignment &rhs) const {
     return this->variable < rhs.variable && this->value < rhs.value;
+}
+
+std::string VariableAssignment::toString() {
+    return this->variable + "=" + std::to_string(this->value);
 }
 
 template class greates_lower_bound<NumericExpression>;
