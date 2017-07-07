@@ -27,7 +27,7 @@ operators = {
     '+': {'prec': 30, 'prob': .3},
     '-': {'prec': 30, 'prob': .3}}
 
-max_levels = 24
+max_levels = 2
 integer_range = (0, 100)
 
 
@@ -131,7 +131,7 @@ class binary_expression(expression):
         return "("+left_str + op_str + right_str+")"
 
 
-for i in range(100):
+for i in range(1000):
     expr = expression.create_random(0)
     print(expr)
 

@@ -11,9 +11,10 @@ SCENARIO("Testing basic EVMDD construction", "[evmddBuild]") {
         WHEN("No evaluation") {
             THEN("Result should be ") {
                 Domains d = {};
+                Ordering o = {};
                 CreateEvmdd<NumericExpression> create;
                 Evmdd<NumericExpression> res =
-                    create.create_evmdd(p.getExpression(), d);
+                    create.create_evmdd(p.getExpression(), d, o);
                 REQUIRE(res.get_min().size() == 1);
                 REQUIRE(res.get_min()[0].value == 13);
             }
@@ -24,12 +25,29 @@ SCENARIO("Testing basic EVMDD construction", "[evmddBuild]") {
         Polynomial p = Polynomial(e);
         WHEN("Create EVMDD") {
             Domains d = {{"x", 5}};
+            Ordering o = {{"x", 1}};
             CreateEvmdd<NumericExpression> create;
             Evmdd<NumericExpression> res =
-                create.create_evmdd(p.getExpression(), d);
+                create.create_evmdd(p.getExpression(), d, o);
             THEN("get_min should be 0 and get_max should be 4") {
                 REQUIRE(res.get_min()[0].value == 0);
                 REQUIRE(res.get_max()[0].value == 4);
+            }
+        }
+    }
+
+    GIVEN("the Expression (X+1) with domain x=5") {
+        std::string e = "x + 1";
+        Polynomial p = Polynomial(e);
+        WHEN("Create EVMDD") {
+            Domains d = {{"x", 5}};
+            Ordering o = {{"x", 1}};
+            CreateEvmdd<NumericExpression> create;
+            Evmdd<NumericExpression> res =
+                create.create_evmdd(p.getExpression(), d, o);
+            THEN("get_min should be 1 and get_max should be 5") {
+                REQUIRE(res.get_min()[0].value == 1);
+                REQUIRE(res.get_max()[0].value == 5);
             }
         }
     }

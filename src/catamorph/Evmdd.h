@@ -1,6 +1,7 @@
 #ifndef NUMERIC_CATAMORPH_EVMDD_H
 #define NUMERIC_CATAMORPH_EVMDD_H
 
+#include "Expression.h"
 #include <map>
 #include <memory>
 #include <vector>
@@ -23,6 +24,7 @@ class Node {
 public:
     static int id_counter;
     int id;
+    int level;
     std::string variable;
     std::vector<Edge<T>> outgoing; // outgoing edge
     std::vector<Edge<T>> incoming; // incoming edge
@@ -42,7 +44,17 @@ public:
 
 template <typename T>
 class Evmdd {
+private:
+    template <typename Operator>
+    Evmdd<T> _termianl_value(Evmdd<T> other, Expression oper);
+    std::vector<Edge<T>> _align_levels(Edge<T> edge1, Edge<T> edge2);
+    Edge<T> apply_operator(Edge<T> edge1, Edge<T> edge2, Expression oper);
+
 public:
+    static Evmdd<T> makeConstEvmdd(T weight);
+    static Evmdd<T> makeVarEvmdd(const std::string var, unsigned int domain,
+                                 int level);
+
     // Evmdd(const Evmdd &that) = delete;
     // Evmdd(){};
     Node<T> terminal;
@@ -61,6 +73,9 @@ public:
         Edge<T> const &incoming_edge,
         std::map<int, std::vector<T>> const &partialEvaluations,
         EvaluationFunction evaluationFunction = EvaluationFunction()) const;
+
+    template <typename Operator>
+    Evmdd<T> apply(Evmdd<T> other, Expression oper);
 
     std::vector<T> get_min() const;
     std::vector<T> get_max() const;
