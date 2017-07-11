@@ -18,7 +18,7 @@ SCENARIO("Testing Polynomial Interface Class", "[poly]") {
             const Env empty_env = {};
             THEN("Result should be (+ (* y 2) x 3)") {
                 Polynomial result(p.evaluate(empty_env));
-                REQUIRE(result.toString() == "(+ (* y 2.000000) x 3.000000)");
+                REQUIRE(result.toString() == "(+ (* y 2) x 3)");
             }
         }
 
@@ -26,7 +26,7 @@ SCENARIO("Testing Polynomial Interface Class", "[poly]") {
             const Env partial_env = {{"x", 1}};
             THEN("Result should be (+(* y 2) 4)") {
                 Polynomial result(p.evaluate(partial_env));
-                REQUIRE(result.toString() == "(+ (* y 2.000000) 4.000000)");
+                REQUIRE(result.toString() == "(+ (* y 2) 4)");
                 Expression const_expr = result.getConstantPart();
                 AND_THEN("constant part of the function should be 4") {
                     NBR const *c = Factories::get_as_cst(const_expr.get());
@@ -36,7 +36,7 @@ SCENARIO("Testing Polynomial Interface Class", "[poly]") {
                     Polynomial sub(result.subtractConstant(const_expr));
                     THEN("subtraction should be (- (+ (* y 2) 4) 4)") {
                         REQUIRE(sub.toString() ==
-                                "(- (+ (* y 2.000000) 4.000000) 4.000000)");
+                                "(- (+ (* y 2) 4) 4)");
                     }
                 }
             }
