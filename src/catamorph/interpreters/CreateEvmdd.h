@@ -2,6 +2,7 @@
 #define NUMERIC_CATAMORPH_CREATEEVMDD_H
 
 #include "../Evmdd.h"
+#include "../EvmddExpression.h"
 #include "../Expression.h"
 
 using Domains = std::map<ID, unsigned int>;
@@ -14,6 +15,8 @@ private:
     // Evmdd<T> makeVarEvmdd(const std::string var, unsigned int domain, int
     // level);
     auto create_evmdd_alg(Domains const &domains, Ordering const &ordering);
+    template <typename Tag>
+    auto apply(op<Tag, Evmdd<NumericExpression>> const &e);
 
 public:
     Evmdd<T> create_evmdd(Expression const &e, Domains const &domains,

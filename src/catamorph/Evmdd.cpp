@@ -28,6 +28,7 @@ template <typename EvaluationFunction>
 std::vector<T> Evmdd<T>::evaluate(
     std::map<std::string, std::vector<int>> const &state,
     EvaluationFunction evaluationFunction) const {
+    std::cout << "Begin Eval:: " << std::endl << std::endl;
     std::map<int, std::vector<T>> partialEvaluations;
 
     std::queue<Edge<T>> openList;
@@ -35,6 +36,9 @@ std::vector<T> Evmdd<T>::evaluate(
     Edge<T> currentEdge;
     while (openList.size() > 0) {
         currentEdge = openList.front();
+        std::cout << "currentEdge " << currentEdge.label.expression.toString()
+                  << " to " << currentEdge.successor.variable << std::endl;
+
         openList.pop();
         auto p = partialEvaluations.find(currentEdge.successor.id);
         auto res = calculate_partial_evaluation(currentEdge, partialEvaluations,
@@ -74,8 +78,10 @@ std::vector<T> Evmdd<T>::evaluate(
             } else {
                 // variable not in state
                 // so we assume that variable can take on all values
-                for (const Edge<T> &succ_edge :
-                     currentEdge.successor.outgoing) {
+                for (Edge<T> &succ_edge : currentEdge.successor.outgoing) {
+                    std::cout << "    adding edge: "
+                              << succ_edge.label.expression.toString() << " to "
+                              << succ_edge.successor.variable << std::endl;
                     openList.push(succ_edge);
                 }
             }
@@ -124,8 +130,8 @@ Node<T>::Node() {
 }
 
 template <typename T>
-template <typename Operator>
-Evmdd<T> Evmdd<T>::apply(Evmdd<T> other, Expression oper) {
+// template <typename Operator>
+Evmdd<T> Evmdd<T>::apply(Evmdd<T> const &other, Expression oper) {
     // terminal case
     if (this->evmdd.successor.id == this->terminal.id &&
         other.evmdd.successor.id == other.terminal.id) {

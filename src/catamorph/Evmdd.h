@@ -74,8 +74,8 @@ public:
         std::map<int, std::vector<T>> const &partialEvaluations,
         EvaluationFunction evaluationFunction = EvaluationFunction()) const;
 
-    template <typename Operator>
-    Evmdd<T> apply(Evmdd<T> other, Expression oper);
+    // template <typename Operator>
+    Evmdd<T> apply(Evmdd<T> const &other, Expression oper);
 
     std::vector<T> get_min() const;
     std::vector<T> get_max() const;

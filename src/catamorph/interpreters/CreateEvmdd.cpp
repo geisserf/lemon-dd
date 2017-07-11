@@ -1,6 +1,22 @@
 #include "CreateEvmdd.h"
 #include "../Catamorph.h"
 #include "../EvmddExpression.h"
+#include "../Expression.h"
+
+template <>
+template <typename Tag>
+auto CreateEvmdd<NumericExpression>::apply(
+    op<Tag, Evmdd<NumericExpression>> const &e) {
+    if (e.rands().size() < 2) {
+        throw std::logic_error("wrong number of parameter expected >2");
+    }
+
+    Evmdd<NumericExpression> left_evmdd = e.rands().front();
+    for (auto sub = e.rands().begin() + 1; sub != e.rands().end(); sub++) {
+        left_evmdd.apply(*sub, Expression(e));
+    }
+    return left_evmdd;
+}
 
 template <>
 auto CreateEvmdd<NumericExpression>::create_evmdd_alg(
@@ -17,6 +33,9 @@ auto CreateEvmdd<NumericExpression>::create_evmdd_alg(
                        return Evmdd<NumericExpression>::makeVarEvmdd(
                            *o, domains.find(*o)->second,
                            ordering.find(*o)->second);
+                   }
+                   if (auto *o = Factories::get_as_add(e)) {
+                       return apply(*o);
                    }
                    NumericExpression exp;
                    exp.value = 0;
