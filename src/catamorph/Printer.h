@@ -1,6 +1,7 @@
 #ifndef NUMERIC_CATAMORPH_PRINTER_H
 #define NUMERIC_CATAMORPH_PRINTER_H
 
+#include "../boost_dependencies/boost/algorithm/string/join.hpp"
 #include "Catamorph.h"
 #include "Expression.h"
 #include "Factories.h"

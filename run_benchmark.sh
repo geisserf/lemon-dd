@@ -1,9 +1,9 @@
 #!/bin/sh
 
 set -e
-./build.py --debug -j4
+./build.py -j4
 
-./builds/debug32/bin/Benchmark
+./builds/release32/bin/Benchmark
 #pprof --callgrind builds/debug32/bin/Benchmark MyProfileFilename >profile.callgrind
 #kcachegrind profile.callgrind
 

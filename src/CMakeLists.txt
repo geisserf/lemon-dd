@@ -21,7 +21,7 @@ set(CMAKE_CXX_FLAGS_PROFILE ${CMAKE_CXX_FLAGS_DEBUG})
 set(CMAKE_EXE_LINKER_FLAGS_PROFILE "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -pg")
 
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG -fomit-frame-pointer")
-#set(CMAKE_CXX_FLAGS_DEBUG "-O3")
+set(CMAKE_CXX_FLAGS_DEBUG "-O3")
 #set(CMAKE_CXX_FLAGS_PROFILE "-O3 -pg")
 
 include_directories(boost_dependencies)
@@ -35,16 +35,18 @@ set(SOURCE_FILES
         catamorph/interpreters/Evaluate.cpp catamorph/interpreters/Evaluate.h
         catamorph/interpreters/Dependencies.cpp catamorph/interpreters/Dependencies.h
         catamorph/interpreters/Iverson.cpp catamorph/interpreters/Iverson.h
+        catamorph/interpreters/CreateEvmdd.h catamorph/interpreters/CreateEvmdd.cpp
         catamorph/Expression.h
         Polynomial.cpp Polynomial.h
         parser.cpp parser.h
-        catamorph/Printer.h)
+        catamorph/Printer.h
+        catamorph/Evmdd.h catamorph/Evmdd.cpp
+        catamorph/EvmddExpression.h catamorph/EvmddExpression.cpp)
 
 add_library(NumericCatamorph_lib ${SOURCE_FILES})
 target_link_libraries(NumericCatamorph_lib MiniBoost)
 
 add_executable(Parser parser_main.cpp ${SOURCE_FILES})
 
-add_subdirectory(evmdd)
 add_subdirectory(test)
 add_subdirectory(benchmark)
