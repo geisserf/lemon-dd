@@ -20,24 +20,21 @@ Token Lexer::getNextToken() {
     // trim surrounding parantheses
     trim(input);
 
-    std::regex addRegex("\\+([^[:alnum:]](.*))"); // Regex for arithmetic +
-    std::regex subRegex("-([^[:alnum:]](.*))");   // Regex for arithmetic -
-    std::regex multRegex("\\*(.*)");              // Regex for arithmetic *
-    std::regex divRegex("\\/(.*)");               // Regex for arithmetic /
-    // Regex for constants. Constants are a number, optionally preceded by + or
-    // -.
+    std::regex addRegex("\\+(.*)");  // Regex for arithmetic +
+    std::regex subRegex("-(.*)");    // Regex for arithmetic -
+    std::regex multRegex("\\*(.*)"); // Regex for arithmetic *
+    std::regex divRegex("\\/(.*)");  // Regex for arithmetic /
+    // Regex for constant numbers.
     // Note that we use the passive group (?:subpattern) here, so that we only
     // have one backreference for the whole constant and not multiple
     // backreferences for individual constant parts
     std::regex constantRegex(
-        "((?:(?:\\+|-)?[[:digit:]]+)(?:\\.(?:(?:[[:digit:]]+)?))?)(.*)");
+        "((?:[[:digit:]]+)(?:\\.(?:(?:[[:digit:]]+)?))?)(.*)");
     std::regex lParenRegex("\\((.*)"); // Regex for (
     std::regex rParenRegex("\\)(.*)"); // Regex for )
-    // Variables contain numbers, letters or "_", they may be 
-    // positive or negative, but must not start with a number
-    std::regex varRegex("((?:(?:\\+|-)?[[:alpha:]|_]+)(?:[[:alnum:]|_]*))(.*)");
-        
-        //((([[:alpha:]]|_)+(([[:alnum:]]|_)*))))(.*)");
+    // Variables contain letters, numbers or "_",
+    // but must not start with a number
+    std::regex varRegex("((?:[[:alpha:]|_]+)(?:[[:alnum:]|_]*))(.*)");
 
     Token token;
     if (std::regex_match(input, addRegex)) {
@@ -119,13 +116,6 @@ Expression Parser::parseExpression(Lexer &lexer) const {
         return Factories::cst(stod(token.value));
         break;
     case Token::VAR:
-        // Handle unary operator before variables (e.g. -A, +var)
-        if (token.value[0] == '+') {
-            return Factories::var(token.value.substr(1));
-        } else if (token.value[0] == '-') {
-            return Factories::sub(
-                {Factories::cst(0), Factories::var(token.value.substr(1))});
-        }
         return Factories::var(token.value);
         break;
     case Token::OP:
@@ -200,6 +190,12 @@ Expression InfixParser::parseExpression(Lexer &lexer) const {
     case Token::OP: {
         // expression is a binary expression
         Expression rhs = parseTerm(lexer);
+        Token next_token = lexer.getNextToken();
+        lexer.revert();
+        if (next_token.type != Token::END && next_token.type != Token::RPAREN) {
+            throw std::invalid_argument(
+                "Expected expression to end or ')' for " + lexer.input);
+        }
         return createExpression(lhs, token, rhs);
         break;
     }
@@ -215,7 +211,8 @@ Expression InfixParser::parseExpression(Lexer &lexer) const {
         break;
     }
     default:
-        throw std::invalid_argument("Illegal expression: " + lexer.input);
+        throw std::invalid_argument("Illegal expression: " + lexer.input +
+                                    "\n" + "token value: " + token.value);
         break;
     }
 }
@@ -239,22 +236,27 @@ Expression InfixParser::parseTerm(Lexer &lexer) const {
 }
 
 Expression InfixParser::parseFactor(Lexer &lexer) const {
-    // factor = constant | {"+"|"-"}variable | "(" expression ")"
+    // factor = {"+" | "-" } (constant |  variable | "(" expression ")")
     Token token = lexer.getNextToken();
     switch (token.type) {
     case Token::CONST:
         return Factories::cst(stod(token.value));
         break;
-    case Token::VAR:
-        // Handle unary operator before variables (e.g. -A, +var)
-        if (token.value[0] == '+') {
-            return Factories::var(token.value.substr(1));
-        } else if (token.value[0] == '-') {
-            return Factories::sub(
-                {Factories::cst(0), Factories::var(token.value.substr(1))});
-        }
+    case Token::VAR: {
         return Factories::var(token.value);
         break;
+    }
+    case Token::OP: {
+        if (token.value == "+") {
+            return Factories::add({Factories::cst(0), parseExpression(lexer)});
+        }
+        if (token.value == "-") {
+            return Factories::sub({Factories::cst(0), parseExpression(lexer)});
+        }
+        throw std::invalid_argument("Expected unary operator in factor " +
+                                    lexer.input);
+        break;
+    }
     case Token::LPAREN: {
         string const beforeRParen = lexer.input;
         Expression expression = parseExpression(lexer);
