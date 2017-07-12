@@ -6,15 +6,16 @@
 template <>
 template <typename Tag>
 auto CreateEvmdd<NumericExpression>::apply(
+    expression_r<Evmdd<NumericExpression>> const & /*expression*/,
     op<Tag, Evmdd<NumericExpression>> const &e) {
     if (e.rands().size() < 2) {
         throw std::logic_error("wrong number of parameter expected >2");
     }
 
     Evmdd<NumericExpression> left_evmdd = e.rands().front();
-    for (auto sub = e.rands().begin() + 1; sub != e.rands().end(); sub++) {
-        left_evmdd.apply(*sub, Expression(e));
-    }
+    // for (auto sub = e.rands().begin() + 1; sub != e.rands().end(); sub++) {
+    //     left_evmdd.apply(*sub, expression);
+    // }
     return left_evmdd;
 }
 
@@ -35,7 +36,7 @@ auto CreateEvmdd<NumericExpression>::create_evmdd_alg(
                            ordering.find(*o)->second);
                    }
                    if (auto *o = Factories::get_as_add(e)) {
-                       return apply(*o);
+                       return apply(e, *o);
                    }
                    NumericExpression exp;
                    exp.value = 0;

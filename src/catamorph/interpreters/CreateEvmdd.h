@@ -16,7 +16,8 @@ private:
     // level);
     auto create_evmdd_alg(Domains const &domains, Ordering const &ordering);
     template <typename Tag>
-    auto apply(op<Tag, Evmdd<NumericExpression>> const &e);
+    auto apply(expression_r<Evmdd<NumericExpression>> const &expression,
+               op<Tag, Evmdd<NumericExpression>> const &e);
 
 public:
     Evmdd<T> create_evmdd(Expression const &e, Domains const &domains,

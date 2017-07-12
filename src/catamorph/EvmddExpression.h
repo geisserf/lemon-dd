@@ -28,6 +28,7 @@ public:
     EvmddExpression<T> &operator-(const EvmddExpression<T> &right);
     EvmddExpression<T> &operator*(const EvmddExpression<T> &right);
     EvmddExpression<T> &operator/(const EvmddExpression<T> &right);
+    bool operator<(const EvmddExpression<T> &right);
     bool operator==(const EvmddExpression<T> &right);
 
     bool operator!=(const EvmddExpression<T> &right);

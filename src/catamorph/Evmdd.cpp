@@ -131,7 +131,7 @@ Node<T>::Node() {
 
 template <typename T>
 // template <typename Operator>
-Evmdd<T> Evmdd<T>::apply(Evmdd<T> const &other, Expression oper) {
+Evmdd<T> Evmdd<T>::apply(Evmdd<T> const &other, expression_r<T> const &oper) {
     // terminal case
     if (this->evmdd.successor.id == this->terminal.id &&
         other.evmdd.successor.id == other.terminal.id) {
@@ -147,18 +147,19 @@ Evmdd<T> Evmdd<T>::apply(Evmdd<T> const &other, Expression oper) {
 
     std::vector<Edge<T>> children;
     // new children
-    for (int c = 0; c < self_children.size(); c++) {
+    for (size_t c = 0; c < self_children.size(); c++) {
         // apply operator on edges of both children
         children.push_back(
             apply_operator(self_children[c], other_children[c], oper));
     }
 
     // get minimum of child edge labels
-    T result_weight =
-        std::min_element(children.begin(), children.end(), [](Edge<T> e1,
-                                                              Edge<T> e2) {
+    auto rw = std::min_element(
+        children.begin(), children.end(), [](Edge<T> e1, Edge<T> e2) {
             return e1.label.expression < e2.label.expression;
-        }).label.expression;
+        });
+
+    T result_weight = rw->label.expression;
 
     // subtract min from children (moved back up)
     for (Edge<T> child : children) {
@@ -194,15 +195,15 @@ Evmdd<T> Evmdd<T>::apply(Evmdd<T> const &other, Expression oper) {
 
 template <typename T>
 Edge<T> Evmdd<T>::apply_operator(Edge<T> edge1, Edge<T> edge2,
-                                 Expression oper) {
+                                 expression_r<T> const &oper) {
     T e;
-    if (Factories::get_as_add(oper.get())) {
+    if (Factories::get_as_add(oper)) {
         e = edge1.label.expression + edge2.label.expression;
-    } else if (Factories::get_as_sub(oper.get())) {
+    } else if (Factories::get_as_sub(oper)) {
         e = edge1.label.expression - edge2.label.expression;
-    } else if (Factories::get_as_mul(oper.get())) {
+    } else if (Factories::get_as_mul(oper)) {
         e = edge1.label.expression * edge2.label.expression;
-    } else if (Factories::get_as_div(oper.get())) {
+    } else if (Factories::get_as_div(oper)) {
         e = edge1.label.expression / edge2.label.expression;
     } else {
         throw std::logic_error("Unknown Operator in Apply");
@@ -235,18 +236,19 @@ std::vector<Edge<T>> Evmdd<T>::_align_levels(Edge<T> edge1, Edge<T> edge2) {
 }
 
 template <typename T>
-template <typename Operator>
-Evmdd<T> Evmdd<T>::_termianl_value(Evmdd<T> other, Expression oper) {
-    if (Factories::get_as_add(oper.get())) {
+// template <typename Operator>
+Evmdd<T> Evmdd<T>::_termianl_value(Evmdd<T> other,
+                                   expression_r<T> const &oper) {
+    if (Factories::get_as_add(oper)) {
         return Evmdd<T>::makeConstEvmdd(this->evmdd.label.expression +
                                         other.evmdd.label.expression);
-    } else if (Factories::get_as_sub(oper.get())) {
+    } else if (Factories::get_as_sub(oper)) {
         return Evmdd<T>::makeConstEvmdd(this->evmdd.label.expression -
                                         other.evmdd.label.expression);
-    } else if (Factories::get_as_mul(oper.get())) {
+    } else if (Factories::get_as_mul(oper)) {
         return Evmdd<T>::makeConstEvmdd(this->evmdd.label.expression *
                                         other.evmdd.label.expression);
-    } else if (Factories::get_as_div(oper.get())) {
+    } else if (Factories::get_as_div(oper)) {
         return Evmdd<T>::makeConstEvmdd(this->evmdd.label.expression /
                                         other.evmdd.label.expression);
     }

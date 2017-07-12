@@ -16,6 +16,11 @@ bool EvmddExpression<float>::operator==(const EvmddExpression<float> &right) {
 }
 
 template <>
+bool EvmddExpression<float>::operator<(const EvmddExpression<float> &right) {
+    return this->value < right.value;
+}
+
+template <>
 bool EvmddExpression<float>::operator!=(const EvmddExpression<float> &right) {
     return this->value != right.value;
 }
@@ -146,6 +151,15 @@ bool EvmddExpression<std::vector<VariableAssignment>>::operator==(
     const EvmddExpression<std::vector<VariableAssignment>> &right) {
     return std::equal(this->value.begin(), this->value.end(),
                       right.value.begin());
+}
+
+template <>
+bool EvmddExpression<std::vector<VariableAssignment>>::operator<(
+    const EvmddExpression<std::vector<VariableAssignment>> &right) {
+    // return
+    // std::less(this->value.begin(),this->value.end(),right.value.begin());
+    (void)right;
+    return false;
 }
 
 template <>
@@ -336,8 +350,16 @@ std::string EvmddExpression<
            this->value.second.toString() + ")";
 }
 
-/* Variable Assignment */
+template <>
+bool EvmddExpression<TupleExpression>::operator<(
+    const EvmddExpression<TupleExpression> &right) {
+    // return
+    // std::less(this->value.begin(),this->value.end(),right.value.begin());
+    (void)right;
+    return false;
+}
 
+/* Variable Assignment */
 bool VariableAssignment::operator==(const VariableAssignment &rhs) const {
     return variable == rhs.variable && value == rhs.value;
 }
