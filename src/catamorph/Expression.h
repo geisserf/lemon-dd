@@ -6,7 +6,6 @@
 
 using NBR = float;
 using ID = std::string;
-using namespace boost::adaptors;
 using Env = std::map<ID, NBR>;
 
 struct add_tag {};

@@ -7,6 +7,8 @@
 #include "Expression.h"
 #include "Factories.h"
 
+using namespace boost::adaptors;
+
 class Catamorph {
 public:
     template <typename Out, typename Algebra>
@@ -22,6 +24,7 @@ public:
         using Out = expression_r<B>;
 
         if (auto *o = Factories::get_as_add(e))
+            // create an add operand with map applied on all operands
             return Out(add_op<B>(o->rands() | transformed(map)));
 
         if (auto *o = Factories::get_as_sub(e))
