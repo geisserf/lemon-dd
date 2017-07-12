@@ -6,16 +6,16 @@
 template <>
 template <typename Tag>
 auto CreateEvmdd<NumericExpression>::apply(
-    expression_r<Evmdd<NumericExpression>> const & /*expression*/,
+    expression_r<Evmdd<NumericExpression>> const & expression,
     op<Tag, Evmdd<NumericExpression>> const &e) {
     if (e.rands().size() < 2) {
         throw std::logic_error("wrong number of parameter expected >2");
     }
 
     Evmdd<NumericExpression> left_evmdd = e.rands().front();
-    // for (auto sub = e.rands().begin() + 1; sub != e.rands().end(); sub++) {
-    //     left_evmdd.apply(*sub, expression);
-    // }
+     for (auto sub = e.rands().begin() + 1; sub != e.rands().end(); sub++) {
+         left_evmdd = left_evmdd.apply(*sub, expression);
+     }
     return left_evmdd;
 }
 

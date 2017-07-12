@@ -45,6 +45,7 @@ SCENARIO("Testing basic EVMDD construction", "[evmddBuild]") {
             CreateEvmdd<NumericExpression> create;
             Evmdd<NumericExpression> res =
                 create.create_evmdd(p.getExpression(), d, o);
+            // TODO fix bug
             THEN("get_min should be 1 and get_max should be 5") {
                 REQUIRE(res.get_min()[0].value == 1);
                 REQUIRE(res.get_max()[0].value == 5);

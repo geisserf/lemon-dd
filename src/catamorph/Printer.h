@@ -1,12 +1,11 @@
 #ifndef NUMERIC_CATAMORPH_PRINTER_H
 #define NUMERIC_CATAMORPH_PRINTER_H
 
-#include "../boost_dependencies/boost/algorithm/string/join.hpp"
 #include "Catamorph.h"
 #include "Expression.h"
 #include "Factories.h"
-#include <iostream>
 #include <iomanip>
+#include <iostream>
 #include <string>
 
 #include "../boost_dependencies/boost/algorithm/string/join.hpp"
@@ -34,7 +33,7 @@ private:
         if (auto *o = Factories::get_as_and(e))
             return Printer::print_op(*o, "^");
         if (auto *i = Factories::get_as_cst(e)) {
-            // We use the stream operator to print e instead of std::to_string, 
+            // We use the stream operator to print e instead of std::to_string,
             // because then we can set the precision before we print (otherwise
             // even integer constant n is printed as n.000000
             std::ostringstream out;

@@ -46,10 +46,10 @@ template <typename T>
 class Evmdd {
 private:
     // template <typename Operator>
-    Evmdd<T> _termianl_value(Evmdd<T> other, expression_r<T> const &oper);
+    Evmdd<T> _terminal_value(Evmdd<T> other, expression_r<Evmdd<T>> const &oper);
     std::vector<Edge<T>> _align_levels(Edge<T> edge1, Edge<T> edge2);
     Edge<T> apply_operator(Edge<T> edge1, Edge<T> edge2,
-                           expression_r<T> const &oper);
+                           expression_r<Evmdd<T>> const &oper);
 
 public:
     static Evmdd<T> makeConstEvmdd(T weight);
@@ -76,7 +76,7 @@ public:
         EvaluationFunction evaluationFunction = EvaluationFunction()) const;
 
     // template <typename Operator>
-    Evmdd<T> apply(Evmdd<T> const &other, expression_r<T> const &oper);
+    Evmdd<T> apply(Evmdd<T> const &other, expression_r<Evmdd<T>> const &oper);
 
     std::vector<T> get_min() const;
     std::vector<T> get_max() const;

@@ -131,11 +131,12 @@ Node<T>::Node() {
 
 template <typename T>
 // template <typename Operator>
-Evmdd<T> Evmdd<T>::apply(Evmdd<T> const &other, expression_r<T> const &oper) {
+Evmdd<T> Evmdd<T>::apply(Evmdd<T> const &other,
+                         expression_r<Evmdd<T>> const &oper) {
     // terminal case
     if (this->evmdd.successor.id == this->terminal.id &&
         other.evmdd.successor.id == other.terminal.id) {
-        return _termianl_value(other, oper);
+        return _terminal_value(other, oper);
     }
 
     // get the higher level
@@ -195,7 +196,7 @@ Evmdd<T> Evmdd<T>::apply(Evmdd<T> const &other, expression_r<T> const &oper) {
 
 template <typename T>
 Edge<T> Evmdd<T>::apply_operator(Edge<T> edge1, Edge<T> edge2,
-                                 expression_r<T> const &oper) {
+                                 expression_r<Evmdd<T>> const &oper) {
     T e;
     if (Factories::get_as_add(oper)) {
         e = edge1.label.expression + edge2.label.expression;
@@ -237,8 +238,8 @@ std::vector<Edge<T>> Evmdd<T>::_align_levels(Edge<T> edge1, Edge<T> edge2) {
 
 template <typename T>
 // template <typename Operator>
-Evmdd<T> Evmdd<T>::_termianl_value(Evmdd<T> other,
-                                   expression_r<T> const &oper) {
+Evmdd<T> Evmdd<T>::_terminal_value(Evmdd<T> other,
+                                   expression_r<Evmdd<T>> const &oper) {
     if (Factories::get_as_add(oper)) {
         return Evmdd<T>::makeConstEvmdd(this->evmdd.label.expression +
                                         other.evmdd.label.expression);

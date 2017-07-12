@@ -351,8 +351,7 @@ std::string EvmddExpression<
 }
 
 template <>
-bool EvmddExpression<TupleExpression>::operator<(
-    const EvmddExpression<TupleExpression> &right) {
+bool TupleExpression::operator<(const TupleExpression &right) {
     // return
     // std::less(this->value.begin(),this->value.end(),right.value.begin());
     (void)right;
