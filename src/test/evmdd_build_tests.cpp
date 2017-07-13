@@ -52,4 +52,19 @@ SCENARIO("Testing basic EVMDD construction", "[evmddBuild]") {
             }
         }
     }
+    GIVEN("the expression (x+y) with domain x=5, y=2") {
+        std::string e = "x + y";
+        Polynomial p = Polynomial(e);
+        WHEN("Create EVMDD") {
+            Domains d = {{"x", 5}, {"y", 2}};
+            Ordering o = {{"x", 1}, {"y", 2}};
+            CreateEvmdd<NumericExpression> create;
+            Evmdd<NumericExpression> res =
+                create.create_evmdd(p.getExpression(), d, o);
+            THEN("get_min should be 0 and get_max should be 5") {
+                REQUIRE(res.get_min()[0].value == 0);
+                REQUIRE(res.get_max()[0].value == 5);
+            }
+        }
+    }
 }
