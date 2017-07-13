@@ -24,27 +24,42 @@ auto CreateEvmdd<NumericExpression>::apply(
 template <>
 auto CreateEvmdd<NumericExpression>::create_evmdd_alg(
     Domains const &domains, Ordering const &ordering) {
-    return [&domains, &ordering,
-            this](expression_r<Evmdd<NumericExpression>> const &e)
-               -> Evmdd<NumericExpression> {
-                   if (auto *o = Factories::get_as_cst(e)) {
-                       NumericExpression exp;
-                       exp.value = *o;
-                       return Evmdd<NumericExpression>::makeConstEvmdd(exp);
-                   }
-                   if (auto *o = Factories::get_as_var(e)) {
-                       return Evmdd<NumericExpression>::makeVarEvmdd(
-                           *o, domains.find(*o)->second,
-                           ordering.find(*o)->second);
-                   }
-                   if (auto *o = Factories::get_as_add(e)) {
-                       return apply(e, *o);
-                   }
-                   NumericExpression exp;
-                   exp.value = 0;
-                   // not implemented :-)
-                   return Evmdd<NumericExpression>::makeConstEvmdd(exp);
-               };
+    return
+        [&domains, &ordering, this](expression_r<Evmdd<NumericExpression>> const
+                                        &e) -> Evmdd<NumericExpression> {
+            if (auto *o = Factories::get_as_cst(e)) {
+                NumericExpression exp;
+                exp.value = *o;
+                Evmdd<NumericExpression> result;
+                result.evmdd = Evmdd<NumericExpression>::makeConstEvmdd(exp);
+                return result;
+            }
+            if (auto *o = Factories::get_as_var(e)) {
+                Evmdd<NumericExpression> result;
+                result.evmdd = Evmdd<NumericExpression>::makeVarEvmdd(
+                    *o, domains.find(*o)->second, ordering.find(*o)->second);
+                return result;
+            }
+            if (auto *o = Factories::get_as_add(e)) {
+                return apply(e, *o);
+            }
+            if (auto *o = Factories::get_as_sub(e)) {
+                return apply(e, *o);
+            }
+            if (auto *o = Factories::get_as_mul(e)) {
+                return apply(e, *o);
+            }
+            if (auto *o = Factories::get_as_div(e)) {
+                return apply(e, *o);
+            }
+
+            NumericExpression exp;
+            exp.value = 0;
+            // not implemented :-)
+            Evmdd<NumericExpression> result;
+            result.evmdd = Evmdd<NumericExpression>::makeConstEvmdd(exp);
+            return result;
+        };
 }
 
 template <>

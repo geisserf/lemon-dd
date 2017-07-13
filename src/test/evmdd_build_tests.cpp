@@ -67,4 +67,36 @@ SCENARIO("Testing basic EVMDD construction", "[evmddBuild]") {
             }
         }
     }
+
+    GIVEN("the expression (x*y) with domain x=5, y=3") {
+        std::string e = "x * y";
+        Polynomial p = Polynomial(e);
+        WHEN("Create EVMDD") {
+            Domains d = {{"x", 5}, {"y", 3}};
+            Ordering o = {{"x", 1}, {"y", 2}};
+            CreateEvmdd<NumericExpression> create;
+            Evmdd<NumericExpression> res =
+                create.create_evmdd(p.getExpression(), d, o);
+            THEN("get_min should be 0 and get_max should be 8") {
+                REQUIRE(res.get_min()[0].value == 0);
+                REQUIRE(res.get_max()[0].value == 8);
+            }
+        }
+        WHEN("Partial Evaluation on x=2 y=2") {
+            Domains d = {{"x", 5}, {"y", 3}};
+            Ordering o = {{"x", 1}, {"y", 2}};
+            CreateEvmdd<NumericExpression> create;
+            Evmdd<NumericExpression> res =
+                create.create_evmdd(p.getExpression(), d, o);
+
+            std::vector<int> values;
+            values.push_back(2);
+            std::map<std::string, std::vector<int>> state;
+            state.insert(std::pair<std::string, std::vector<int>>("x", values));
+            state.insert(std::pair<std::string, std::vector<int>>("y", values));
+            THEN("evaluate partial should be 4") {
+                REQUIRE(res.evaluate_partial(state)[0].value == 4);
+            }
+        }
+    }
 }

@@ -46,15 +46,18 @@ template <typename T>
 class Evmdd {
 private:
     // template <typename Operator>
-    Evmdd<T> _terminal_value(Evmdd<T> other, expression_r<Evmdd<T>> const &oper);
+    Edge<T> _terminal_value(Edge<T> first, Edge<T> other,
+                            expression_r<Evmdd<T>> const &oper);
     std::vector<Edge<T>> _align_levels(Edge<T> edge1, Edge<T> edge2);
     Edge<T> apply_operator(Edge<T> edge1, Edge<T> edge2,
                            expression_r<Evmdd<T>> const &oper);
+    Edge<T> _apply(Edge<T> const &first, Edge<T> const &other,
+                   expression_r<Evmdd<T>> const &oper);
 
 public:
-    static Evmdd<T> makeConstEvmdd(T weight);
-    static Evmdd<T> makeVarEvmdd(const std::string var, unsigned int domain,
-                                 int level);
+    static Edge<T> makeConstEvmdd(T weight);
+    static Edge<T> makeVarEvmdd(const std::string var, unsigned int domain,
+                                int level);
 
     // Evmdd(const Evmdd &that) = delete;
     // Evmdd(){};
