@@ -58,19 +58,41 @@ std::vector<T> Evmdd<T>::evaluate(
             if (state.find(currentEdge.successor.variable) != state.end()) {
                 // variable is in state,  add successor outgoing edges to open
                 // list
+                std::cout << "get State values" << std::endl;
                 auto const &state_values =
                     state.at(currentEdge.successor.variable);
                 for (const auto &state_value : state_values) {
+                    std::cout << " value" << std::endl;
                     if (currentEdge.successor.outgoing.size() >
                             (unsigned)state_value &&
                         state_value >= 0) {
-                        auto it = std::find_if(
-                            currentEdge.successor.outgoing.begin(),
-                            currentEdge.successor.outgoing.end(),
-                            [state_value](const Edge<T> &obj) {
-                                return obj.value == (unsigned)state_value;
-                            });
-                        openList.push((*it));
+                        std::cout << "find_if" << std::endl;
+                        for (auto e : currentEdge.successor.outgoing) {
+                            std::cout << "checking Value " << e.value
+                                      << " against " << state_value
+                                      << std::endl;
+                            if (e.value == (unsigned)state_value) {
+                                openList.push(e);
+
+                                std::cout << "pushed" << std::endl;
+                            }
+                        }
+
+                        // auto it = std::find_if(
+                        //     currentEdge.successor.outgoing.begin(),
+                        //     currentEdge.successor.outgoing.end(),
+                        //     [state_value](const Edge<T> &obj) {
+                        //         return obj.value == (unsigned)state_value;
+                        //     });
+                        // std::cout<<"push"<<std::endl;
+                        // if(it != currentEdge.successor.outgoing.end()){
+                        //   openList.push(*it);
+                        // }else{
+                        // std::cout<<"not found
+                        // "<<currentEdge.successor.variable<<" outgoing value
+                        // "<<state_value<<std::endl;
+                        // }
+                        //                        openList.push(*it);
                     } else {
                         std::cerr << "Error Evaluating EVMDD: "
                                   << currentEdge.successor.variable
@@ -93,7 +115,7 @@ std::vector<T> Evmdd<T>::evaluate(
             }
         }
     }
-    //  std::cout<<"finished"<<terminal.id<<std::endl;
+    std::cout << "finished" << std::endl;
     // if (partialEvaluations.find(terminal.id) != partialEvaluations.end()) {
     // std::cout<<"found"<<std::endl;
     //}
@@ -223,6 +245,7 @@ Edge<T> Evmdd<T>::_apply(Edge<T> const &first, Edge<T> const &other,
 
     res.successor = result_succ;
     res.label.expression = result_weight;
+    res.value = first.value;
 
     // TODO missing rest of evmdd details
     // this->evmdd = result_edge;
@@ -276,8 +299,11 @@ std::vector<Edge<T>> Evmdd<T>::_align_levels(Edge<T> edge1, Edge<T> edge2) {
             res.push_back(ne);
         }
     } else {
+        int value = 0;
         for (Edge<T> child : edge2.successor.outgoing) {
             Edge<T> ne = Edge<T>(edge1);
+            ne.value = value;
+            value++;
             res.push_back(ne);
         }
     }
@@ -285,7 +311,7 @@ std::vector<Edge<T>> Evmdd<T>::_align_levels(Edge<T> edge1, Edge<T> edge2) {
         std::cout << " New Edge " << e.predecessor.variable << ","
                   << e.successor.variable << ":"
                   << e.label.expression.toString() << " level"
-                  << e.successor.level << std::endl;
+                  << e.successor.level << "Value" << e.value << std::endl;
     }
 
     return res;
