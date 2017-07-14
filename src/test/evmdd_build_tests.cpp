@@ -82,20 +82,84 @@ SCENARIO("Testing basic EVMDD construction", "[evmddBuild]") {
                 REQUIRE(res.get_max()[0].value == 8);
             }
         }
-        WHEN("Partial Evaluation on x=2 y=2") {
+        WHEN("Partial Evaluation on x=0..4 y=0..2") {
             Domains d = {{"x", 5}, {"y", 3}};
             Ordering o = {{"x", 1}, {"y", 2}};
             CreateEvmdd<NumericExpression> create;
             Evmdd<NumericExpression> res =
                 create.create_evmdd(p.getExpression(), d, o);
 
-            std::vector<int> values;
-            values.push_back(2);
-            std::map<std::string, std::vector<int>> state;
-            state.insert(std::pair<std::string, std::vector<int>>("x", values));
-            state.insert(std::pair<std::string, std::vector<int>>("y", values));
-            THEN("evaluate partial should be 4") {
-                REQUIRE(res.evaluate_partial(state)[0].value == 4);
+            for (int x = 0; x <= 4; x++) {
+                for (int y = 0; y <= 2; y++) {
+                    std::vector<int> values_x;
+                    values_x.push_back(x);
+                    std::vector<int> values_y;
+                    values_y.push_back(y);
+                    std::map<std::string, std::vector<int>> state;
+                    state.insert(std::pair<std::string, std::vector<int>>(
+                        "x", values_x));
+                    state.insert(std::pair<std::string, std::vector<int>>(
+                        "y", values_y));
+                    THEN("evaluate partial should be x*y") {
+                        REQUIRE(res.evaluate_partial(state)[0].value == x * y);
+                    }
+                }
+            }
+        }
+    }
+    GIVEN("the expression (x - y) with domain x=5, y=3") {
+        std::string e = "x - y";
+        Polynomial p = Polynomial(e);
+        WHEN("Partial Evaluation on x=1..4 y=1..2") {
+            Domains d = {{"x", 5}, {"y", 3}};
+            Ordering o = {{"x", 1}, {"y", 2}};
+            CreateEvmdd<NumericExpression> create;
+            Evmdd<NumericExpression> res =
+                create.create_evmdd(p.getExpression(), d, o);
+
+            for (float x = 2; x <= 4; x++) {
+                for (float y = 0; y <= 2; y++) {
+                    std::vector<int> values_x;
+                    values_x.push_back((int)x);
+                    std::vector<int> values_y;
+                    values_y.push_back((int)y);
+                    std::map<std::string, std::vector<int>> state;
+                    state.insert(std::pair<std::string, std::vector<int>>(
+                        "x", values_x));
+                    state.insert(std::pair<std::string, std::vector<int>>(
+                        "y", values_y));
+                    THEN("evaluate partial should be x*y") {
+                        REQUIRE(res.evaluate_partial(state)[0].value == x - y);
+                    }
+                }
+            }
+        }
+    }
+    GIVEN("the expression (x / y) with domain x=5, y=3") {
+        std::string e = "x / y";
+        Polynomial p = Polynomial(e);
+        WHEN("Partial Evaluation on x=1..4 y=1..2") {
+            Domains d = {{"x", 5}, {"y", 3}};
+            Ordering o = {{"x", 1}, {"y", 2}};
+            CreateEvmdd<NumericExpression> create;
+            Evmdd<NumericExpression> res =
+                create.create_evmdd(p.getExpression(), d, o);
+
+            for (float x = 0; x <= 4; x++) {
+                for (float y = 1; y <= 2; y++) {
+                    std::vector<int> values_x;
+                    values_x.push_back((int)x);
+                    std::vector<int> values_y;
+                    values_y.push_back((int)y);
+                    std::map<std::string, std::vector<int>> state;
+                    state.insert(std::pair<std::string, std::vector<int>>(
+                        "x", values_x));
+                    state.insert(std::pair<std::string, std::vector<int>>(
+                        "y", values_y));
+                    THEN("evaluate partial should be x*y") {
+                        REQUIRE(res.evaluate_partial(state)[0].value == x / y);
+                    }
+                }
             }
         }
     }

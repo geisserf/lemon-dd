@@ -56,6 +56,7 @@ private:
 
 public:
     static Edge<T> makeConstEvmdd(T weight);
+    static Edge<T> makeConstEvmdd(T weight, unsigned int edge_value);
     static Edge<T> makeVarEvmdd(const std::string var, unsigned int domain,
                                 int level);
 

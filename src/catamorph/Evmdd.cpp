@@ -29,7 +29,7 @@ template <typename EvaluationFunction>
 std::vector<T> Evmdd<T>::evaluate(
     std::map<std::string, std::vector<int>> const &state,
     EvaluationFunction evaluationFunction) const {
-    std::cout << std::endl << "Begin Eval:: " << std::endl;
+    // std::cout << std::endl << "Begin Eval:: " << std::endl;
     std::map<int, std::vector<T>> partialEvaluations;
 
     std::queue<Edge<T>> openList;
@@ -37,62 +37,54 @@ std::vector<T> Evmdd<T>::evaluate(
     Edge<T> currentEdge;
     while (openList.size() > 0) {
         currentEdge = openList.front();
-        std::cout << "currentEdge " << currentEdge.label.expression.toString()
-                  << " from " << currentEdge.predecessor.variable << " id "
-                  << currentEdge.predecessor.id << " to "
-                  << currentEdge.successor.variable
-                  << " id: " << currentEdge.successor.id << std::endl;
+        // std::cout << "currentEdge " <<
+        // currentEdge.label.expression.toString()
+        //           << " from " << currentEdge.predecessor.variable << " id "
+        //           << currentEdge.predecessor.id << " to "
+        //           << currentEdge.successor.variable
+        //           << " id: " << currentEdge.successor.id << std::endl;
         openList.pop();
         auto p = partialEvaluations.find(currentEdge.successor.id);
         auto res = calculate_partial_evaluation(currentEdge, partialEvaluations,
                                                 evaluationFunction);
         if (p == partialEvaluations.end()) {
-            //  std::cout<<"adding pe id: "<<currentEdge.successor.id<<"
-            //  entries: "<<res.size()<<std::endl;
             partialEvaluations.insert(
                 std::pair<int, std::vector<T>>(currentEdge.successor.id, res));
         } else {
             p->second = res;
         }
+
+        //      std::cout<<"added res: "<<res[0].toString()<<std::endl;
+
         if (!currentEdge.successor.outgoing.empty()) {
             if (state.find(currentEdge.successor.variable) != state.end()) {
                 // variable is in state,  add successor outgoing edges to open
                 // list
-                std::cout << "get State values" << std::endl;
+                //              std::cout << "get State values from "
+                //                        << currentEdge.successor.variable <<
+                //                        std::endl;
                 auto const &state_values =
                     state.at(currentEdge.successor.variable);
                 for (const auto &state_value : state_values) {
-                    std::cout << " value" << std::endl;
+                    //                std::cout << " value" << std::endl;
                     if (currentEdge.successor.outgoing.size() >
                             (unsigned)state_value &&
                         state_value >= 0) {
-                        std::cout << "find_if" << std::endl;
+                        //                  std::cout << "find_if" << std::endl;
                         for (auto e : currentEdge.successor.outgoing) {
-                            std::cout << "checking Value " << e.value
-                                      << " against " << state_value
-                                      << std::endl;
+                            //                    std::cout << "checking Value "
+                            //                    << e.value
+                            //                              << " against " <<
+                            //                              state_value
+                            //                              << std::endl;
                             if (e.value == (unsigned)state_value) {
                                 openList.push(e);
 
-                                std::cout << "pushed" << std::endl;
+                                //                      std::cout << "pushed" <<
+                                //                      std::endl;
                             }
                         }
 
-                        // auto it = std::find_if(
-                        //     currentEdge.successor.outgoing.begin(),
-                        //     currentEdge.successor.outgoing.end(),
-                        //     [state_value](const Edge<T> &obj) {
-                        //         return obj.value == (unsigned)state_value;
-                        //     });
-                        // std::cout<<"push"<<std::endl;
-                        // if(it != currentEdge.successor.outgoing.end()){
-                        //   openList.push(*it);
-                        // }else{
-                        // std::cout<<"not found
-                        // "<<currentEdge.successor.variable<<" outgoing value
-                        // "<<state_value<<std::endl;
-                        // }
-                        //                        openList.push(*it);
                     } else {
                         std::cerr << "Error Evaluating EVMDD: "
                                   << currentEdge.successor.variable
@@ -104,18 +96,12 @@ std::vector<T> Evmdd<T>::evaluate(
                 // variable not in state
                 // so we assume that variable can take on all values
                 for (Edge<T> &succ_edge : currentEdge.successor.outgoing) {
-                    //                std::cout << "    adding edge: "
-                    //                      <<
-                    //                      succ_edge.label.expression.toString()
-                    //                      << " to "
-                    //                        << succ_edge.successor.variable <<
-                    //                        std::endl;
                     openList.push(succ_edge);
                 }
             }
         }
     }
-    std::cout << "finished" << std::endl;
+    //    std::cout << "finished" << std::endl;
     // if (partialEvaluations.find(terminal.id) != partialEvaluations.end()) {
     // std::cout<<"found"<<std::endl;
     //}
@@ -130,7 +116,7 @@ std::vector<T> Evmdd<T>::calculate_partial_evaluation(
     EvaluationFunction evaluationFunction) const {
     //(void)evaluationFunction;
     if (incoming_edge.predecessor.variable == "") {
-        //        std::cout<<"partial evaluate no predecessor"<<std::endl;
+        //      std::cout<<"partial evaluate no predecessor"<<std::endl;
         T current = incoming_edge.label.expression;
         std::vector<T> result;
         T e;
@@ -142,9 +128,9 @@ std::vector<T> Evmdd<T>::calculate_partial_evaluation(
         //    "<<incoming_edge.predecessor.id<<std::endl;
         auto pe = partialEvaluations.find(incoming_edge.predecessor.id);
 
-        std::vector<T> partial_evaluations;
+        std::vector<T> predecessor_partial_evaluations;
         if (pe != partialEvaluations.end()) {
-            partial_evaluations = pe->second;
+            predecessor_partial_evaluations = pe->second;
         } // else{
         // std::cout<<"partial_evals empty, predecessor not done"<<std::endl;
         //}
@@ -152,19 +138,26 @@ std::vector<T> Evmdd<T>::calculate_partial_evaluation(
         // std::vector<T> partial_evaluations =
         //     partialEvaluations.find(incoming_edge.predecessor.id)->second;
         // execute evaluation function and add to partial_evaluation
-        for (auto &it : partial_evaluations) {
+
+        std::vector<T> result;
+        auto current_pe = partialEvaluations.find(incoming_edge.successor.id);
+        if (current_pe != partialEvaluations.end()) {
+            result = current_pe->second;
+        }
+
+        for (auto &it : predecessor_partial_evaluations) {
             T current = it + incoming_edge.label.expression;
             // auto x = current.evaluation_function(partial_evaluations,
             // compare);
-            //       std::cout<<"execute eval funciton on
-            //       "<<current.toString()<<std::endl;
-            auto x = evaluationFunction(current, partial_evaluations);
-            //            for(auto a:x){
-            //       std::cout<<"partial eval: "<<a.toString()<<std::endl;
-            //          }
-            partial_evaluations = x;
+            //             std::cout<<"execute eval funciton on
+            //             "<<current.toString()<<std::endl;
+            auto x = evaluationFunction(current, result);
+            //    for(auto a:x){
+            //           std::cout<<"partial eval: "<<a.toString()<<std::endl;
+            //    }
+            result = x;
         }
-        return partial_evaluations;
+        return result;
     }
 }
 
@@ -188,10 +181,10 @@ Evmdd<T> Evmdd<T>::apply(Evmdd<T> const &other,
 template <typename T>
 Edge<T> Evmdd<T>::_apply(Edge<T> const &first, Edge<T> const &other,
                          expression_r<Evmdd<T>> const &oper) {
-    std::cout << "Apply" << std::endl;
+    //    std::cout << "Apply" << std::endl;
 
-    std::cout << "self id: " << first.successor.variable
-              << " other id: " << other.successor.variable << std::endl;
+    //    std::cout << "self id: " << first.successor.variable
+    //              << " other id: " << other.successor.variable << std::endl;
     // terminal case
     if (first.successor.id == 0 && other.successor.id == 0) {
         return _terminal_value(first, other, oper);
@@ -209,9 +202,11 @@ Edge<T> Evmdd<T>::_apply(Edge<T> const &first, Edge<T> const &other,
         children.push_back(
             apply_operator(self_children[c], other_children[c], oper));
 
-        std::cout << "Child after op apply " << children[c].predecessor.variable
-                  << "," << children[c].successor.variable << ":"
-                  << children[c].label.expression.toString() << std::endl;
+        //      std::cout << "Child after op apply " <<
+        //      children[c].predecessor.variable
+        //                << "," << children[c].successor.variable << ":"
+        //                << children[c].label.expression.toString() <<
+        //                std::endl;
     }
 
     // get minimum of child edge labels
@@ -247,8 +242,6 @@ Edge<T> Evmdd<T>::_apply(Edge<T> const &first, Edge<T> const &other,
     res.label.expression = result_weight;
     res.value = first.value;
 
-    // TODO missing rest of evmdd details
-    // this->evmdd = result_edge;
     return res;
 }
 
@@ -282,15 +275,16 @@ Edge<T> Evmdd<T>::apply_operator(Edge<T> edge1, Edge<T> edge2,
 
 template <typename T>
 std::vector<Edge<T>> Evmdd<T>::_align_levels(Edge<T> edge1, Edge<T> edge2) {
-    std::cout << "aligning: edge " << edge1.predecessor.variable << ","
-              << edge1.successor.variable << ":"
-              << edge1.label.expression.toString() << " and "
-              << edge2.predecessor.variable << "," << edge2.successor.variable
-              << ":" << edge2.label.expression.toString() << std::endl;
+    // std::cout << "aligning: edge " << edge1.predecessor.variable << ","
+    //           << edge1.successor.variable << ":"
+    //           << edge1.label.expression.toString() << " and "
+    //           << edge2.predecessor.variable << "," <<
+    //           edge2.successor.variable
+    //           << ":" << edge2.label.expression.toString() << std::endl;
 
     std::vector<Edge<T>> res;
-    std::cout << " edge1 " << edge1.successor.level << " edge2 "
-              << edge2.successor.level << std::endl;
+    // std::cout << " edge1 " << edge1.successor.level << " edge2 "
+    //           << edge2.successor.level << std::endl;
     if (edge1.successor.level >= edge2.successor.level) {
         for (Edge<T> child : edge1.successor.outgoing) {
             T newexp = child.label.expression + edge1.label.expression;
@@ -307,12 +301,12 @@ std::vector<Edge<T>> Evmdd<T>::_align_levels(Edge<T> edge1, Edge<T> edge2) {
             res.push_back(ne);
         }
     }
-    for (auto e : res) {
-        std::cout << " New Edge " << e.predecessor.variable << ","
-                  << e.successor.variable << ":"
-                  << e.label.expression.toString() << " level"
-                  << e.successor.level << "Value" << e.value << std::endl;
-    }
+    // for (auto e : res) {
+    //     std::cout << " New Edge " << e.predecessor.variable << ","
+    //               << e.successor.variable << ":"
+    //               << e.label.expression.toString() << " level"
+    //               << e.successor.level << "Value" << e.value << std::endl;
+    // }
 
     return res;
 }
@@ -322,17 +316,17 @@ template <typename T>
 Edge<T> Evmdd<T>::_terminal_value(Edge<T> first, Edge<T> other,
                                   expression_r<Evmdd<T>> const &oper) {
     if (Factories::get_as_add(oper)) {
-        return Evmdd<T>::makeConstEvmdd(first.label.expression +
-                                        other.label.expression);
+        return Evmdd<T>::makeConstEvmdd(
+            first.label.expression + other.label.expression, first.value);
     } else if (Factories::get_as_sub(oper)) {
-        return Evmdd<T>::makeConstEvmdd(first.label.expression -
-                                        other.label.expression);
+        return Evmdd<T>::makeConstEvmdd(
+            first.label.expression - other.label.expression, first.value);
     } else if (Factories::get_as_mul(oper)) {
-        return Evmdd<T>::makeConstEvmdd(first.label.expression *
-                                        other.label.expression);
+        return Evmdd<T>::makeConstEvmdd(
+            first.label.expression * other.label.expression, first.value);
     } else if (Factories::get_as_div(oper)) {
-        return Evmdd<T>::makeConstEvmdd(first.label.expression /
-                                        other.label.expression);
+        return Evmdd<T>::makeConstEvmdd(
+            first.label.expression / other.label.expression, first.value);
     }
     throw std::logic_error("Unknown Operator in Apply");
 }
@@ -384,11 +378,16 @@ Edge<NumericExpression> Evmdd<NumericExpression>::makeVarEvmdd(
 
 template <typename T>
 Edge<T> Evmdd<T>::makeConstEvmdd(T weight) {
+    return makeConstEvmdd(weight, 0);
+}
+
+template <typename T>
+Edge<T> Evmdd<T>::makeConstEvmdd(T weight, unsigned int edge_value) {
     Edge<T> edge;
     Label<T> l;
     l.expression = std::move(weight);
     edge.label = std::move(l);
-    edge.value = 0;
+    edge.value = edge_value;
     Node<T> successor;
     successor.level = 0;
     successor.id = 0;
