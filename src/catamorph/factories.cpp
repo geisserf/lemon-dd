@@ -2,7 +2,7 @@
 // Created by bwright on 22.06.17.
 //
 
-#include "Factories.h"
+#include "factories.h"
 
 Expression Factories::mul(std::vector<Expression> const &rands) {
     return Expression(mul_op<Expression>{rands});

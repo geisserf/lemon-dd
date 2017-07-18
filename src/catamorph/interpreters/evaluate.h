@@ -1,7 +1,7 @@
 #ifndef NUMERIC_CATAMORPH_EVAOL_H
 #define NUMERIC_CATAMORPH_EVAOL_H
 
-#include "../Catamorph.h"
+#include "../catamorph.h"
 
 class Evaluate {
 public:

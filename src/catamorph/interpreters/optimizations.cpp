@@ -1,4 +1,4 @@
-#include "Optimizations.h"
+#include "optimizations.h"
 
 template <typename Tag>
 void Optimizations::throw_wrong_parameters(op<Tag, Expression> const &e,

@@ -1,4 +1,4 @@
-#include "EvmddExpression.h"
+#include "evmdd_expression.h"
 #include <algorithm>
 #include <iostream>
 

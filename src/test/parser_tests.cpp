@@ -1,5 +1,5 @@
 #include "../parser.h"
-#include "../catamorph/Printer.h"
+#include "../catamorph/printer.h"
 #include "Catch/include/catch.hpp"
 
 #include <iostream>

@@ -4,8 +4,8 @@
 #include <string>
 #include <vector>
 
-#include "Expression.h"
-#include "Factories.h"
+#include "expression.h"
+#include "factories.h"
 
 using namespace boost::adaptors;
 

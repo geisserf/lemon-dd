@@ -19,6 +19,8 @@ public:
 template <typename T>
 class EvmddExpression {
 public:
+    EvmddExpression() = default;
+    EvmddExpression(T value) : value(value) {}
     T value;
 
     EvmddExpression<T> &operator+(const EvmddExpression<T> &right);

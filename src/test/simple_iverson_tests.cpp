@@ -1,5 +1,5 @@
-#include "../Polynomial.h"
-#include "../catamorph/interpreters/Evaluate.h"
+#include "../polynomial.h"
+#include "../catamorph/interpreters/evaluate.h"
 #include "Catch/include/catch.hpp"
 
 SCENARIO("Testing basic logic expressions and evaluations", "[iverson]") {

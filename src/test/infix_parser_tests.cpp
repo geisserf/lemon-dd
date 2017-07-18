@@ -1,4 +1,4 @@
-#include "../Polynomial.h"
+#include "../polynomial.h"
 #include "Catch/include/catch.hpp"
 
 SCENARIO("Testing parsing infix to prefix", "[infixparser]") {

@@ -1,7 +1,7 @@
 #ifndef NUMERIC_CATAMORPH_POLYNOMIAL_H
 #define NUMERIC_CATAMORPH_POLYNOMIAL_H
 
-#include "catamorph/Expression.h"
+#include "catamorph/expression.h"
 
 #include <string>
 

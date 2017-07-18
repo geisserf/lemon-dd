@@ -29,19 +29,21 @@ add_subdirectory(boost_dependencies/libs)
 
 
 set(SOURCE_FILES
-        catamorph/Catamorph.h
-        catamorph/Factories.cpp catamorph/Factories.h
-        catamorph/interpreters/Optimizations.cpp catamorph/interpreters/Optimizations.h
-        catamorph/interpreters/Evaluate.cpp catamorph/interpreters/Evaluate.h
-        catamorph/interpreters/Dependencies.cpp catamorph/interpreters/Dependencies.h
-        catamorph/interpreters/Iverson.cpp catamorph/interpreters/Iverson.h
-        catamorph/interpreters/CreateEvmdd.h catamorph/interpreters/CreateEvmdd.cpp
-        catamorph/Expression.h
-        Polynomial.cpp Polynomial.h
+        catamorph/catamorph.h
+        catamorph/factories.cpp catamorph/factories.h
+        catamorph/interpreters/optimizations.cpp catamorph/interpreters/optimizations.h
+        catamorph/interpreters/evaluate.cpp catamorph/interpreters/evaluate.h
+        catamorph/interpreters/dependencies.cpp catamorph/interpreters/dependencies.h
+        catamorph/interpreters/iverson.cpp catamorph/interpreters/iverson.h
+        catamorph/interpreters/create_evmdd.h
+        catamorph/interpreters/create_evmdd.cpp
+        catamorph/expression.h
+        polynomial.cpp polynomial.h
         parser.cpp parser.h
-        catamorph/Printer.h
-        catamorph/Evmdd.h catamorph/Evmdd.cpp
-        catamorph/EvmddExpression.h catamorph/EvmddExpression.cpp)
+        catamorph/printer.h
+        evmdd/evmdd.h evmdd/evmdd.cpp
+        evmdd/node.h evmdd/node.cpp evmdd/node_storage.h evmdd/node_storage.cpp
+        evmdd/evmdd_expression.h evmdd/evmdd_expression.cpp)
 
 add_library(NumericCatamorph_lib ${SOURCE_FILES})
 target_link_libraries(NumericCatamorph_lib MiniBoost)

@@ -1,6 +1,6 @@
-#include "Dependencies.h"
-#include "../Catamorph.h"
-#include "../Factories.h"
+#include "dependencies.h"
+#include "../catamorph.h"
+#include "../factories.h"
 
 template <typename Tag>
 std::set<ID> Dependency::join_sets(op<Tag, std::set<ID>> const &op) {

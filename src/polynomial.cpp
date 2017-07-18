@@ -1,9 +1,9 @@
-#include "Polynomial.h"
+#include "polynomial.h"
 #include "parser.h"
 
-#include "catamorph/Printer.h"
-#include "catamorph/interpreters/Dependencies.h"
-#include "catamorph/interpreters/Evaluate.h"
+#include "catamorph/printer.h"
+#include "catamorph/interpreters/dependencies.h"
+#include "catamorph/interpreters/evaluate.h"
 
 #include <string>
 

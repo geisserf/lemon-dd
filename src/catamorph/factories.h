@@ -1,7 +1,7 @@
 #ifndef NUMERIC_CATAMORPH_FACTORIES_H
 #define NUMERIC_CATAMORPH_FACTORIES_H
 
-#include "Expression.h"
+#include "expression.h"
 
 class Factories {
 public:

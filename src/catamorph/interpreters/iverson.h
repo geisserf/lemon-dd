@@ -1,7 +1,7 @@
 #ifndef NUMERIC_CATAMORPH_IVERSON_H
 #define NUMERIC_CATAMORPH_IVERSON_H
 
-#include "../Catamorph.h"
+#include "../catamorph.h"
 
 class Iverson {
 public:

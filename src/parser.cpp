@@ -1,6 +1,6 @@
 #include "parser.h"
-#include "catamorph/Expression.h"
-#include "catamorph/Factories.h"
+#include "catamorph/expression.h"
+#include "catamorph/factories.h"
 
 #include <assert.h>
 #include <iostream>

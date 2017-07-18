@@ -1,7 +1,7 @@
 #ifndef NUMERIC_CATAMORPH_DEPENDENCIES_H
 #define NUMERIC_CATAMORPH_DEPENDENCIES_H
 
-#include "../Expression.h"
+#include "../expression.h"
 
 class Dependency {
 public:

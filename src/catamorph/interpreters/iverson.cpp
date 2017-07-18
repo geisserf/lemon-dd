@@ -2,8 +2,8 @@
 // Created by bwright on 22.06.17.
 //
 
-#include "Iverson.h"
-#include "Optimizations.h"
+#include "iverson.h"
+#include "optimizations.h"
 
 Expression Iverson::opt_equals_alg(expression_r<Expression> const &e) {
     if (auto *op = Factories::get_as_equals(e)) {

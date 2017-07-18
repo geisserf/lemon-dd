@@ -1,7 +1,7 @@
 #ifndef NUMERIC_CATAMORPH_OPTIMIZATIONS_H
 #define NUMERIC_CATAMORPH_OPTIMIZATIONS_H
 
-#include "../Catamorph.h"
+#include "../catamorph.h"
 
 class Optimizations {
 private:

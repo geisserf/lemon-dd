@@ -1,12 +1,12 @@
-#include "../Polynomial.h"
-#include "../catamorph/Factories.h"
-#include "../catamorph/interpreters/Dependencies.h"
+#include "../polynomial.h"
+#include "../catamorph/factories.h"
+#include "../catamorph/interpreters/dependencies.h"
 #include <chrono>
 #include <fstream>
 #include <gperftools/profiler.h>
 #include <iostream>
 
-void run_benchmark_from_file_single_evlauation(int domain_size,
+void run_benchmark_from_file_single_evaluation(int domain_size,
                                                std::string benchmark_file,
                                                std::string result_file,
                                                int ast_depth) {
@@ -73,7 +73,7 @@ int main() {
     }
     int depth = 2;
     for (std::string benchmark_file : benchmark_files) {
-        run_benchmark_from_file_single_evlauation(
+        run_benchmark_from_file_single_evaluation(
             default_domain_size, benchmark_file, result_file, depth);
         depth = depth + 2;
     }

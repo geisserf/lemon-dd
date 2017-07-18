@@ -1,9 +1,9 @@
 #ifndef NUMERIC_CATAMORPH_PRINTER_H
 #define NUMERIC_CATAMORPH_PRINTER_H
 
-#include "Catamorph.h"
-#include "Expression.h"
-#include "Factories.h"
+#include "catamorph.h"
+#include "expression.h"
+#include "factories.h"
 #include <iomanip>
 #include <iostream>
 #include <string>
