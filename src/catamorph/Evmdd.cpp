@@ -3,7 +3,9 @@
 #include "Expression.h"
 #include "Factories.h"
 #include <algorithm>
+#include <functional>
 #include <iostream>
+#include <limits>
 #include <queue>
 
 template <typename T>
@@ -162,9 +164,6 @@ std::vector<T> Evmdd<T>::calculate_partial_evaluation(
 }
 
 template <typename T>
-int Node<T>::id_counter = 0;
-
-template <typename T>
 Node<T>::Node() {
     id = id_counter++;
     variable = "";
@@ -173,6 +172,7 @@ Node<T>::Node() {
 template <typename T>
 Evmdd<T> Evmdd<T>::apply(Evmdd<T> const &other,
                          expression_r<Evmdd<T>> const &oper) {
+    // std::cout<<"APPLY"<<std::endl;
     this->evmdd = _apply(this->evmdd, other.evmdd, oper);
 
     return *this;
@@ -181,32 +181,30 @@ Evmdd<T> Evmdd<T>::apply(Evmdd<T> const &other,
 template <typename T>
 Edge<T> Evmdd<T>::_apply(Edge<T> const &first, Edge<T> const &other,
                          expression_r<Evmdd<T>> const &oper) {
-    //    std::cout << "Apply" << std::endl;
+    //   std::cout << "_apply" << std::endl;
 
-    //    std::cout << "self id: " << first.successor.variable
-    //              << " other id: " << other.successor.variable << std::endl;
+    //      std::cout << "self var: " <<
+    //      first.successor.variable<<first.successor.id
+    //                << " other var: " <<
+    //                other.successor.variable<<other.successor.id << std::endl;
     // terminal case
     if (first.successor.id == 0 && other.successor.id == 0) {
+        //        std::cout<<"Terminal"<<std::endl;
         return _terminal_value(first, other, oper);
     }
     // get the higher level
     int level = std::max(first.successor.level, other.successor.level);
     // align edges
+    // std::cout<<"align"<<std::endl;
     auto self_children = _align_levels(first, other);
     auto other_children = _align_levels(other, first);
-
+    // std::cout<<"end align"<<std::endl;
     std::vector<Edge<T>> children;
     // new children
     for (size_t c = 0; c < self_children.size(); c++) {
         // apply operator on edges of both children
         children.push_back(
             apply_operator(self_children[c], other_children[c], oper));
-
-        //      std::cout << "Child after op apply " <<
-        //      children[c].predecessor.variable
-        //                << "," << children[c].successor.variable << ":"
-        //                << children[c].label.expression.toString() <<
-        //                std::endl;
     }
 
     // get minimum of child edge labels
@@ -215,72 +213,59 @@ Edge<T> Evmdd<T>::_apply(Edge<T> const &first, Edge<T> const &other,
             return e1.label.expression < e2.label.expression;
         });
 
-    Node<T> result_succ;
-    result_succ.level = level;
-    result_succ.outgoing = children;
+    // std::cout<<"go mit"<<std::endl;
 
+    std::string var = "";
     if (first.successor.level == level) {
-        result_succ.variable = first.successor.variable;
+        var = first.successor.variable;
     } else {
-        result_succ.variable = other.successor.variable;
+        var = other.successor.variable;
     }
+
+    Node<T> result_succ = Node<T>::makeNode(children, var, level);
+
+    //    std::cout<<"succ build"<<std::endl;
     T result_weight = rw->label.expression;
     // subtract min from children (moved back up)
 
     for (auto it = result_succ.outgoing.begin();
          it != result_succ.outgoing.end(); it++) {
+        //      std::cout<<"subtracting"<<it->label.expression.toString()<<"-"<<result_weight.toString()<<std::endl;
         it->label.expression = it->label.expression - result_weight;
-        it->predecessor = result_succ;
+        // it->predecessor = result_succ;
     }
 
+    // std::cout<<"subtracted min"<<std::endl;
     // Shannon reduction
     // TODO
 
-    Edge<T> res;
+    Edge<T> res(result_succ);
 
-    res.successor = result_succ;
+    //  res.successor = result_succ;
     res.label.expression = result_weight;
     res.value = first.value;
 
+    // std::cout<<"done . return"<<std::endl;
+    // std::cout<<"Result: "<<res.predecessor.variable<<" to
+    // "<<res.successor.variable<< " with label
+    // "<<res.label.expression.toString()<<std::endl;
     return res;
 }
 
 template <typename T>
 Edge<T> Evmdd<T>::apply_operator(Edge<T> edge1, Edge<T> edge2,
                                  expression_r<Evmdd<T>> const &oper) {
-    // I think :-(?
-    // if(!edge2.successor.id==0){
-    //   return _apply(edge2,oper);
-    // }
-    //
-    //
-    //    T e;
-    //    if (Factories::get_as_add(oper)) {
-    //        e = edge1.label.expression + edge2.label.expression;
-    //    } else if (Factories::get_as_sub(oper)) {
-    //        e = edge1.label.expression - edge2.label.expression;
-    //    } else if (Factories::get_as_mul(oper)) {
-    //        e = edge1.label.expression * edge2.label.expression;
-    //    } else if (Factories::get_as_div(oper)) {
-    //        e = edge1.label.expression / edge2.label.expression;
-    //    } else {
-    //        throw std::logic_error("Unknown Operator in Apply");
-    //    }
-    //
-    //    Edge<T> edge = Edge<T>(edge1);
-    //   edge.label.expression = e;
-    //    return edge;
     return _apply(edge1, edge2, oper);
 }
 
 template <typename T>
 std::vector<Edge<T>> Evmdd<T>::_align_levels(Edge<T> edge1, Edge<T> edge2) {
-    // std::cout << "aligning: edge " << edge1.predecessor.variable << ","
-    //           << edge1.successor.variable << ":"
-    //           << edge1.label.expression.toString() << " and "
-    //           << edge2.predecessor.variable << "," <<
-    //           edge2.successor.variable
-    //           << ":" << edge2.label.expression.toString() << std::endl;
+    //  std::cout << "aligning: edge " << edge1.predecessor.variable << ","
+    //            << edge1.successor.variable << ":"
+    //            << edge1.label.expression.toString() << " and "
+    //            << edge2.predecessor.variable << "," <<
+    //            edge2.successor.variable
+    //            << ":" << edge2.label.expression.toString() << std::endl;
 
     std::vector<Edge<T>> res;
     // std::cout << " edge1 " << edge1.successor.level << " edge2 "
@@ -301,12 +286,6 @@ std::vector<Edge<T>> Evmdd<T>::_align_levels(Edge<T> edge1, Edge<T> edge2) {
             res.push_back(ne);
         }
     }
-    // for (auto e : res) {
-    //     std::cout << " New Edge " << e.predecessor.variable << ","
-    //               << e.successor.variable << ":"
-    //               << e.label.expression.toString() << " level"
-    //               << e.successor.level << "Value" << e.value << std::endl;
-    // }
 
     return res;
 }
@@ -335,26 +314,20 @@ template <>
 Edge<NumericExpression> Evmdd<NumericExpression>::makeVarEvmdd(
     const std::string var, unsigned int domain, int level) {
     // terminal node
-    Node<NumericExpression> terminal;
-    terminal.id = 0;
-    terminal.level = 0;
-    // Incoming Edge
+    Node<NumericExpression> terminal =
+        Node<NumericExpression>::makeTerminalNode();
+
+    // Incoming
     Label<NumericExpression> incoming_label;
     NumericExpression expression;
     expression.value = 0;
     incoming_label.expression = expression;
-    Edge<NumericExpression> incoming_edge;
-    incoming_edge.label = incoming_label;
-    incoming_edge.value = 0;
 
     // Variable Node
-    Node<NumericExpression> variable_node;
-    variable_node.variable = var;
-    variable_node.incoming.push_back(incoming_edge);
-    variable_node.level = level;
 
     // for each domain value add edge from incoming_edge.get()->successor to
     // terminal with weight = domain value
+    std::vector<Edge<NumericExpression>> outgoing;
     for (unsigned int d = 0; d < domain; d++) {
         Label<NumericExpression> edge_label;
         NumericExpression edge_expression;
@@ -363,16 +336,20 @@ Edge<NumericExpression> Evmdd<NumericExpression>::makeVarEvmdd(
         Edge<NumericExpression> edge;
         edge.label = edge_label;
         edge.value = d;
-        edge.successor = terminal;
-        edge.predecessor = variable_node;
-        variable_node.outgoing.push_back(edge);
+        outgoing.push_back(edge);
     }
 
-    incoming_edge.successor = variable_node;
-    // Evmdd<NumericExpression> result;
-    // result.evmdd = incoming_edge;
-    // result.terminal = terminal;
+    Node<NumericExpression> variable_node =
+        Node<NumericExpression>::makeNode(outgoing, var, level);
 
+    Edge<NumericExpression> incoming_edge(variable_node);
+    incoming_edge.label = incoming_label;
+    incoming_edge.value = 0;
+    variable_node.incoming.push_back(incoming_edge);
+    //    std::cout<<"Edge from
+    //    "<<incoming_edge.predecessor.variable<<":"<<incoming_edge.predecessor.id<<
+    //    " to
+    //    "<<incoming_edge.successor.variable<<":"<<incoming_edge.successor.id<<std::endl;
     return incoming_edge;
 }
 
@@ -383,19 +360,87 @@ Edge<T> Evmdd<T>::makeConstEvmdd(T weight) {
 
 template <typename T>
 Edge<T> Evmdd<T>::makeConstEvmdd(T weight, unsigned int edge_value) {
+    // Node<T> terminal = Node<T>::make
+    //    std::cout<<"create const"<<std::endl;
     Edge<T> edge;
     Label<T> l;
-    l.expression = std::move(weight);
-    edge.label = std::move(l);
+    l.expression = weight;
+    edge.label = l;
     edge.value = edge_value;
-    Node<T> successor;
-    successor.level = 0;
-    successor.id = 0;
-    edge.successor = successor;
-    // Evmdd<T> result;
-    // result.terminal = successor;
-    // result.evmdd = edge;
+    // std::cout<<"Const-Edge from
+    // "<<edge.predecessor.variable<<":"<<edge.predecessor.id<< " to
+    // "<<edge.successor.variable<<":"<<edge.successor.id<<std::endl;i
+    //  std::cout<<"   done"<<std::endl;
     return edge;
+}
+
+template <typename T>
+Node<T> Node<T>::makeTerminalNode() {
+    std::vector<Edge<T>> outgoing;
+    Node<T> t = Node<T>::makeNode(outgoing, "", 0);
+    t.id = 0;
+    return t;
+}
+
+template <typename T>
+Node<T> Node<T>::makeDummyNode() {
+    std::vector<Edge<T>> outgoing;
+    Node<T> dummy = Node<T>::makeNode(outgoing, "", 0);
+    return dummy;
+}
+
+template <typename T>
+Node<T> Node<T>::makeNode(std::vector<Edge<T>> outgoing, std::string variable,
+                          int level) {
+    size_t hash_ = (size_t)level;
+    size_t seed = 0;
+    size_t size = outgoing.size();
+
+    for (size_t i = 0; i < size; i++) {
+        hash_ ^=
+            std::hash<std::string>{}(outgoing[i].label.expression.toString()) +
+            0x9e3779b9 + (seed << 6) + (seed >> 2);
+    }
+
+    auto element = Node<T>::memorized.find(hash_);
+    if (element != Node<T>::memorized.end()) {
+        //   std::cout<<"Return existing Node: "<<variable<<std::endl;
+        //    return element->second;
+    }
+
+    Node<T> node;
+    node.level = level;
+    node.variable = variable;
+    node.outgoing = outgoing;
+    for (auto it = node.outgoing.begin(); it != node.outgoing.end(); it++) {
+        it->predecessor = node;
+    }
+
+    Node<T>::memorized.insert(std::pair<size_t, Node<T>>(hash_, node));
+    // std::cout<<"Return new node: "<<variable<<std::endl;
+    return node;
+}
+
+template <typename T>
+void Evmdd<T>::print() {
+    print_rec(this->evmdd, "");
+}
+
+template <typename T>
+void Evmdd<T>::print_rec(Edge<T> edge, std::string depth) {
+    std::cout << depth << "from: " << edge.predecessor.variable
+              << " with label " << edge.label.expression.toString()
+              << " to: " << edge.successor.variable << std::endl;
+    depth = depth + "  ";
+    for (auto child : edge.successor.outgoing) {
+        print_rec(child, depth);
+    }
+}
+
+template <typename T>
+Edge<T>::Edge(Node<T> suc, Node<T> pre) : successor(suc), predecessor(pre) {
+    suc.incoming.push_back(*this);
+    pre.outgoing.push_back(*this);
 }
 
 template class Evmdd<NumericExpression>;

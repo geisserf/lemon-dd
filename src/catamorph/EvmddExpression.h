@@ -1,6 +1,3 @@
-
-//
-
 #ifndef NUMERIC_CATAMORPH_EVMDDEXPRESSION_H
 #define NUMERIC_CATAMORPH_EVMDDEXPRESSION_H
 
@@ -30,9 +27,7 @@ public:
     EvmddExpression<T> &operator/(const EvmddExpression<T> &right);
     bool operator<(const EvmddExpression<T> &right);
     bool operator==(const EvmddExpression<T> &right);
-
     bool operator!=(const EvmddExpression<T> &right);
-
     std::string toString();
 };
 

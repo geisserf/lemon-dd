@@ -21,6 +21,12 @@ class Edge;
 
 template <typename T>
 class Node {
+private:
+    static std::map<size_t, Node<T>> memorized;
+    // static Node<T> terminal;
+    // static Node<T> dummy;
+    Node();
+
 public:
     static int id_counter;
     int id;
@@ -29,17 +35,29 @@ public:
     std::vector<Edge<T>> outgoing; // outgoing edge
     std::vector<Edge<T>> incoming; // incoming edge
     // Node(const Node<T> &that) = delete;
-    Node();
+    // Node();
+    static Node<T> makeNode(std::vector<Edge<T>> outgoing, std::string variable,
+                            int level);
+    static Node<T> makeTerminalNode();
+
+    static Node<T> makeDummyNode();
 };
+
+template <typename T>
+std::map<size_t, Node<T>> Node<T>::memorized;
+template <typename T>
+int Node<T>::id_counter = 1;
 
 template <typename T>
 class Edge {
 public:
     unsigned int value;
-    Node<T> predecessor;
     Node<T> successor;
+    Node<T> predecessor;
     Label<T> label;
-    // Edge(const Edge<T> &that) = delete;
+    // Edge(const Edge<T> &that) = idelete;
+    Edge(Node<T> suc = Node<T>::makeTerminalNode(),
+         Node<T> pre = Node<T>::makeDummyNode());
 };
 
 template <typename T>
@@ -62,7 +80,7 @@ public:
 
     // Evmdd(const Evmdd &that) = delete;
     // Evmdd(){};
-    Node<T> terminal;
+    // Node<T> terminal;
     Edge<T> evmdd;
     std::vector<Node<T>> nodes;
     std::vector<T> evaluate_partial(
@@ -84,6 +102,8 @@ public:
 
     std::vector<T> get_min() const;
     std::vector<T> get_max() const;
+    void print();
+    void print_rec(Edge<T> edge, std::string depth);
 };
 
 #endif // NUMERIC_CATAMORPH_EVMDD_H
