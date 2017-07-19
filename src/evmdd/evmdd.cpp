@@ -4,6 +4,7 @@
 #include <queue>
 
 using std::vector;
+using std::string;
 
 template <typename T>
 std::vector<T> Evmdd<T>::get_min() const {
@@ -30,7 +31,7 @@ std::vector<T> Evmdd<T>::evaluate(
     EvaluationFunction evaluationFunction) const {
     std::map<int, std::vector<T>> partialEvaluations;
     partialEvaluations[0] = std::vector<T>{{input_value}};
-    NodeStorage<T> node_storage = NodeStorage<T>::getInstance();
+    NodeStorage<T> node_storage; // = NodeStorage<T>::getInstance();
     std::queue<Node<T>> openList;
     openList.push(entry_node);
     Node<T> currentNode = entry_node;
@@ -105,24 +106,15 @@ Evmdd<T> EvmddFactory<T>::make_const_evmdd(T weight) {
     return Evmdd<T>(weight, node_factory.get_terminal_node());
 }
 
-template <>
-Evmdd<NumericExpression> EvmddFactory<NumericExpression>::make_var_evmdd(
-    int level, std::string const &var, int domain) {
-    vector<Edge<NumericExpression>> children;
-    for (int i = 0; i < domain; ++i) {
-        children.emplace_back(Label<NumericExpression>(i), 0);
-    }
-    Node<NumericExpression> node = node_factory.make_node(level, var, children);
-    return Evmdd<NumericExpression>(0, node);
-}
-
 template <typename T>
-Evmdd<T> EvmddFactory<T>::make_var_evmdd(int level, std::string const &var,
-                                         int domain) {
-    (void)level;
-    (void)var;
-    (void)domain;
-    throw(std::logic_error("Make Var EVMDD not implemented"));
+Evmdd<T> EvmddFactory<T>::make_var_evmdd(int level, string const &var,
+                                         vector<T> const &domain) {
+    vector<Edge<T>> children;
+    for (size_t i = 0; i < domain.size(); ++i) {
+        children.emplace_back(Label<T>(domain[i]), 0);
+    }
+    Node<T> node = node_factory.make_node(level, var, children);
+    return Evmdd<T>(T::identity(), node);
 }
 
 // template <typename T>
@@ -270,9 +262,9 @@ Evmdd<T> EvmddFactory<T>::make_var_evmdd(int level, std::string const &var,
 // }
 
 template class Evmdd<NumericExpression>;
-template class Evmdd<VariableAssignementExpression>;
+template class Evmdd<VariableAssignmentExpression>;
 template class Evmdd<TupleExpression>;
 
 template class EvmddFactory<NumericExpression>;
-template class EvmddFactory<VariableAssignementExpression>;
+template class EvmddFactory<VariableAssignmentExpression>;
 template class EvmddFactory<TupleExpression>;

@@ -10,7 +10,7 @@ class VariableAssignment {
 public:
     std::string variable;
     int value;
-    std::string toString();
+    std::string toString() const;
     bool operator==(const VariableAssignment &rhs) const;
     bool operator!=(const VariableAssignment &rhs) const;
     bool operator<(const VariableAssignment &rhs) const;
@@ -23,14 +23,17 @@ public:
     EvmddExpression(T value) : value(value) {}
     T value;
 
-    EvmddExpression<T> &operator+(const EvmddExpression<T> &right);
-    EvmddExpression<T> &operator-(const EvmddExpression<T> &right);
-    EvmddExpression<T> &operator*(const EvmddExpression<T> &right);
-    EvmddExpression<T> &operator/(const EvmddExpression<T> &right);
-    bool operator<(const EvmddExpression<T> &right);
-    bool operator==(const EvmddExpression<T> &right);
-    bool operator!=(const EvmddExpression<T> &right);
-    std::string toString();
+    EvmddExpression<T> operator+(const EvmddExpression<T> &right) const;
+    EvmddExpression<T> operator-(const EvmddExpression<T> &right) const;
+    EvmddExpression<T> operator*(const EvmddExpression<T> &right) const;
+    EvmddExpression<T> operator/(const EvmddExpression<T> &right) const;
+    bool operator<(const EvmddExpression<T> &right) const;
+    bool operator==(const EvmddExpression<T> &right) const;
+    bool operator!=(const EvmddExpression<T> &right) const;
+    std::string toString() const;
+
+    // return identity element for type T
+    static EvmddExpression<T> identity();
 };
 
 template <class T>
@@ -50,9 +53,9 @@ struct least_upper_bound { // max
 };
 
 using NumericExpression = EvmddExpression<float>;
-using VariableAssignementExpression =
+using VariableAssignmentExpression =
     EvmddExpression<std::vector<VariableAssignment>>;
-using TupleExpression = EvmddExpression<
-    std::pair<VariableAssignementExpression, NumericExpression>>;
+using TupleExpression =
+    EvmddExpression<std::pair<VariableAssignmentExpression, NumericExpression>>;
 
 #endif // NUMERIC_CATAMORPH_EVMDDEXPRESSION_H

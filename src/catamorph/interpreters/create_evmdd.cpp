@@ -6,8 +6,6 @@
 using std::vector;
 using std::string;
 
-
-
 template <>
 auto CreateEvmdd<NumericExpression>::create_evmdd_alg(
     Domains const &domains, Ordering const &ordering) {
@@ -19,7 +17,11 @@ auto CreateEvmdd<NumericExpression>::create_evmdd_alg(
         if (auto *var = Factories::get_as_var(e)) {
             std::string name(*var);
             int level = ordering.at(*var);
-            int domain = domains.at(*var);
+            int domain_size = domains.at(*var);
+            vector<NumericExpression> domain;
+            for (int i = 0; i < domain_size; ++i) {
+                domain.emplace_back(i);
+            }
             return factory.make_var_evmdd(level, name, domain);
         }
         if (auto *o = Factories::get_as_add(e)) {

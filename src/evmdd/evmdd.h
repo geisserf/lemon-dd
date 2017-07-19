@@ -3,6 +3,8 @@
 
 #include "node.h"
 
+#include <algorithm>
+#include <cassert>
 #include <functional>
 #include <map>
 #include <memory>
@@ -32,8 +34,11 @@ private:
 
 public:
     void print(std::ostream &out) {
-        out << "IMPLEMENT ME";
+        out << "input value: " << input_value.toString();
+        out << " nodes: " << std::endl;
+        entry_node.print(out);
     }
+
     std::vector<T> evaluate_partial(
         std::map<std::string, std::vector<int>> const &state) const;
 
@@ -56,14 +61,84 @@ class EvmddFactory {
 public:
     Evmdd<T> make_const_evmdd(T weight);
 
-    Evmdd<T> make_var_evmdd(int level, std::string const &var, int domain);
+    Evmdd<T> make_var_evmdd(int level, std::string const &var,
+                            std::vector<T> const &domain);
 
     template <typename F>
-    Evmdd<T> apply(Evmdd<T> const &first, Evmdd<T> const &second, F oper) {
-        (void)(first);
-        (void)(second);
-        (void)(oper);
-        return make_const_evmdd(T{});
+    Evmdd<T> apply(Evmdd<T> const &left, Evmdd<T> const &right, F oper) {
+        if (terminal_case(left, right, oper)) {
+            return make_terminal_evmdd(left, right, oper);
+        }
+        // TODO implement caching for apply
+        std::vector<Evmdd<T>> left_sub_evmdds = sub_evmdds(left, right);
+        std::vector<Evmdd<T>> right_sub_evmdds = sub_evmdds(right, left);
+        assert(left_sub_evmdds.size() > 0);
+        assert(left_sub_evmdds.size() == right_sub_evmdds.size());
+        int root_level =
+            std::max(left.entry_node.get_level(), right.entry_node.get_level());
+        std::string var = "TODO"; // TODO correct variable
+        std::vector<Evmdd<T>> new_children;
+        for (size_t i = 0; i < left_sub_evmdds.size(); ++i) {
+            new_children.push_back(
+                apply(left_sub_evmdds[i], right_sub_evmdds[i], oper));
+        }
+        return create_evmdd(root_level, var, new_children);
+    }
+
+    // Returns true if the operation can immmediately be computed between the
+    // evmdds.
+    template <typename F>
+    bool terminal_case(Evmdd<T> const &left, Evmdd<T> const &right,
+                       F /*oper*/) {
+        return (left.entry_node.get_level() == 0 &&
+                right.entry_node.get_level() == 0);
+    }
+
+    template <typename F>
+    Evmdd<T> make_terminal_evmdd(Evmdd<T> const &left, Evmdd<T> const &right,
+                                 F oper) {
+        T input_value = oper(left.input_value, right.input_value);
+        return make_const_evmdd(input_value);
+    }
+
+    // If level of f is smaller than level of g, copy f |g.children| times.
+    // Otherwise create an evmdd for each child of f with (weight+input value)
+    // as new input value and the child as root node.
+    std::vector<Evmdd<T>> sub_evmdds(Evmdd<T> const &f, Evmdd<T> const &g) {
+        std::vector<Evmdd<T>> result;
+        if (f.entry_node.get_level() >= g.entry_node.get_level()) {
+            for (Edge<T> const &edge : f.entry_node.get_children()) {
+                T input = f.input_value + edge.first.expression;
+                Node<T> root_node = node_factory.get_node(edge.second);
+                Evmdd<T> evmdd(input, root_node);
+                result.push_back(evmdd);
+            }
+        } else {
+            for (size_t i = 0; i < g.entry_node.get_children().size(); ++i) {
+                result.push_back(f);
+            }
+        }
+        return result;
+    }
+
+    // Returns a evmdd with root node at level, with input value as the minimal
+    // input value of all children. Weights to each child is its original
+    // input value minus the minimal input value.
+    Evmdd<T> create_evmdd(int level, std::string var,
+                          std::vector<Evmdd<T>> const &children) {
+        Evmdd<T> min_weight_evmdd =
+            *std::min_element(children.begin(), children.end(),
+                             [](Evmdd<T> const &e1, Evmdd<T> const &e2) {
+                                 return e1.input_value < e2.input_value;
+                             });
+        T min_weight = min_weight_evmdd.input_value;
+        std::vector<Edge<T>> edges;
+        for (Evmdd<T> const &child : children) {
+            edges.emplace_back(Label<T>{child.input_value - min_weight},
+                               child.entry_node.get_id());
+        }
+        Node<T> root_node = node_factory.make_node(level, var, edges);
+        return Evmdd<T>(min_weight, root_node);
     }
 
 private:

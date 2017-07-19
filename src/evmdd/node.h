@@ -41,18 +41,26 @@ private:
 
 public:
     void print(std::ostream &out) const {
-        out << "IMPLEMENT ME";
+        out << "ID: " << id << std::endl;
+        for (size_t i = 0; i < children.size(); ++i) {
+            out << "\tw[i]: " << children[i].first.expression.toString()
+                << " c[i]: " << children[i].second << std::endl;
+        }
     }
 
     int get_id() const {
         return id;
     }
-    std::vector<Edge<T>> get_children() {
+    std::vector<Edge<T>> get_children() const {
         return children;
     }
 
-    std::string get_variable() {
+    std::string get_variable() const {
         return variable;
+    }
+
+    int get_level() const {
+        return level;
     }
 };
 
@@ -68,8 +76,8 @@ public:
                       std::vector<Edge<T>> const &children);
 
 private:
-    int node_counter;
     NodeStorage<T> storage;
+    int node_counter;
 };
 
 #endif /* NODE_H */

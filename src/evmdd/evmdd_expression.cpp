@@ -5,63 +5,62 @@
 /*
  * Expression<float>
  */
+
 template <>
-std::string EvmddExpression<float>::toString() {
-    return std::to_string(this->value);
+NumericExpression NumericExpression::identity() {
+    return NumericExpression{0.0f};
 }
 
 template <>
-bool EvmddExpression<float>::operator==(const EvmddExpression<float> &right) {
-    return this->value == right.value;
+std::string NumericExpression::toString() const {
+    return std::to_string(value);
 }
 
 template <>
-bool EvmddExpression<float>::operator<(const EvmddExpression<float> &right) {
-    return this->value < right.value;
+bool NumericExpression::operator==(const NumericExpression &right) const {
+    return value == right.value;
 }
 
 template <>
-bool EvmddExpression<float>::operator!=(const EvmddExpression<float> &right) {
-    return this->value != right.value;
+bool NumericExpression::operator<(const NumericExpression &right) const {
+    return value < right.value;
 }
 
 template <>
-EvmddExpression<float> &EvmddExpression<float>::operator+(
-    const EvmddExpression<float> &right) {
-    NumericExpression *numericExpression = new EvmddExpression<float>();
-    numericExpression->value = this->value + right.value;
-    return *numericExpression;
-}
-template <>
-EvmddExpression<float> &EvmddExpression<float>::operator-(
-    const EvmddExpression<float> &right) {
-    NumericExpression *numericExpression = new EvmddExpression<float>();
-    numericExpression->value = this->value - right.value;
-    return *numericExpression;
+bool NumericExpression::operator!=(const NumericExpression &right) const {
+    return value != right.value;
 }
 
 template <>
-EvmddExpression<float> &EvmddExpression<float>::operator*(
-    const EvmddExpression<float> &right) {
-    NumericExpression *numericExpression = new EvmddExpression<float>();
-    numericExpression->value = this->value * right.value;
-    return *numericExpression;
+NumericExpression NumericExpression::operator+(
+    const NumericExpression &right) const {
+    return NumericExpression{value + right.value};
 }
 
 template <>
-EvmddExpression<float> &EvmddExpression<float>::operator/(
-    const EvmddExpression<float> &right) {
-    NumericExpression *numericExpression = new EvmddExpression<float>();
-    numericExpression->value = this->value / right.value;
-    return *numericExpression;
+NumericExpression NumericExpression::operator-(
+    const NumericExpression &right) const {
+    return NumericExpression{value - right.value};
+}
+
+template <>
+NumericExpression NumericExpression::operator*(
+    const NumericExpression &right) const {
+    return NumericExpression{value * right.value};
+}
+
+template <>
+NumericExpression NumericExpression::operator/(
+    const NumericExpression &right) const {
+    return NumericExpression{value / right.value};
 }
 
 template <>
 std::vector<NumericExpression> greates_lower_bound<NumericExpression>::
 operator()(const NumericExpression &a,
            const std::vector<NumericExpression> &b) const {
-    std::vector<EvmddExpression<float>> result;
-    EvmddExpression<float> e;
+    std::vector<NumericExpression> result;
+    NumericExpression e;
     if (b.size() == 1) {
         if (b.front().value < a.value) {
             e.value = b.front().value;
@@ -78,8 +77,8 @@ operator()(const NumericExpression &a,
 template <>
 std::vector<NumericExpression> least_upper_bound<NumericExpression>::operator()(
     const NumericExpression &a, const std::vector<NumericExpression> &b) const {
-    std::vector<EvmddExpression<float>> result;
-    EvmddExpression<float> e;
+    std::vector<NumericExpression> result;
+    NumericExpression e;
     if (b.size() == 1) {
         if (b.front().value > a.value) {
             e.value = b.front().value;
@@ -96,23 +95,25 @@ std::vector<NumericExpression> least_upper_bound<NumericExpression>::operator()(
 /*
  * Expression Variable Assignment
  */
+template <>
+VariableAssignmentExpression VariableAssignmentExpression::identity() {
+    return VariableAssignmentExpression{{}};
+}
 
 template <>
-std::string EvmddExpression<std::vector<VariableAssignment>>::toString() {
+std::string VariableAssignmentExpression::toString() const {
     std::string result = "{";
-    for (size_t i = 0; i < this->value.size(); i++) {
+    for (size_t i = 0; i < value.size(); i++) {
         result = result + " " + value[i].toString();
     }
     return result + "}";
 }
 
 template <>
-EvmddExpression<std::vector<VariableAssignment>>
-    &EvmddExpression<std::vector<VariableAssignment>>::operator+(
-        const EvmddExpression<std::vector<VariableAssignment>> &right) {
-    EvmddExpression<std::vector<VariableAssignment>>
-        *variableAssignmentExpression =
-            new EvmddExpression<std::vector<VariableAssignment>>();
+VariableAssignmentExpression VariableAssignmentExpression::operator+(
+    const VariableAssignmentExpression &right) const {
+    VariableAssignmentExpression *variableAssignmentExpression =
+        new VariableAssignmentExpression();
     variableAssignmentExpression->value.insert(
         variableAssignmentExpression->value.end(), this->value.begin(),
         this->value.end());
@@ -123,39 +124,36 @@ EvmddExpression<std::vector<VariableAssignment>>
 }
 
 template <>
-EvmddExpression<std::vector<VariableAssignment>>
-    &EvmddExpression<std::vector<VariableAssignment>>::operator-(
-        const EvmddExpression<std::vector<VariableAssignment>> &right) {
+VariableAssignmentExpression VariableAssignmentExpression::operator-(
+    const VariableAssignmentExpression &right) const {
     (void)right;
     throw std::logic_error("Not implemented");
 }
 
 template <>
-EvmddExpression<std::vector<VariableAssignment>>
-    &EvmddExpression<std::vector<VariableAssignment>>::operator*(
-        const EvmddExpression<std::vector<VariableAssignment>> &right) {
+VariableAssignmentExpression VariableAssignmentExpression::operator*(
+    const VariableAssignmentExpression &right) const {
     (void)right;
     throw std::logic_error("Not implemented");
 }
 
 template <>
-EvmddExpression<std::vector<VariableAssignment>>
-    &EvmddExpression<std::vector<VariableAssignment>>::operator/(
-        const EvmddExpression<std::vector<VariableAssignment>> &right) {
+VariableAssignmentExpression VariableAssignmentExpression::operator/(
+    const VariableAssignmentExpression &right) const {
     (void)right;
     throw std::logic_error("Not implemented");
 }
 
 template <>
-bool EvmddExpression<std::vector<VariableAssignment>>::operator==(
-    const EvmddExpression<std::vector<VariableAssignment>> &right) {
+bool VariableAssignmentExpression::operator==(
+    const VariableAssignmentExpression &right) const {
     return std::equal(this->value.begin(), this->value.end(),
                       right.value.begin());
 }
 
 template <>
-bool EvmddExpression<std::vector<VariableAssignment>>::operator<(
-    const EvmddExpression<std::vector<VariableAssignment>> &right) {
+bool VariableAssignmentExpression::operator<(
+    const VariableAssignmentExpression &right) const {
     // return
     // std::less(this->value.begin(),this->value.end(),right.value.begin());
     (void)right;
@@ -163,17 +161,17 @@ bool EvmddExpression<std::vector<VariableAssignment>>::operator<(
 }
 
 template <>
-bool EvmddExpression<std::vector<VariableAssignment>>::operator!=(
-    const EvmddExpression<std::vector<VariableAssignment>> &right) {
+bool VariableAssignmentExpression::operator!=(
+    const VariableAssignmentExpression &right) const {
     return !(this->value == right.value);
 }
 
 template <>
-std::vector<VariableAssignementExpression>
-greates_lower_bound<VariableAssignementExpression>::operator()(
-    const VariableAssignementExpression &a,
-    const std::vector<VariableAssignementExpression> &b) const {
-    VariableAssignementExpression e;
+std::vector<VariableAssignmentExpression>
+greates_lower_bound<VariableAssignmentExpression>::operator()(
+    const VariableAssignmentExpression &a,
+    const std::vector<VariableAssignmentExpression> &b) const {
+    VariableAssignmentExpression e;
     // union
     std::vector<VariableAssignment> result;
     // add own variable assignments to new result
@@ -194,21 +192,21 @@ greates_lower_bound<VariableAssignementExpression>::operator()(
             }
         }
     }
-    std::vector<VariableAssignementExpression> r;
-    EvmddExpression<std::vector<VariableAssignment>> va_exp;
+    std::vector<VariableAssignmentExpression> r;
+    VariableAssignmentExpression va_exp;
     va_exp.value = result;
     r.push_back(va_exp);
     return r;
 }
 
 template <>
-std::vector<VariableAssignementExpression>
-least_upper_bound<VariableAssignementExpression>::operator()(
-    const VariableAssignementExpression &a,
-    const std::vector<VariableAssignementExpression> &b) const {
+std::vector<VariableAssignmentExpression>
+least_upper_bound<VariableAssignmentExpression>::operator()(
+    const VariableAssignmentExpression &a,
+    const std::vector<VariableAssignmentExpression> &b) const {
     (void)a;
     (void)b;
-    std::vector<VariableAssignementExpression> result;
+    std::vector<VariableAssignmentExpression> result;
     return result;
 }
 
@@ -217,53 +215,41 @@ least_upper_bound<VariableAssignementExpression>::operator()(
  */
 
 template <>
-EvmddExpression<std::pair<VariableAssignementExpression, NumericExpression>> &
-EvmddExpression<std::pair<VariableAssignementExpression, NumericExpression>>::
-operator+(const EvmddExpression<
-          std::pair<VariableAssignementExpression, NumericExpression>> &right) {
-    EvmddExpression<std::pair<VariableAssignementExpression, NumericExpression>>
-        *tupleExpression = new EvmddExpression<
-            std::pair<VariableAssignementExpression, NumericExpression>>();
+TupleExpression TupleExpression::identity() {
+    return TupleExpression{
+        std::make_pair(VariableAssignmentExpression::identity(),
+                       NumericExpression::identity())};
+}
+
+template <>
+TupleExpression TupleExpression::operator+(const TupleExpression &right) const {
+    TupleExpression *tupleExpression = new TupleExpression();
     tupleExpression->value.first = this->value.first + right.value.first;
     tupleExpression->value.second = this->value.second + right.value.second;
     return *tupleExpression;
 }
 
 template <>
-EvmddExpression<std::pair<VariableAssignementExpression, NumericExpression>> &
-EvmddExpression<std::pair<VariableAssignementExpression, NumericExpression>>::
-operator-(const EvmddExpression<
-          std::pair<VariableAssignementExpression, NumericExpression>> &right) {
-    EvmddExpression<std::pair<VariableAssignementExpression, NumericExpression>>
-        *tupleExpression = new EvmddExpression<
-            std::pair<VariableAssignementExpression, NumericExpression>>();
+TupleExpression TupleExpression::operator-(const TupleExpression &right) const {
+    TupleExpression *tupleExpression = new TupleExpression();
     tupleExpression->value.first = this->value.first - right.value.first;
     tupleExpression->value.second = this->value.second - right.value.second;
     return *tupleExpression;
 }
 
 template <>
-EvmddExpression<std::pair<VariableAssignementExpression, NumericExpression>>
-    &EvmddExpression<
-        std::pair<VariableAssignementExpression, NumericExpression>>::operator
-        *(const EvmddExpression<std::pair<VariableAssignementExpression,
-                                          NumericExpression>> &right) {
-    EvmddExpression<std::pair<VariableAssignementExpression, NumericExpression>>
-        *tupleExpression = new EvmddExpression<
-            std::pair<VariableAssignementExpression, NumericExpression>>();
+TupleExpression TupleExpression::operator*(
+    const EvmddExpression<std::pair<VariableAssignmentExpression,
+                                    NumericExpression>> &right) const {
+    TupleExpression *tupleExpression = new TupleExpression();
     tupleExpression->value.first = this->value.first * right.value.first;
     tupleExpression->value.second = this->value.second * right.value.second;
     return *tupleExpression;
 }
 
 template <>
-EvmddExpression<std::pair<VariableAssignementExpression, NumericExpression>> &
-EvmddExpression<std::pair<VariableAssignementExpression, NumericExpression>>::
-operator/(const EvmddExpression<
-          std::pair<VariableAssignementExpression, NumericExpression>> &right) {
-    EvmddExpression<std::pair<VariableAssignementExpression, NumericExpression>>
-        *tupleExpression = new EvmddExpression<
-            std::pair<VariableAssignementExpression, NumericExpression>>();
+TupleExpression TupleExpression::operator/(const TupleExpression &right) const {
+    TupleExpression *tupleExpression = new TupleExpression();
     tupleExpression->value.first = this->value.first / right.value.first;
     tupleExpression->value.second = this->value.second / right.value.second;
     return *tupleExpression;
@@ -344,14 +330,12 @@ std::vector<TupleExpression> least_upper_bound<TupleExpression>::operator()(
 }
 
 template <>
-std::string EvmddExpression<
-    std::pair<VariableAssignementExpression, NumericExpression>>::toString() {
-    return "(" + this->value.first.toString() + ", " +
-           this->value.second.toString() + ")";
+std::string TupleExpression::toString() const {
+    return "(" + value.first.toString() + ", " + value.second.toString() + ")";
 }
 
 template <>
-bool TupleExpression::operator<(const TupleExpression &right) {
+bool TupleExpression::operator<(const TupleExpression &right) const {
     // return
     // std::less(this->value.begin(),this->value.end(),right.value.begin());
     (void)right;
@@ -371,10 +355,10 @@ bool VariableAssignment::operator<(const VariableAssignment &rhs) const {
     return this->variable < rhs.variable && this->value < rhs.value;
 }
 
-std::string VariableAssignment::toString() {
+std::string VariableAssignment::toString() const {
     return this->variable + "=" + std::to_string(this->value);
 }
 
 template class greates_lower_bound<NumericExpression>;
-template class greates_lower_bound<VariableAssignementExpression>;
+template class greates_lower_bound<VariableAssignmentExpression>;
 template class greates_lower_bound<TupleExpression>;

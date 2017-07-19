@@ -8,7 +8,7 @@ Node<T>::Node(int id, int level, std::string const &var,
 
 template <typename T>
 NodeFactory<T>::NodeFactory()
-    : node_counter(1), storage(NodeStorage<T>::getInstance()) {}
+    : storage(NodeStorage<T>()), node_counter(storage.size()) {}
 
 template <typename T>
 Node<T> NodeFactory<T>::get_terminal_node() {
@@ -21,15 +21,15 @@ Node<T> NodeFactory<T>::make_node(int level, std::string const &variable,
     // if (storage.find(level, variable, children) == storage.end)...
     Node<T> node(node_counter++, level, variable, children);
     storage.add_node(node);
-    return Node<T>{};
+    return node;
 }
 
 template class Node<NumericExpression>;
-template class Node<VariableAssignementExpression>;
+template class Node<VariableAssignmentExpression>;
 template class Node<TupleExpression>;
 
 template class NodeFactory<NumericExpression>;
-template class NodeFactory<VariableAssignementExpression>;
+template class NodeFactory<VariableAssignmentExpression>;
 template class NodeFactory<TupleExpression>;
 
 // template <typename T>
