@@ -8,7 +8,7 @@ Node<T>::Node(int id, int level, std::string const &var,
 
 template <typename T>
 NodeFactory<T>::NodeFactory()
-    : node_counter(1), storage(Node<T>(0, 0, "", {})) {}
+    : node_counter(1), storage(NodeStorage<T>::getInstance()) {}
 
 template <typename T>
 Node<T> NodeFactory<T>::get_terminal_node() {

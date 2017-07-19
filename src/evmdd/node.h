@@ -37,6 +37,7 @@ private:
     std::vector<Edge<T>> children;
 
     friend NodeFactory<T>;
+    friend NodeStorage<T>;
 
 public:
     void print(std::ostream &out) const {
@@ -46,6 +47,9 @@ public:
     int get_id() const {
         return id;
     }
+    std::vector<Edge<T>> get_children() {
+        return children;
+    }
 };
 
 template <typename T>
@@ -53,7 +57,9 @@ class NodeFactory {
 public:
     NodeFactory();
     Node<T> get_terminal_node();
-
+    Node<T> get_node(int id) {
+        return storage.get_node(id);
+    }
     Node<T> make_node(int level, std::string const &variable,
                       std::vector<Edge<T>> const &children);
 

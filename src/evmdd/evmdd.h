@@ -34,25 +34,22 @@ public:
     void print(std::ostream &out) {
         out << "IMPLEMENT ME";
     }
-    //    std::vector<T> evaluate_partial(
-    //        std::map<std::string, std::vector<int>> const &state) const;
-    //
-    //    template <typename EvaluationFunction>
-    //    std::vector<T> evaluate(
-    //        std::map<std::string, std::vector<int>> const &state,
-    //        EvaluationFunction evaluationFunction = EvaluationFunction())
-    //        const;
-    //
-    //    template <typename EvaluationFunction>
-    //    std::vector<T> calculate_partial_evaluation(
-    //        Edge<T> const &incoming_edge,
-    //        std::map<int, std::vector<T>> const &partialEvaluations,
-    //        EvaluationFunction evaluationFunction = EvaluationFunction())
-    //        const;
-    //
-    //    std::vector<T> get_min() const;
-    //    std::vector<T> get_max() const;
-    //    void print();
+    std::vector<T> evaluate_partial(
+        std::map<std::string, std::vector<int>> const &state) const;
+
+    template <typename EvaluationFunction>
+    std::vector<T> evaluate(
+        std::map<std::string, std::vector<int>> const &state,
+        EvaluationFunction evaluationFunction = EvaluationFunction()) const;
+
+    template <typename EvaluationFunction>
+    std::vector<T> calculate_partial_evaluation(
+        Node<T> const &current_node, T const &incoming_weight,
+        std::vector<T> const &previous_evaluations,
+        EvaluationFunction evaluation_function = EvaluationFunction()) const;
+
+    std::vector<T> get_min() const;
+    std::vector<T> get_max() const;
 };
 
 template <typename T>

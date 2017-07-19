@@ -1,123 +1,148 @@
 #include "evmdd.h"
 #include "evmdd_expression.h"
-
+#include <queue>
 using std::vector;
 
-// template <typename T>
-// std::vector<T> Evmdd<T>::get_min() const {
-//     return evaluate(std::map<std::string, std::vector<int>>(),
-//                     greates_lower_bound<T>());
-// }
+template <typename T>
+std::vector<T> Evmdd<T>::get_min() const {
+    return evaluate(std::map<std::string, std::vector<int>>(),
+                    greates_lower_bound<T>());
+}
+
+template <typename T>
+std::vector<T> Evmdd<T>::get_max() const {
+    return evaluate(std::map<std::string, std::vector<int>>(),
+                    least_upper_bound<T>());
+}
+
+template <typename T>
+std::vector<T> Evmdd<T>::evaluate_partial(
+    std::map<std::string, std::vector<int>> const &state) const {
+    return evaluate(state, greates_lower_bound<T>());
+}
+
+template <typename T>
+template <typename EvaluationFunction>
+std::vector<T> Evmdd<T>::evaluate(
+    std::map<std::string, std::vector<int>> const &state,
+    EvaluationFunction evaluationFunction) const {
+    (void)state;
+
+    std::map<int, std::vector<T>> partialEvaluations;
+    NodeStorage<T> node_storage = NodeStorage<T>::getInstance();
+    std::queue<Node<T>> openList;
+    openList.push(entry_node);
+    Node<T> currentNode = entry_node;
+    while (openList.size() > 0) {
+        currentNode = openList.front();
+        openList.pop();
+
+        std::vector<T> current_eval =
+            partialEvaluations.at(currentNode.get_id());
+        for (Edge<T> child : currentNode.get_children()) {
+            calculate_partial_evaluation(node_storage.get_node(child.second),
+                                         child.first.expression, current_eval,
+                                         evaluationFunction);
+        }
+
+        // auto p = partialEvaluations.find(currentNode.id);
+        // auto res = calculate_partial_evaluation(currentNode, current_weight,
+        //                                                evaluationFunction);
+        // partialEvaluations[currentNode.id] = res;
+
+        // if (p == partialEvaluations.end()) {
+        //    partialEvaluations.insert(
+        //        std::pair<int, std::vector<T>>(currentEdge.successor.id,
+        //        res));
+        //} else {
+        //    p->second = res;
+        // }
+        //
+        //         if (!currentEdge.successor.outgoing.empty()) {
+        //             if (state.find(currentEdge.successor.variable) !=
+        //             state.end()) {
+        //                 // variable is in state,  add successor outgoing
+        //                 edges to
+        //                 open
+        //                 // list
+        //                 auto const &state_values =
+        //                     state.at(currentEdge.successor.variable);
+        //                 for (const auto &state_value : state_values) {
+        //                     if (currentEdge.successor.outgoing.size() >
+        //                             (unsigned)state_value &&
+        //                         state_value >= 0) {
+        //                         for (auto e : currentEdge.successor.outgoing)
+        //                         {
+        //                             if (e.value == (unsigned)state_value) {
+        //                                 openList.push(e);
+        //                             }
+        //                         }
+        //
+        //                     } else {
+        //                         std::cerr << "Error Evaluating EVMDD: "
+        //                                   << currentEdge.successor.variable
+        //                                   << " with value: " << state_value
+        //                                   << std::endl;
+        //                     }
+        //                 }
+        //             } else {
+        //                 // variable not in state
+        //                 // so we assume that variable can take on all values
+        //                 for (Edge<T> &succ_edge :
+        //                 currentEdge.successor.outgoing)
+        //                 {
+        //                     openList.push(succ_edge);
+        //                 }
+        //             }
+        //         }
+        //     }
+    }
+    return partialEvaluations.find(0)->second;
+}
 //
-// template <typename T>
-// std::vector<T> Evmdd<T>::get_max() const {
-//     return evaluate(std::map<std::string, std::vector<int>>(),
-//                     least_upper_bound<T>());
-// }
-//
-// template <typename T>
-// std::vector<T> Evmdd<T>::evaluate_partial(
-//     std::map<std::string, std::vector<int>> const &state) const {
-//     return evaluate(state, greates_lower_bound<T>());
-// }
-//
-// template <typename T>
-// template <typename EvaluationFunction>
-// std::vector<T> Evmdd<T>::evaluate(
-//     std::map<std::string, std::vector<int>> const &state,
-//     EvaluationFunction evaluationFunction) const {
-//     std::map<int, std::vector<T>> partialEvaluations;
-//
-//     std::queue<Edge<T>> openList;
-//     openList.push(evmdd);
-//     Edge<T> currentEdge;
-//     while (openList.size() > 0) {
-//         currentEdge = openList.front();
-//         openList.pop();
-//         auto p = partialEvaluations.find(currentEdge.successor.id);
-//         auto res = calculate_partial_evaluation(currentEdge,
-//         partialEvaluations,
-//                                                 evaluationFunction);
-//         if (p == partialEvaluations.end()) {
-//             partialEvaluations.insert(
-//                 std::pair<int, std::vector<T>>(currentEdge.successor.id,
-//                 res));
-//         } else {
-//             p->second = res;
-//         }
-//
-//         if (!currentEdge.successor.outgoing.empty()) {
-//             if (state.find(currentEdge.successor.variable) != state.end()) {
-//                 // variable is in state,  add successor outgoing edges to
-//                 open
-//                 // list
-//                 auto const &state_values =
-//                     state.at(currentEdge.successor.variable);
-//                 for (const auto &state_value : state_values) {
-//                     if (currentEdge.successor.outgoing.size() >
-//                             (unsigned)state_value &&
-//                         state_value >= 0) {
-//                         for (auto e : currentEdge.successor.outgoing) {
-//                             if (e.value == (unsigned)state_value) {
-//                                 openList.push(e);
-//                             }
-//                         }
-//
-//                     } else {
-//                         std::cerr << "Error Evaluating EVMDD: "
-//                                   << currentEdge.successor.variable
-//                                   << " with value: " << state_value
-//                                   << std::endl;
-//                     }
-//                 }
-//             } else {
-//                 // variable not in state
-//                 // so we assume that variable can take on all values
-//                 for (Edge<T> &succ_edge : currentEdge.successor.outgoing) {
-//                     openList.push(succ_edge);
-//                 }
-//             }
-//         }
-//     }
-//     return partialEvaluations.find(0)->second;
-// }
-//
-// template <typename T>
-// template <typename EvaluationFunction>
-// std::vector<T> Evmdd<T>::calculate_partial_evaluation(
-//     Edge<T> const &incoming_edge,
-//     std::map<int, std::vector<T>> const &partialEvaluations,
-//     EvaluationFunction evaluationFunction) const {
-//     if (incoming_edge.predecessor.variable == "") {
-//         T current = incoming_edge.label.expression;
-//         std::vector<T> result;
-//         T e;
-//         e.value = current.value;
-//         result.push_back(e);
-//         return result;
-//     } else {
-//         auto pe = partialEvaluations.find(incoming_edge.predecessor.id);
-//
-//         std::vector<T> predecessor_partial_evaluations;
-//         if (pe != partialEvaluations.end()) {
-//             predecessor_partial_evaluations = pe->second;
-//         }
-//
-//         std::vector<T> result;
-//         auto current_pe =
-//         partialEvaluations.find(incoming_edge.successor.id);
-//         if (current_pe != partialEvaluations.end()) {
-//             result = current_pe->second;
-//         }
-//
-//         for (auto &it : predecessor_partial_evaluations) {
-//             T current = it + incoming_edge.label.expression;
-//             auto x = evaluationFunction(current, result);
-//             result = x;
-//         }
-//         return result;
-//     }
-// }
+template <typename T>
+template <typename EvaluationFunction>
+std::vector<T> Evmdd<T>::calculate_partial_evaluation(
+    Node<T> const &currentNode, T const &incoming_weight,
+    std::vector<T> const &previous_evaluations,
+    EvaluationFunction evaluation_function) const {
+    (void)incoming_weight;
+    (void)previous_evaluations;
+    (void)evaluation_function;
+    (void)currentNode;
+
+    //     if (incoming_edge.predecessor.variable == "") {
+    //         T current = incoming_edge.label.expression;
+
+    std::vector<T> result;
+    //         T e;
+    //         e.value = current.value;
+    //         result.push_back(e);
+    return result;
+    //     } else {
+    //         auto pe =
+    //         partialEvaluations.find(incoming_edge.predecessor.id);
+    //
+    //         std::vector<T> predecessor_partial_evaluations;
+    //         if (pe != partialEvaluations.end()) {
+    //             predecessor_partial_evaluations = pe->second;
+    //         }
+    //
+    //         std::vector<T> result;
+    //         auto current_pe =
+    //         partialEvaluations.find(incoming_edge.successor.id);
+    //         if (current_pe != partialEvaluations.end()) {
+    //             result = current_pe->second;
+    //         }
+    //
+    //         for (auto &it : predecessor_partial_evaluations) {
+    //             T current = it + incoming_edge.label.expression;
+    //             auto x = evaluationFunction(current, result);
+    //             result = x;
+    //         }
+    //         return result;
+    //     }
+}
 //
 
 template <typename T>
@@ -143,9 +168,9 @@ Evmdd<NumericExpression> EvmddFactory<NumericExpression>::make_var_evmdd(
 template <typename T>
 Evmdd<T> EvmddFactory<T>::make_var_evmdd(int level, std::string const &var,
                                          int domain) {
-    (void) level;
-    (void) var;
-    (void) domain;
+    (void)level;
+    (void)var;
+    (void)domain;
     throw(std::logic_error("Make Var EVMDD not implemented"));
 }
 
@@ -215,7 +240,8 @@ Evmdd<T> EvmddFactory<T>::make_var_evmdd(int level, std::string const &var,
 // }
 //
 // template <typename T>
-// std::vector<Edge<T>> Evmdd<T>::_align_levels(Edge<T> edge1, Edge<T> edge2) {
+// std::vector<Edge<T>> Evmdd<T>::_align_levels(Edge<T> edge1, Edge<T>
+// edge2) {
 //     std::vector<Edge<T>> res;
 //     if (edge1.successor.level >= edge2.successor.level) {
 //         for (Edge<T> child : edge1.successor.outgoing) {
@@ -252,7 +278,8 @@ Evmdd<T> EvmddFactory<T>::make_var_evmdd(int level, std::string const &var,
 //
 //     // Variable Node
 //
-//     // for each domain value add edge from incoming_edge.get()->successor to
+//     // for each domain value add edge from incoming_edge.get()->successor
+//     to
 //     // terminal with weight = domain value
 //     std::vector<Edge<NumericExpression>> outgoing;
 //     for (unsigned int d = 0; d < domain; d++) {
