@@ -36,8 +36,8 @@ SCENARIO("Testing basic EVMDD construction", "[evmddBuild]") {
             //    res.print();
             //    std::cout << "Eval" << std::endl;
             THEN("get_min should be 0 and get_max should be 4") {
-                // REQUIRE(res.get_min()[0].value == 0);
-                // REQUIRE(res.get_max()[0].value == 4);
+                REQUIRE(res.get_min()[0].value == 0);
+                REQUIRE(res.get_max()[0].value == 4);
             }
         }
     }

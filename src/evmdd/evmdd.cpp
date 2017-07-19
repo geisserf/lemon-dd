@@ -47,22 +47,37 @@ std::vector<T> Evmdd<T>::evaluate(
 
         // add nodes to open list:
 
-        if (currentNode.get_children().size() > 0) {
-            // get child node
-            for (Edge<T> edge : currentNode.get_children()) {
-                Node<T> child = node_storage.get_node(edge.second);
-                auto s = state.find(child.get_variable());
-                if (s != state.end()) {
-                    // variable in state:
-                    for (int state_value : s->second) {
-                        Node<T> n = node_storage.get_node(
-                            currentNode.get_children()[state_value].second);
-                        std::cout << "Adding Node: " << n.get_variable()
+        // get child node
+        int child_value = 0;
+        std::cout << "Current node: " << currentNode.get_variable()
+                  << " children " << currentNode.get_children().size()
+                  << std::endl;
+        for (Edge<T> edge : currentNode.get_children()) {
+            Node<T> child = node_storage.get_node(edge.second);
+            auto s = state.find(child.get_variable());
+            if (s != state.end()) {
+                // variable in state:
+                for (int state_value : s->second) {
+                    std::cout << "Checking state value" << state_value
+                              << std::endl;
+                    // Node<T> n = node_storage.get_node(
+                    //    currentNode.get_children()[state_value].second);
+                    // std::cout << "Adding Node: " << n.get_variable()
+                    //          << std::endl;
+                    if (state_value == child_value) {
+                        std::cout << "Adding Node: " << child.get_variable()
                                   << std::endl;
-                        openList.push(n);
+                        openList.push(child);
                     }
                 }
+            } else {
+                // variabe not in state take all possible values
+                std::cout << "Adding Node: " << child.get_variable()
+                          << std::endl;
+
+                openList.push(child);
             }
+            child_value++;
         }
     }
     return partialEvaluations.find(0)->second;
