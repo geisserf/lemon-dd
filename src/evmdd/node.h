@@ -50,6 +50,10 @@ public:
     std::vector<Edge<T>> get_children() {
         return children;
     }
+
+    std::string get_variable() {
+        return variable;
+    }
 };
 
 template <typename T>

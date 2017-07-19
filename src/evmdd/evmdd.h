@@ -44,8 +44,7 @@ public:
 
     template <typename EvaluationFunction>
     std::vector<T> calculate_partial_evaluation(
-        Node<T> const &current_node, T const &incoming_weight,
-        std::vector<T> const &previous_evaluations,
+        T const &incoming_weight, std::vector<T> const &previous_evaluations,
         EvaluationFunction evaluation_function = EvaluationFunction()) const;
 
     std::vector<T> get_min() const;

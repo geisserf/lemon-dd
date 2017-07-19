@@ -1,6 +1,6 @@
-#include "../polynomial.h"
 #include "../catamorph/interpreters/create_evmdd.h"
 #include "../evmdd/evmdd_expression.h"
+#include "../polynomial.h"
 #include "Catch/include/catch.hpp"
 #include <iostream>
 
@@ -16,8 +16,8 @@ SCENARIO("Testing basic EVMDD construction", "[evmddBuild]") {
                 Evmdd<NumericExpression> res =
                     create.create_evmdd(p.getExpression(), d, o);
                 res.print(std::cout);
-                // REQUIRE(res.get_min().size() == 1);
-                // REQUIRE(res.get_min()[0].value == 13);
+                REQUIRE(res.get_min().size() == 1);
+                REQUIRE(res.get_min()[0].value == 13);
             }
         }
     }
