@@ -59,11 +59,19 @@ public:
 template <typename T>
 class EvmddFactory {
 public:
+    void set_ordering(Ordering const &o) {
+        ordering = o;
+    }
+
+    // Creates an evmdd for a constant term
     Evmdd<T> make_const_evmdd(T weight);
 
-    Evmdd<T> make_var_evmdd(int level, std::string const &var,
+    // Creates an evmdd for a variable (i.e. one node representing the variable,
+    // connected to the terminal node)
+    Evmdd<T> make_var_evmdd(std::string const &var,
                             std::vector<T> const &domain);
 
+    // Creates a new evmdd representing the term 'left oper right'
     template <typename F>
     Evmdd<T> apply(Evmdd<T> const &left, Evmdd<T> const &right, F oper) {
         if (terminal_case(left, right, oper)) {
@@ -85,6 +93,7 @@ public:
         return create_evmdd(root_level, var, new_children);
     }
 
+private:
     // Returns true if the operation can immmediately be computed between the
     // evmdds.
     template <typename F>
@@ -94,6 +103,7 @@ public:
                 right.entry_node.get_level() == 0);
     }
 
+    // computation of 'left oper right' if it is a terminal operation
     template <typename F>
     Evmdd<T> make_terminal_evmdd(Evmdd<T> const &left, Evmdd<T> const &right,
                                  F oper) {
@@ -128,9 +138,9 @@ public:
                           std::vector<Evmdd<T>> const &children) {
         Evmdd<T> min_weight_evmdd =
             *std::min_element(children.begin(), children.end(),
-                             [](Evmdd<T> const &e1, Evmdd<T> const &e2) {
-                                 return e1.input_value < e2.input_value;
-                             });
+                              [](Evmdd<T> const &e1, Evmdd<T> const &e2) {
+                                  return e1.input_value < e2.input_value;
+                              });
         T min_weight = min_weight_evmdd.input_value;
         std::vector<Edge<T>> edges;
         for (Evmdd<T> const &child : children) {
@@ -141,7 +151,6 @@ public:
         return Evmdd<T>(min_weight, root_node);
     }
 
-private:
     // variable ordering
     Ordering ordering;
     NodeFactory<T> node_factory;

@@ -15,7 +15,7 @@ class CreateEvmdd {
 private:
     EvmddFactory<T> factory;
 
-    auto create_evmdd_alg(Domains const &domains, Ordering const &ordering);
+    auto create_evmdd_alg(Domains const &domains);
 
     template <typename F>
     NumericEvmdd apply(std::vector<NumericEvmdd> const &evmdds, F op) {
