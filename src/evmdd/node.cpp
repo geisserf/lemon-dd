@@ -2,9 +2,22 @@
 #include "evmdd_expression.h"
 
 template <typename T>
+void Node<T>::print(std::ostream &out, std::string indent) const {
+    out << indent << "ID: " << id << std::endl;
+    indent += "  ";
+    for (size_t i = 0; i < children.size(); ++i) {
+        out << indent << "w[i]: " << children[i].first.expression.toString()
+            << std::endl;
+        //    << " c[i]: "<<std::endl;
+        storage->get_node(children[i].second).print(out, indent + "  ");
+    }
+}
+
+template <typename T>
 Node<T>::Node(int id, int level, std::string const &var,
-              std::vector<Edge<T>> const &children)
-    : id(id), level(level), variable(var), children(children) {}
+              std::vector<Edge<T>> const &children, NodeStorage<T> *storage)
+    : id(id), level(level), variable(var), children(children),
+      storage(storage) {}
 
 template <typename T>
 NodeFactory<T>::NodeFactory()
@@ -19,7 +32,7 @@ template <typename T>
 Node<T> NodeFactory<T>::make_node(int level, std::string const &variable,
                                   std::vector<Edge<T>> const &children) {
     // if (storage.find(level, variable, children) == storage.end)...
-    Node<T> node(node_counter++, level, variable, children);
+    Node<T> node(node_counter++, level, variable, children, &storage);
     storage.add_node(node);
     return node;
 }
@@ -31,38 +44,3 @@ template class Node<TupleExpression>;
 template class NodeFactory<NumericExpression>;
 template class NodeFactory<VariableAssignmentExpression>;
 template class NodeFactory<TupleExpression>;
-
-// template <typename T>
-// void Evmdd<T>::print_rec(Edge<T> edge, std::string depth) {
-//    std::cout << depth << "from: " << edge.predecessor.variable
-//              << " with label " << edge.label.expression.toString()
-//              << " to: " << edge.successor.variable << std::endl;
-//    depth = depth + "  ";
-//    for (auto child : edge.successor.outgoing) {
-//        print_rec(child, depth);
-//    }
-//}
-//
-// template <typename T>
-// Node<T> Node<T>::makeNode(std::vector<Edge<T>> outgoing, std::string
-// variable,
-//                          int level) {
-//
-//    auto element = Node<T>::memorized.find(hash_);
-//
-//    Node<T> node;
-//    node.level = level;
-//    node.variable = variable;
-//    node.outgoing = outgoing;
-//    for (auto it = node.outgoing.begin(); it != node.outgoing.end(); it++) {
-//        it->predecessor = node;
-//    }
-//
-//    Node<T>::memorized.insert(std::pair<size_t, Node<T>>(hash_, node));
-//    // std::cout<<"Return new node: "<<variable<<std::endl;
-//    return node;
-//}
-//
-//
-//
-//

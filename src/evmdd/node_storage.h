@@ -33,7 +33,7 @@ public:
         return lookup.size();
     }
 
-    NodeStorage() : lookup({{0, Node<T>(0, 0, "", {})}}) {}
+    NodeStorage() : lookup({{0, Node<T>(0, 0, "", {}, this)}}) {}
 
 private:
     std::map<int, Node<T>> lookup;

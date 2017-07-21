@@ -27,26 +27,21 @@ class NodeFactory;
 template <typename T>
 class Node {
 private:
-    Node() {}
+    //    Node() {}
     Node(int id, int level, std::string const &var,
-         std::vector<Edge<T>> const &children);
+         std::vector<Edge<T>> const &children, NodeStorage<T> *storage);
 
     int id;
     int level;
     std::string variable;
     std::vector<Edge<T>> children;
+    NodeStorage<T> *storage;
 
     friend NodeFactory<T>;
     friend NodeStorage<T>;
 
 public:
-    void print(std::ostream &out) const {
-        out << "ID: " << id << std::endl;
-        for (size_t i = 0; i < children.size(); ++i) {
-            out << "\tw[i]: " << children[i].first.expression.toString()
-                << " c[i]: " << children[i].second << std::endl;
-        }
-    }
+    void print(std::ostream &out, std::string indent = "") const;
 
     int get_id() const {
         return id;
