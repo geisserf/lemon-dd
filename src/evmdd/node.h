@@ -67,42 +67,38 @@ public:
 
     template <typename EvaluationFunction>
     std::vector<T> evaluate(State const &state, EvaluationFunction func) const {
-        std::vector<T> result;
-        auto state_values_iter = state.find(variable);
-        // state does not permit every domain value for this variable
-        if (state_values_iter != state.end()) {
-            std::vector<int> state_values = state_values_iter->second;
-            for (size_t i = 0; i < state_values.size(); ++i) {
-                assert(static_cast<size_t>(state_values[i]) < children.size());
-                if (children[state_values[i]].second->is_terminal()) {
-                    result = func(children[state_values[i]].first.expression,
-                                  result);
-                } else {
-                    std::vector<T> child_result =
-                        children[state_values[i]].second->evaluate(state, func);
-                    T const &weight =
-                        children[state_values[i]].first.expression;
+        // Terminal node backpropagates identity element
+        if (is_terminal()) {
+            return std::vector<T>{T::identity()};
+        }
 
-                    // add weight to child evaluations:
-                    for (T child_expr : child_result) {
-                        result = func(child_expr + weight, result);
-                    }
+        std::vector<T> result;
+        auto state_it = state.find(variable);
+        // state does not permit every domain value for this variable
+        if (state_it != state.end()) {
+            for (int domain_value : state_it->second) {
+                assert(static_cast<size_t>(domain_value) < children.size());
+                std::vector<T> child_result =
+                    children[domain_value].second->evaluate(state, func);
+                T const &weight = children[domain_value].first.expression;
+
+                // add weight to child evaluation:
+                for (T child_expr : child_result) {
+                    result = func(child_expr + weight, result);
                 }
             }
         } else {
-            // state contains all domain values for this variable
-            for (size_t i = 0; i < children.size(); ++i) {
-                if (children[i].second->is_terminal()) {
-                    result = func(children[i].first.expression, result);
-                } else {
-                    // get evaluation of child
-                    std::vector<T> child_result =
-                        children[i].second->evaluate(state, func);
-                    T const &weight = children[i].first.expression;
-                    // add weight to child evaluations:
-                    for (T child_expr : child_result) {
-                        result = func(child_expr + weight, result);
-                    }
+            // TODO This is basically the same code as above, just for the case
+            // that the whole domain is covered. It would be nice if we could
+            // remove this code duplication
+            for (size_t domain_value = 0; domain_value < children.size();
+                 ++domain_value) {
+                std::vector<T> child_result =
+                    children[domain_value].second->evaluate(state, func);
+                T const &weight = children[domain_value].first.expression;
+                // add weight to child evaluations:
+                for (T child_expr : child_result) {
+                    result = func(child_expr + weight, result);
                 }
             }
         }

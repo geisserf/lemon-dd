@@ -28,11 +28,6 @@ template <typename T>
 template <typename EvaluationFunction>
 vector<T> Evmdd<T>::evaluate(State const &state,
                              EvaluationFunction eval_function) {
-    if (entry_node->is_terminal()) {
-        vector<T> result = {{input_value}};
-        return result;
-    }
-
     vector<T> per_state_result = entry_node->evaluate(state, eval_function);
     vector<T> result;
     for (T res : per_state_result) {
