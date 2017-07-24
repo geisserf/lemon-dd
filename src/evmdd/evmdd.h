@@ -107,8 +107,8 @@ private:
     template <typename F>
     bool terminal_case(Evmdd<T> const &left, Evmdd<T> const &right,
                        F /*oper*/) {
-        return (left.entry_node->get_level() == 0 &&
-                right.entry_node->get_level() == 0);
+        return (left.entry_node->is_terminal() &&
+                right.entry_node->is_terminal());
     }
 
     // computation of 'left oper right' if it is a terminal operation

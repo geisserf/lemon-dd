@@ -33,10 +33,10 @@ vector<T> Evmdd<T>::evaluate(State const &state,
         return result;
     }
 
-    vector<T> res = entry_node->evaluate(state, eval_function);
+    vector<T> per_state_result = entry_node->evaluate(state, eval_function);
     vector<T> result;
-    for (auto e : res) {
-        T current = e + input_value;
+    for (T res : per_state_result) {
+        T current = res + input_value;
         result = eval_function(current, result);
     }
     return result;

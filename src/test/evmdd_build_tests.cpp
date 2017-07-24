@@ -93,44 +93,41 @@ SCENARIO("Testing basic EVMDD construction", "[evmddBuild]") {
             Domains d = {{"x", 5}, {"y", 3}};
             Ordering o = {{"x", 1}, {"y", 2}};
             CreateEvmdd<NumericExpression> create;
-            Evmdd<NumericExpression> res =
+            Evmdd<NumericExpression> evmdd =
                 create.create_evmdd(p.getExpression(), d, o);
-            // std::cout << e << std::endl;
-            // res.print(std::cout);
-            // std::cout << "created" << e << std::endl;
-            // res.print();
-            // std::cout << "Eval" << std::endl;
             THEN("get_min should be 0 and get_max should be 8") {
-                REQUIRE(res.get_min()[0].value == 0);
-                REQUIRE(res.get_max()[0].value == 8);
+                REQUIRE(evmdd.get_min()[0].value == 0);
+                REQUIRE(evmdd.get_max()[0].value == 8);
             }
-        }
-        WHEN("Partial Evaluation on x=0..4 y=0..2") {
-            Domains d = {{"x", 5}, {"y", 3}};
-            Ordering o = {{"x", 1}, {"y", 2}};
-            CreateEvmdd<NumericExpression> create;
-            Evmdd<NumericExpression> res =
-                create.create_evmdd(p.getExpression(), d, o);
 
-            // std::cout << e << std::endl;
-            // res.print(std::cout);
-            // std::cout << "created" << e << std::endl;
-            // res.print();
-            // std::cout << "Eval" << std::endl;
-            for (int x = 0; x <= 4; x++) {
-                for (int y = 0; y <= 2; y++) {
-                    std::vector<int> values_x;
-                    values_x.push_back(x);
-                    std::vector<int> values_y;
-                    values_y.push_back(y);
-                    std::map<std::string, std::vector<int>> state;
-                    state.insert(std::pair<std::string, std::vector<int>>(
-                        "x", values_x));
-                    state.insert(std::pair<std::string, std::vector<int>>(
-                        "y", values_y));
-                    THEN("evaluate partial should be x*y") {
-                        REQUIRE(res.evaluate_partial(state)[0].value == x * y);
+            WHEN("We evaluate a single state") {
+                for (int x = 0; x <= 4; x++) {
+                    for (int y = 0; y <= 2; y++) {
+                        std::vector<int> values_x{x};
+                        std::vector<int> values_y{y};
+                        std::map<std::string, std::vector<int>> state{
+                            {"x", values_x}, {"y", values_y}};
+                        auto result = evmdd.evaluate_partial(state);
+                        THEN("evaluate partial has only one result") {
+                            REQUIRE(result.size() == 1);
+                        }
+                        THEN("evaluate partial should be x*y") {
+                            REQUIRE(result[0].value == x * y);
+                        }
                     }
+                }
+            }
+            WHEN("We evaluate partial state x={1,2,3}, y={2,3} ") {
+                std::vector<int> values_x{1, 2, 3};
+                std::vector<int> values_y{2};
+                std::map<std::string, std::vector<int>> state{{"x", values_x},
+                                                              {"y", values_y}};
+                auto result = evmdd.evaluate_partial(state);
+                THEN("evaluate partial has only one result") {
+                    REQUIRE(result.size() == 1);
+                }
+                THEN("evaluate partial should be 1*2 = 2") {
+                    REQUIRE(result[0].value == 2);
                 }
             }
         }

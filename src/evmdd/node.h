@@ -3,6 +3,8 @@
 
 #include "evmdd_expression.h"
 #include "node_storage.h"
+
+#include <cassert>
 #include <map>
 #include <memory>
 #include <ostream>
@@ -71,14 +73,13 @@ public:
         if (state_values_iter != state.end()) {
             std::vector<int> state_values = state_values_iter->second;
             for (size_t i = 0; i < state_values.size(); ++i) {
+                assert(static_cast<size_t>(state_values[i]) < children.size());
                 if (children[state_values[i]].second->is_terminal()) {
                     result = func(children[state_values[i]].first.expression,
                                   result);
                 } else {
-                    // TODO check correctness of children[i] vs
-                    // children[state_values[i]]
                     std::vector<T> child_result =
-                        children[i].second->evaluate(state, func);
+                        children[state_values[i]].second->evaluate(state, func);
                     T const &weight =
                         children[state_values[i]].first.expression;
 
