@@ -60,15 +60,12 @@ std::vector<NumericExpression> greates_lower_bound<NumericExpression>::
 operator()(const NumericExpression &a,
            const std::vector<NumericExpression> &b) const {
     std::vector<NumericExpression> result;
-    NumericExpression e;
-    if (b.size() == 1) {
-        if (b.front().value < a.value) {
-            e.value = b.front().value;
-        } else {
-            e.value = a.value;
+    NumericExpression e = a;
+
+    for (NumericExpression b_ : b) {
+        if (b_ < e) {
+            e = b_;
         }
-    } else {
-        e.value = a.value;
     }
     result.push_back(e);
     return result;
@@ -78,16 +75,13 @@ template <>
 std::vector<NumericExpression> least_upper_bound<NumericExpression>::operator()(
     const NumericExpression &a, const std::vector<NumericExpression> &b) const {
     std::vector<NumericExpression> result;
-    NumericExpression e;
-    if (b.size() == 1) {
-        if (b.front().value > a.value) {
-            e.value = b.front().value;
-        } else {
-            e.value = a.value;
+    NumericExpression e = a;
+    for (NumericExpression b_ : b) {
+        if (b_.value > e.value) {
+            e = b_;
         }
-    } else {
-        e.value = a.value;
     }
+
     result.push_back(e);
     return result;
 }
@@ -359,6 +353,9 @@ std::string VariableAssignment::toString() const {
     return this->variable + "=" + std::to_string(this->value);
 }
 
+template class least_upper_bound<NumericExpression>;
+template class least_upper_bound<VariableAssignmentExpression>;
+template class least_upper_bound<TupleExpression>;
 template class greates_lower_bound<NumericExpression>;
 template class greates_lower_bound<VariableAssignmentExpression>;
 template class greates_lower_bound<TupleExpression>;

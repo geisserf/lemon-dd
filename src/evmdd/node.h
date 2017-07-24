@@ -1,8 +1,9 @@
 #ifndef NODE_H
 #define NODE_H
 
+#include "evmdd_expression.h"
 #include "node_storage.h"
-
+#include <map>
 #include <memory>
 #include <ostream>
 #include <utility>
@@ -20,6 +21,7 @@ class Node;
 
 template <typename T>
 using Edge = std::pair<Label<T>, std::shared_ptr<Node<T> const>>;
+using State = std::map<std::string, std::vector<int>>;
 
 template <typename T>
 class NodeFactory;
@@ -27,7 +29,6 @@ class NodeFactory;
 template <typename T>
 class Node {
 private:
-    Node() {}
     Node(int id, int level, std::string const &var,
          std::vector<Edge<T>> const &children);
 
@@ -38,20 +39,14 @@ private:
 
     friend NodeFactory<T>;
     friend NodeStorage<T>;
-    friend std::shared_ptr<Node<T> const>;
 
 public:
-    void print(std::ostream &out) const {
-        out << "ID: " << id << std::endl;
-        for (size_t i = 0; i < children.size(); ++i) {
-            out << "\tw[i]: " << children[i].first.expression.toString()
-                << " c[i]: " << children[i].second->get_id() << std::endl;
-        }
-    }
+    void print(std::ostream &out, std::string indent = "") const;
 
     int get_id() const {
         return id;
     }
+
     std::vector<Edge<T>> get_children() const {
         return children;
     }
@@ -62,6 +57,55 @@ public:
 
     int get_level() const {
         return level;
+    }
+
+    bool is_terminal() const {
+        return id == 0;
+    }
+
+    template <typename EvaluationFunction>
+    std::vector<T> evaluate(State const &state, EvaluationFunction func) const {
+        std::vector<T> result;
+        auto state_values_iter = state.find(variable);
+        // state does not permit every domain value for this variable
+        if (state_values_iter != state.end()) {
+            std::vector<int> state_values = state_values_iter->second;
+            for (size_t i = 0; i < state_values.size(); ++i) {
+                if (children[state_values[i]].second->is_terminal()) {
+                    result = func(children[state_values[i]].first.expression,
+                                  result);
+                } else {
+                    // TODO check correctness of children[i] vs
+                    // children[state_values[i]]
+                    std::vector<T> child_result =
+                        children[i].second->evaluate(state, func);
+                    T const &weight =
+                        children[state_values[i]].first.expression;
+
+                    // add weight to child evaluations:
+                    for (T child_expr : child_result) {
+                        result = func(child_expr + weight, result);
+                    }
+                }
+            }
+        } else {
+            // state contains all domain values for this variable
+            for (size_t i = 0; i < children.size(); ++i) {
+                if (children[i].second->is_terminal()) {
+                    result = func(children[i].first.expression, result);
+                } else {
+                    // get evaluation of child
+                    std::vector<T> child_result =
+                        children[i].second->evaluate(state, func);
+                    T const &weight = children[i].first.expression;
+                    // add weight to child evaluations:
+                    for (T child_expr : child_result) {
+                        result = func(child_expr + weight, result);
+                    }
+                }
+            }
+        }
+        return result;
     }
 };
 
@@ -80,7 +124,10 @@ public:
         std::vector<Edge<T>> const &children);
 
 private:
+    // Manages node memory
     NodeStorage<T> storage;
+
+    // How many nodes this factory created
     int node_counter;
 
     // Retrieves the node with the given id

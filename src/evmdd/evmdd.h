@@ -38,6 +38,17 @@ public:
         out << " nodes: " << std::endl;
         entry_node->print(out);
     }
+
+    std::vector<T> evaluate_partial(
+        std::map<std::string, std::vector<int>> const &state);
+
+    template <typename EvaluationFunction>
+    std::vector<T> evaluate(
+        std::map<std::string, std::vector<int>> const &state,
+        EvaluationFunction evaluationFunction = EvaluationFunction());
+
+    std::vector<T> get_min();
+    std::vector<T> get_max();
 };
 
 template <typename T>
@@ -69,9 +80,19 @@ public:
         std::vector<Evmdd<T>> right_sub_evmdds = sub_evmdds(right, left);
         assert(left_sub_evmdds.size() > 0);
         assert(left_sub_evmdds.size() == right_sub_evmdds.size());
-        int root_level = std::max(left.entry_node->get_level(),
-                                  right.entry_node->get_level());
-        std::string var = "TODO"; // TODO correct variable
+
+        // TODO variable should be retrieved by the ordering and not stored in
+        // nodes
+        int root_level;
+        std::string var;
+        if (left.entry_node->get_level() <= right.entry_node->get_level()) {
+            root_level = right.entry_node->get_level();
+            var = right.entry_node->get_variable();
+        } else {
+            root_level = left.entry_node->get_level();
+            var = left.entry_node->get_variable();
+        }
+
         std::vector<Evmdd<T>> new_children;
         for (size_t i = 0; i < left_sub_evmdds.size(); ++i) {
             new_children.push_back(

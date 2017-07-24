@@ -1,11 +1,46 @@
 #include "evmdd.h"
 #include "evmdd_expression.h"
+#include "node.h"
 #include <iostream>
 #include <queue>
 
 using std::vector;
+using std::map;
 using std::string;
 using std::shared_ptr;
+
+template <typename T>
+vector<T> Evmdd<T>::get_min() {
+    return evaluate(map<string, vector<int>>(), greates_lower_bound<T>());
+}
+
+template <typename T>
+vector<T> Evmdd<T>::get_max() {
+    return evaluate(map<string, vector<int>>(), least_upper_bound<T>());
+}
+
+template <typename T>
+vector<T> Evmdd<T>::evaluate_partial(map<string, vector<int>> const &state) {
+    return evaluate(state, greates_lower_bound<T>());
+}
+
+template <typename T>
+template <typename EvaluationFunction>
+vector<T> Evmdd<T>::evaluate(State const &state,
+                             EvaluationFunction eval_function) {
+    if (entry_node->is_terminal()) {
+        vector<T> result = {{input_value}};
+        return result;
+    }
+
+    vector<T> res = entry_node->evaluate(state, eval_function);
+    vector<T> result;
+    for (auto e : res) {
+        T current = e + input_value;
+        result = eval_function(current, result);
+    }
+    return result;
+}
 
 template <typename T>
 Evmdd<T>::Evmdd(T input, shared_ptr<Node<T> const> entry_node)
