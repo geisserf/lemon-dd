@@ -6,8 +6,8 @@ void Node<T>::print(std::ostream &out, std::string indent) const {
     out << indent << "ID: " << id << std::endl;
     indent += "  ";
     for (size_t i = 0; i < children.size(); ++i) {
-        out << indent << "w[i]: " << children[i].first.expression.toString()
-            << std::endl;
+        out << indent << "w[" << i
+            << "]: " << children[i].first.expression.toString() << std::endl;
         //    << " c[i]: "<<std::endl;
         storage->get_node(children[i].second).print(out, indent + "  ");
     }
