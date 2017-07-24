@@ -26,9 +26,9 @@ template <typename T>
 class Evmdd {
 private:
     T input_value;
-    Node<T> entry_node;
+    std::shared_ptr<Node<T> const> entry_node;
 
-    Evmdd(T input, Node<T> const &entry_node);
+    Evmdd(T input, std::shared_ptr<Node<T> const> entry_node);
 
     friend EvmddFactory<T>;
 
@@ -36,29 +36,16 @@ public:
     void print(std::ostream &out) {
         out << "input value: " << input_value.toString();
         out << " nodes: " << std::endl;
-        entry_node.print(out);
+        entry_node->print(out);
     }
-
-    std::vector<T> evaluate_partial(
-        std::map<std::string, std::vector<int>> const &state) const;
-
-    template <typename EvaluationFunction>
-    std::vector<T> evaluate(
-        std::map<std::string, std::vector<int>> const &state,
-        EvaluationFunction evaluationFunction = EvaluationFunction()) const;
-
-    template <typename EvaluationFunction>
-    std::vector<T> calculate_partial_evaluation(
-        T const &incoming_weight, std::vector<T> const &previous_evaluations,
-        EvaluationFunction evaluation_function = EvaluationFunction()) const;
-
-    std::vector<T> get_min() const;
-    std::vector<T> get_max() const;
 };
 
 template <typename T>
 class EvmddFactory {
 public:
+    // TODO we should not be able to change the ordering for the factory, as
+    // this messes up the correspondence between levels and variables in the
+    // node storage.
     void set_ordering(Ordering const &o) {
         ordering = o;
     }
@@ -82,8 +69,8 @@ public:
         std::vector<Evmdd<T>> right_sub_evmdds = sub_evmdds(right, left);
         assert(left_sub_evmdds.size() > 0);
         assert(left_sub_evmdds.size() == right_sub_evmdds.size());
-        int root_level =
-            std::max(left.entry_node.get_level(), right.entry_node.get_level());
+        int root_level = std::max(left.entry_node->get_level(),
+                                  right.entry_node->get_level());
         std::string var = "TODO"; // TODO correct variable
         std::vector<Evmdd<T>> new_children;
         for (size_t i = 0; i < left_sub_evmdds.size(); ++i) {
@@ -99,8 +86,8 @@ private:
     template <typename F>
     bool terminal_case(Evmdd<T> const &left, Evmdd<T> const &right,
                        F /*oper*/) {
-        return (left.entry_node.get_level() == 0 &&
-                right.entry_node.get_level() == 0);
+        return (left.entry_node->get_level() == 0 &&
+                right.entry_node->get_level() == 0);
     }
 
     // computation of 'left oper right' if it is a terminal operation
@@ -116,15 +103,14 @@ private:
     // as new input value and the child as root node.
     std::vector<Evmdd<T>> sub_evmdds(Evmdd<T> const &f, Evmdd<T> const &g) {
         std::vector<Evmdd<T>> result;
-        if (f.entry_node.get_level() >= g.entry_node.get_level()) {
-            for (Edge<T> const &edge : f.entry_node.get_children()) {
+        if (f.entry_node->get_level() >= g.entry_node->get_level()) {
+            for (Edge<T> const &edge : f.entry_node->get_children()) {
                 T input = f.input_value + edge.first.expression;
-                Node<T> root_node = node_factory.get_node(edge.second);
-                Evmdd<T> evmdd(input, root_node);
+                Evmdd<T> evmdd(input, edge.second);
                 result.push_back(evmdd);
             }
         } else {
-            for (size_t i = 0; i < g.entry_node.get_children().size(); ++i) {
+            for (size_t i = 0; i < g.entry_node->get_children().size(); ++i) {
                 result.push_back(f);
             }
         }
@@ -145,9 +131,10 @@ private:
         std::vector<Edge<T>> edges;
         for (Evmdd<T> const &child : children) {
             edges.emplace_back(Label<T>{child.input_value - min_weight},
-                               child.entry_node.get_id());
+                               child.entry_node);
         }
-        Node<T> root_node = node_factory.make_node(level, var, edges);
+        std::shared_ptr<Node<T> const> root_node =
+            node_factory.make_node(level, var, edges);
         return Evmdd<T>(min_weight, root_node);
     }
 

@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <map>
+#include <memory>
 
 // Storage class to manage evmdd nodes.
 
@@ -12,15 +13,12 @@ class Node;
 template <typename T>
 class NodeStorage {
 public:
-    // NodeStorage(Node<T> const &terminal_node) : lookup({{0, terminal_node}})
-    // {}
-
-    const Node<T> &get_node(int id) {
+    std::shared_ptr<Node<T> const> get_node(int id) const {
         return lookup.at(id);
     }
 
-    void add_node(Node<T> const &node) {
-        lookup.insert(std::make_pair<>(node.get_id(), node));
+    void add_node(std::shared_ptr<Node<T> const> node) {
+        lookup.insert(std::make_pair<>(node->get_id(), node));
     }
     // static NodeStorage &getInstance() {
     //     static NodeStorage instance;
@@ -33,10 +31,13 @@ public:
         return lookup.size();
     }
 
-    NodeStorage() : lookup({{0, Node<T>(0, 0, "", {})}}) {}
+    // Automatically constructs the terminal node on initialization
+    NodeStorage()
+        : lookup({{0, std::shared_ptr<Node<T> const>(
+                          new Node<T>(0, 0, " ", {}))}}) {}
 
 private:
-    std::map<int, Node<T>> lookup;
+    std::map<int, std::shared_ptr<Node<T> const>> lookup;
 };
 
 #endif /* NODE_STORAGE_H */

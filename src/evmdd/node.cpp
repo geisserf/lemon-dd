@@ -1,6 +1,8 @@
 #include "node.h"
 #include "evmdd_expression.h"
 
+using std::shared_ptr;
+
 template <typename T>
 Node<T>::Node(int id, int level, std::string const &var,
               std::vector<Edge<T>> const &children)
@@ -11,15 +13,17 @@ NodeFactory<T>::NodeFactory()
     : storage(NodeStorage<T>()), node_counter(storage.size()) {}
 
 template <typename T>
-Node<T> NodeFactory<T>::get_terminal_node() {
+shared_ptr<Node<T> const> NodeFactory<T>::get_terminal_node() const {
     return storage.get_node(0);
 }
 
 template <typename T>
-Node<T> NodeFactory<T>::make_node(int level, std::string const &variable,
-                                  std::vector<Edge<T>> const &children) {
+shared_ptr<Node<T> const> NodeFactory<T>::make_node(
+    int level, std::string const &variable,
+    std::vector<Edge<T>> const &children) {
     // if (storage.find(level, variable, children) == storage.end)...
-    Node<T> node(node_counter++, level, variable, children);
+    shared_ptr<Node<T> const> node(
+        new Node<T>(node_counter++, level, variable, children));
     storage.add_node(node);
     return node;
 }

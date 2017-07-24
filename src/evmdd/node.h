@@ -19,7 +19,7 @@ template <typename T>
 class Node;
 
 template <typename T>
-using Edge = std::pair<Label<T>, int>;
+using Edge = std::pair<Label<T>, std::shared_ptr<Node<T> const>>;
 
 template <typename T>
 class NodeFactory;
@@ -38,13 +38,14 @@ private:
 
     friend NodeFactory<T>;
     friend NodeStorage<T>;
+    friend std::shared_ptr<Node<T> const>;
 
 public:
     void print(std::ostream &out) const {
         out << "ID: " << id << std::endl;
         for (size_t i = 0; i < children.size(); ++i) {
             out << "\tw[i]: " << children[i].first.expression.toString()
-                << " c[i]: " << children[i].second << std::endl;
+                << " c[i]: " << children[i].second->get_id() << std::endl;
         }
     }
 
@@ -68,16 +69,24 @@ template <typename T>
 class NodeFactory {
 public:
     NodeFactory();
-    Node<T> get_terminal_node();
-    Node<T> get_node(int id) {
-        return storage.get_node(id);
-    }
-    Node<T> make_node(int level, std::string const &variable,
-                      std::vector<Edge<T>> const &children);
+
+    // Returns a pointer to the (unique) terminal node
+    std::shared_ptr<Node<T> const> get_terminal_node() const;
+
+    // Returns a pointer to the given node. If the node is not yet stored, it is
+    // created first.
+    std::shared_ptr<Node<T> const> make_node(
+        int level, std::string const &variable,
+        std::vector<Edge<T>> const &children);
 
 private:
     NodeStorage<T> storage;
     int node_counter;
+
+    // Retrieves the node with the given id
+    std::shared_ptr<Node<T> const> get_node(int id) const {
+        return storage.get_node(id);
+    }
 };
 
 #endif /* NODE_H */
