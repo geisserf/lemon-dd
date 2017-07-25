@@ -1,5 +1,6 @@
 #include "evmdd_expression.h"
 #include <algorithm>
+#include <iomanip>
 #include <iostream>
 
 /*
@@ -13,7 +14,12 @@ NumericExpression NumericExpression::identity() {
 
 template <>
 std::string NumericExpression::toString() const {
-    return std::to_string(value);
+    // We use the stream operator to print e instead of std::to_string,
+    // because then we can set the precision before we print (otherwise
+    // even integer constant n is printed as n.000000
+    std::ostringstream out;
+    out << value;
+    return out.str();
 }
 
 template <>
