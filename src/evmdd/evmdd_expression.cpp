@@ -1,14 +1,16 @@
 #include "evmdd_expression.h"
 #include <algorithm>
+#include <cmath>
 #include <iostream>
-
 /*
  * Logic AND
  */
 template <>
 NumericExpression logic_and<NumericExpression>::operator()(
     const NumericExpression &first, const NumericExpression &second) const {
-    if (first.value == 1 && second.value == 1) {
+    // float comparison to value ==1
+    if (std::fabs(first.value - 1) <= std::numeric_limits<float>::epsilon() &&
+        std::fabs(second.value - 1) <= std::numeric_limits<float>::epsilon()) {
         return NumericExpression{1.0f};
     }
 
