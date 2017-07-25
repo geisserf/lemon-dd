@@ -6,6 +6,12 @@
 #include <utility>
 #include <vector>
 
+template <typename T>
+class logic_and {
+public:
+    T operator()(const T &first, const T &second) const;
+};
+
 class VariableAssignment {
 public:
     std::string variable;

@@ -10,7 +10,8 @@ set(TEST_SOURCES
         simple_iverson_tests.cpp
         polynomial_class_tests.cpp
         parser_tests.cpp
-        evmdd_build_tests.cpp)
+        evmdd_build_tests.cpp
+       iverson_evmdd_tests.cpp)
 
 add_executable(Test ${TEST_SOURCES})
 target_link_libraries(Test NumericCatamorph_lib Catch)

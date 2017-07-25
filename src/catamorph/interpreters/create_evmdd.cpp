@@ -25,6 +25,7 @@ auto CreateEvmdd<NumericExpression>::create_evmdd_alg(Domains const &domains) {
             if (auto *o = Factories::get_as_add(e)) {
                 return apply(o->rands(), std::plus<NumericExpression>());
             }
+
             if (auto *o = Factories::get_as_sub(e)) {
                 return apply(o->rands(), std::minus<NumericExpression>());
             }
@@ -34,6 +35,10 @@ auto CreateEvmdd<NumericExpression>::create_evmdd_alg(Domains const &domains) {
             if (auto *o = Factories::get_as_div(e)) {
                 return apply(o->rands(), std::divides<NumericExpression>());
             }
+            if (auto *o = Factories::get_as_and(e)) {
+                return apply(o->rands(), logic_and<NumericExpression>());
+            }
+
             throw std::logic_error("Unknown Operator in Apply");
         };
 }

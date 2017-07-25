@@ -3,6 +3,38 @@
 #include <iostream>
 
 /*
+ * Logic AND
+ */
+template <>
+NumericExpression logic_and<NumericExpression>::operator()(
+    const NumericExpression &first, const NumericExpression &second) const {
+    if (first.value == 1 && second.value == 1) {
+        return NumericExpression{1.0f};
+    }
+
+    return NumericExpression{0.0f};
+}
+
+template <>
+VariableAssignmentExpression logic_and<VariableAssignmentExpression>::
+operator()(const VariableAssignmentExpression &first,
+           const VariableAssignmentExpression &second) const {
+    (void)first;
+    (void)second;
+    throw std::logic_error(
+        "VariableAssignmentExpression logic and not supported");
+}
+
+template <>
+TupleExpression logic_and<TupleExpression>::operator()(
+    const TupleExpression &first, const TupleExpression &second) const {
+    (void)first;
+    (void)second;
+    throw std::logic_error(
+        "VariableAssignmentExpression logic and not supported");
+}
+
+/*
  * Expression<float>
  */
 
