@@ -35,7 +35,7 @@ private:
 public:
     void print(std::ostream &out) {
         out << "input value: " << input_value.toString();
-        out << " nodes: " << std::endl;
+        out << " nodes:" << std::endl;
         entry_node->print(out);
     }
 
@@ -126,7 +126,7 @@ private:
         std::vector<Evmdd<T>> result;
         if (f.entry_node->get_level() >= g.entry_node->get_level()) {
             for (Edge<T> const &edge : f.entry_node->get_children()) {
-                T input = f.input_value + edge.first.expression;
+                T input = f.input_value + edge.first;
                 Evmdd<T> evmdd(input, edge.second);
                 result.push_back(evmdd);
             }
@@ -151,7 +151,7 @@ private:
         T min_weight = min_weight_evmdd.input_value;
         std::vector<Edge<T>> edges;
         for (Evmdd<T> const &child : children) {
-            edges.emplace_back(Label<T>{child.input_value - min_weight},
+            edges.emplace_back(T{child.input_value - min_weight},
                                child.entry_node);
         }
         std::shared_ptr<Node<T> const> root_node =

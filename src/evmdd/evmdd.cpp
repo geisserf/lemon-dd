@@ -51,8 +51,7 @@ Evmdd<T> EvmddFactory<T>::make_var_evmdd(string const &var,
                                          vector<T> const &domain) {
     vector<Edge<T>> children;
     for (size_t i = 0; i < domain.size(); ++i) {
-        children.emplace_back(Label<T>(domain[i]),
-                              node_factory.get_terminal_node());
+        children.emplace_back(T(domain[i]), node_factory.get_terminal_node());
     }
     shared_ptr<Node<T> const> node =
         node_factory.make_node(ordering[var], var, children);

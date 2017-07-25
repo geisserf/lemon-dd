@@ -9,7 +9,7 @@ void Node<T>::print(std::ostream &out, std::string indent) const {
     indent += "  ";
     for (size_t i = 0; i < children.size(); ++i) {
         out << indent << "w[" << i
-            << "]: " << children[i].first.expression.toString() << std::endl;
+            << "]: " << children[i].first.toString() << std::endl;
         children[i].second->print(out, indent + "  ");
     }
 }
@@ -32,7 +32,9 @@ template <typename T>
 shared_ptr<Node<T> const> NodeFactory<T>::make_node(
     int level, std::string const &variable,
     std::vector<Edge<T>> const &children) {
-    // if (storage.find(level, variable, children) == storage.end)...
+    if (auto cached = storage.exists(level, children)) {
+        return cached;
+    }
     shared_ptr<Node<T> const> node(
         new Node<T>(node_counter++, level, variable, children));
     storage.add_node(node);

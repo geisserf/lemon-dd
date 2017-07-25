@@ -12,17 +12,10 @@
 #include <vector>
 
 template <typename T>
-class Label {
-public:
-    Label(T expr) : expression(expr) {}
-    T expression;
-};
-
-template <typename T>
 class Node;
 
 template <typename T>
-using Edge = std::pair<Label<T>, std::shared_ptr<Node<T> const>>;
+using Edge = std::pair<T, std::shared_ptr<Node<T> const>>;
 using State = std::map<std::string, std::vector<int>>;
 
 template <typename T>
@@ -80,7 +73,7 @@ public:
                 assert(static_cast<size_t>(domain_value) < children.size());
                 std::vector<T> child_result =
                     children[domain_value].second->evaluate(state, func);
-                T const &weight = children[domain_value].first.expression;
+                T const &weight = children[domain_value].first;
 
                 // add weight to child evaluation:
                 for (T child_expr : child_result) {
@@ -95,7 +88,7 @@ public:
                  ++domain_value) {
                 std::vector<T> child_result =
                     children[domain_value].second->evaluate(state, func);
-                T const &weight = children[domain_value].first.expression;
+                T const &weight = children[domain_value].first;
                 // add weight to child evaluations:
                 for (T child_expr : child_result) {
                     result = func(child_expr + weight, result);
