@@ -2,6 +2,40 @@
 #include <algorithm>
 #include <cmath>
 #include <iostream>
+
+/*
+ * Logic equals
+*/
+
+template <>
+NumericExpression logic_equals<NumericExpression>::operator()(
+    const NumericExpression &first, const NumericExpression &second) const {
+    if (std::fabs(first.value - second.value) <=
+        std::numeric_limits<float>::epsilon()) {
+        return NumericExpression{1.0f};
+    } else {
+        return NumericExpression{0.0f};
+    }
+}
+
+template <>
+VariableAssignmentExpression logic_equals<VariableAssignmentExpression>::
+operator()(const VariableAssignmentExpression &first,
+           const VariableAssignmentExpression &second) const {
+    (void)first;
+    (void)second;
+    throw std::logic_error(
+        "Logic And not implemented for variableAssignmentExpression");
+}
+
+template <>
+TupleExpression logic_equals<TupleExpression>::operator()(
+    const TupleExpression &first, const TupleExpression &second) const {
+    (void)first;
+    (void)second;
+    throw std::logic_error("Logic And not implemented for TupleExpression");
+}
+
 /*
  * Logic AND
  */

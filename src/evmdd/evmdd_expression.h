@@ -7,6 +7,12 @@
 #include <vector>
 
 template <typename T>
+class logic_equals {
+public:
+    T operator()(const T &first, const T &second) const;
+};
+
+template <typename T>
 class logic_and {
 public:
     T operator()(const T &first, const T &second) const;
