@@ -18,6 +18,12 @@ public:
     T operator()(const T &first, const T &second) const;
 };
 
+template <typename T>
+class logic_or {
+public:
+    T operator()(const T &first, const T &second) const;
+};
+
 class VariableAssignment {
 public:
     std::string variable;

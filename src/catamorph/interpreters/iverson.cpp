@@ -40,17 +40,6 @@ Expression Iverson::opt_and_alg(expression_r<Expression> const &e) {
               << op->rands().size() << std::endl;
             throw std::logic_error(s.str());
         }
-        /*
-                for (auto sub = op->rands().begin() + 1; sub !=
-           op->rands().end(); sub++) {
-                    if(auto *i = get_as_cst(sub->get())){
-
-                    } else{
-                        //one element is not yet 1|0
-                        return e;
-                    }
-                }
-        */
         if (auto *i = Factories::get_as_cst(op->rands()[0].get())) {
             if (auto *j = Factories::get_as_cst(op->rands()[1].get())) {
                 if (*i == 1 && *j == 1) {
@@ -61,6 +50,25 @@ Expression Iverson::opt_and_alg(expression_r<Expression> const &e) {
             }
         }
     }
+
+    if (auto *op = Factories::get_as_or(e)) {
+        if (op->rands().size() < 2) {
+            std::ostringstream s;
+            s << "wrong number of parameters (expected >=2 was"
+              << op->rands().size() << std::endl;
+            throw std::logic_error(s.str());
+        }
+        if (auto *i = Factories::get_as_cst(op->rands()[0].get())) {
+            if (auto *j = Factories::get_as_cst(op->rands()[1].get())) {
+                if (*i == 1 || *j == 1) {
+                    return Factories::cst(1);
+                } else {
+                    return Factories::cst(0);
+                }
+            }
+        }
+    }
+
     return e;
 }
 

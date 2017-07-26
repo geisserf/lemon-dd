@@ -13,6 +13,7 @@ public:
     static Expression div(std::vector<Expression> const &rands);
     static Expression land(std::vector<Expression> const &rands);
     static Expression equals(std::vector<Expression> const &rands);
+    static Expression lor(std::vector<Expression> const &rands);
 
     template <typename T>
     static float const *get_as_cst(expression_r<T> const &e) {
@@ -52,6 +53,11 @@ public:
     template <typename T>
     static equals_op<T> const *get_as_equals(expression_r<T> const &e) {
         return boost::get<equals_op<T>>(&e);
+    }
+
+    template <typename T>
+    static or_op<T> const *get_as_or(expression_r<T> const &e) {
+        return boost::get<or_op<T>>(&e);
     }
 };
 

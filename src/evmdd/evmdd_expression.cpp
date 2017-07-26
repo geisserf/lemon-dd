@@ -25,7 +25,7 @@ operator()(const VariableAssignmentExpression &first,
     (void)first;
     (void)second;
     throw std::logic_error(
-        "Logic And not implemented for variableAssignmentExpression");
+        "Logic EQUAL not implemented for variableAssignmentExpression");
 }
 
 template <>
@@ -33,9 +33,42 @@ TupleExpression logic_equals<TupleExpression>::operator()(
     const TupleExpression &first, const TupleExpression &second) const {
     (void)first;
     (void)second;
-    throw std::logic_error("Logic And not implemented for TupleExpression");
+    throw std::logic_error("Logic EQUALS not implemented for TupleExpression");
 }
 
+/*
+ * Logic OR
+ */
+template <>
+NumericExpression logic_or<NumericExpression>::operator()(
+    const NumericExpression &first, const NumericExpression &second) const {
+    // float comparison to value ==1
+    if (std::fabs(first.value - 1) <= std::numeric_limits<float>::epsilon() ||
+        std::fabs(second.value - 1) <= std::numeric_limits<float>::epsilon()) {
+        return NumericExpression{1.0f};
+    }
+
+    return NumericExpression{0.0f};
+}
+
+template <>
+VariableAssignmentExpression logic_or<VariableAssignmentExpression>::operator()(
+    const VariableAssignmentExpression &first,
+    const VariableAssignmentExpression &second) const {
+    (void)first;
+    (void)second;
+    throw std::logic_error(
+        "VariableAssignmentExpression logic OR not supported");
+}
+
+template <>
+TupleExpression logic_or<TupleExpression>::operator()(
+    const TupleExpression &first, const TupleExpression &second) const {
+    (void)first;
+    (void)second;
+    throw std::logic_error(
+        "VariableAssignmentExpression logic OR not supported");
+}
 /*
  * Logic AND
  */
@@ -58,7 +91,7 @@ operator()(const VariableAssignmentExpression &first,
     (void)first;
     (void)second;
     throw std::logic_error(
-        "VariableAssignmentExpression logic and not supported");
+        "VariableAssignmentExpression logic AN not supported");
 }
 
 template <>
@@ -67,7 +100,7 @@ TupleExpression logic_and<TupleExpression>::operator()(
     (void)first;
     (void)second;
     throw std::logic_error(
-        "VariableAssignmentExpression logic and not supported");
+        "VariableAssignmentExpression logic AND not supported");
 }
 
 /*

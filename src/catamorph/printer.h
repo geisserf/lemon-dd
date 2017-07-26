@@ -32,6 +32,8 @@ private:
             return Printer::print_op(*o, "==");
         if (auto *o = Factories::get_as_and(e))
             return Printer::print_op(*o, "^");
+        if (auto *o = Factories::get_as_or(e))
+            return Printer::print_op(*o, "||");
         if (auto *i = Factories::get_as_cst(e)) {
             // We use the stream operator to print e instead of std::to_string,
             // because then we can set the precision before we print (otherwise

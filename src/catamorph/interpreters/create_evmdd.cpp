@@ -41,7 +41,9 @@ auto CreateEvmdd<NumericExpression>::create_evmdd_alg(Domains const &domains) {
             if (auto *o = Factories::get_as_equals(e)) {
                 return apply(o->rands(), logic_equals<NumericExpression>());
             }
-
+            if (auto *o = Factories::get_as_or(e)) {
+                return apply(o->rands(), logic_or<NumericExpression>());
+            }
             throw std::logic_error("Unknown Operator in Apply");
         };
 }
