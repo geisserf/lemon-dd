@@ -5,6 +5,7 @@
 
 class Iverson {
 public:
+    static Expression opt_not_alg(expression_r<Expression> const &e);
     static Expression opt_equals_alg(expression_r<Expression> const &e);
     static Expression opt_or_alg(expression_r<Expression> const &e);
     static Expression opt_and_alg(expression_r<Expression> const &e);

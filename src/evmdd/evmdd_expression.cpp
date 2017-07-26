@@ -5,6 +5,45 @@
 #include <iostream>
 
 /*
+ * Logic not
+ */
+
+template <>
+NumericExpression logic_not<NumericExpression>::operator()(
+    const NumericExpression &first, const NumericExpression &second) const {
+    // float comparison to value ==1
+    if (std::fabs(first.value - 1) <= std::numeric_limits<float>::epsilon() &&
+        std::fabs(second.value - 1) <= std::numeric_limits<float>::epsilon()) {
+        return NumericExpression{0.0f};
+    }
+
+    if (std::fabs(first.value) <= std::numeric_limits<float>::epsilon() &&
+        std::fabs(second.value) <= std::numeric_limits<float>::epsilon()) {
+        return NumericExpression{1.0f};
+    }
+
+    throw std::logic_error("Edges not identical on union apply");
+}
+
+template <>
+VariableAssignmentExpression logic_not<VariableAssignmentExpression>::
+operator()(const VariableAssignmentExpression &first,
+           const VariableAssignmentExpression &second) const {
+    (void)first;
+    (void)second;
+    throw std::logic_error(
+        "VariableAssignmentExpression logic NOT not supported");
+}
+
+template <>
+TupleExpression logic_not<TupleExpression>::operator()(
+    const TupleExpression &first, const TupleExpression &second) const {
+    (void)first;
+    (void)second;
+    throw std::logic_error("TupleExpression logic NOT not supported");
+}
+
+/*
  * Logic equals
 */
 
@@ -67,8 +106,7 @@ TupleExpression logic_or<TupleExpression>::operator()(
     const TupleExpression &first, const TupleExpression &second) const {
     (void)first;
     (void)second;
-    throw std::logic_error(
-        "VariableAssignmentExpression logic OR not supported");
+    throw std::logic_error("TupleExpression logic OR not supported");
 }
 /*
  * Logic AND

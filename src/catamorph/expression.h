@@ -15,6 +15,7 @@ struct div_tag {};
 struct and_tag {};
 struct equals_tag {};
 struct or_tag {};
+struct not_tag {};
 
 template <typename Tag, typename R>
 struct op {
@@ -45,11 +46,13 @@ template <typename R>
 using equals_op = op<equals_tag, R>;
 template <typename R>
 using or_op = op<or_tag, R>;
+template <typename R>
+using not_op = op<not_tag, R>;
 
 template <typename R>
 using expression_r =
     boost::variant<float, ID, add_op<R>, mul_op<R>, sub_op<R>, div_op<R>,
-                   and_op<R>, equals_op<R>, or_op<R>>;
+                   and_op<R>, equals_op<R>, or_op<R>, not_op<R>>;
 
 struct Expression : boost::recursive_wrapper<expression_r<Expression>> {
     using boost::recursive_wrapper<expression_r<Expression>>::recursive_wrapper;

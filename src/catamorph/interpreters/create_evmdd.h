@@ -19,8 +19,10 @@ private:
 
     template <typename F>
     NumericEvmdd apply(std::vector<NumericEvmdd> const &evmdds, F op) {
-        if (evmdds.size() < 2) {
-            throw std::logic_error("wrong number of parameters, expected >= 2");
+        if (evmdds.size() == 1) {
+            NumericEvmdd result = evmdds.front();
+            // No unary apply implemented equals apply on same vmdd
+            return factory.apply(result, result, op);
         }
 
         NumericEvmdd result = evmdds.front();

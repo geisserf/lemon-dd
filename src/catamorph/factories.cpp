@@ -39,3 +39,7 @@ Expression Factories::equals(std::vector<Expression> const &rands) {
 Expression Factories::lor(std::vector<Expression> const &rands) {
     return Expression(or_op<Expression>{rands});
 }
+
+Expression Factories::lnot(std::vector<Expression> const &rands) {
+    return Expression(not_op<Expression>{rands});
+}

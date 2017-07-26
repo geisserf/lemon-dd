@@ -29,6 +29,44 @@ Expression Iverson::opt_equals_alg(expression_r<Expression> const &e) {
 }
 
 Expression Iverson::opt_or_alg(expression_r<Expression> const &e) {
+    if (auto *op = Factories::get_as_or(e)) {
+        if (op->rands().size() < 2) {
+            std::ostringstream s;
+            s << "wrong number of parameters (expected >=2 was"
+              << op->rands().size() << std::endl;
+            throw std::logic_error(s.str());
+        }
+        if (auto *i = Factories::get_as_cst(op->rands()[0].get())) {
+            if (auto *j = Factories::get_as_cst(op->rands()[1].get())) {
+                if (*i == 1 || *j == 1) {
+                    return Factories::cst(1);
+                } else {
+                    return Factories::cst(0);
+                }
+            }
+        }
+    }
+
+    return e;
+}
+
+Expression Iverson::opt_not_alg(expression_r<Expression> const &e) {
+    if (auto *op = Factories::get_as_not(e)) {
+        if (op->rands().size() != 1) {
+            std::ostringstream s;
+            s << "wrong number of parameters (expected 1 was"
+              << op->rands().size() << std::endl;
+            throw std::logic_error(s.str());
+        }
+        if (auto *i = Factories::get_as_cst(op->rands()[0].get())) {
+            if (*i == 1) {
+                return Factories::cst(0);
+            } else {
+                return Factories::cst(1);
+            }
+        }
+    }
+
     return e;
 }
 
@@ -51,27 +89,10 @@ Expression Iverson::opt_and_alg(expression_r<Expression> const &e) {
         }
     }
 
-    if (auto *op = Factories::get_as_or(e)) {
-        if (op->rands().size() < 2) {
-            std::ostringstream s;
-            s << "wrong number of parameters (expected >=2 was"
-              << op->rands().size() << std::endl;
-            throw std::logic_error(s.str());
-        }
-        if (auto *i = Factories::get_as_cst(op->rands()[0].get())) {
-            if (auto *j = Factories::get_as_cst(op->rands()[1].get())) {
-                if (*i == 1 || *j == 1) {
-                    return Factories::cst(1);
-                } else {
-                    return Factories::cst(0);
-                }
-            }
-        }
-    }
-
     return e;
 }
 
 Expression Iverson::iverson_alg(expression_r<Expression> const &e) {
-    return opt_or_alg(opt_and_alg(opt_equals_alg(e).get()).get());
+    return opt_not_alg(
+        opt_or_alg(opt_and_alg(opt_equals_alg(e).get()).get()).get());
 }

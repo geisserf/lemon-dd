@@ -186,4 +186,50 @@ SCENARIO("Testing iverson EVMDD construction", "[iversonevmdd]") {
             }
         }
     }
+
+    GIVEN("THE expression !(a)") {
+        Expression e = Factories::lnot({Factories::var((ID) "a")});
+        WHEN("Create EVMDD") {
+            Domains d = {{"a", 2}};
+            Ordering o = {{"a", 1}};
+            CreateEvmdd<NumericExpression> create;
+            Evmdd<NumericExpression> evmdd = create.create_evmdd(e, d, o);
+            // evmdd.print(std::cout);
+            THEN("Evaluation a=1 should be 0") {
+                std::vector<int> values_a{1};
+                std::map<std::string, std::vector<int>> state{{"a", values_a}};
+                auto result = evmdd.evaluate_partial(state);
+                REQUIRE(result[0].value == 0);
+            }
+            THEN("Evaluation a=0 should be 1") {
+                std::vector<int> values_a{0};
+                std::map<std::string, std::vector<int>> state{{"a", values_a}};
+                auto result = evmdd.evaluate_partial(state);
+                REQUIRE(result[0].value == 1);
+            }
+        }
+    }
+    GIVEN("THE expression !(a)*10") {
+        Expression e = Factories::mul(
+            {Factories::lnot({Factories::var((ID) "a")}), Factories::cst(10)});
+        WHEN("Create EVMDD") {
+            Domains d = {{"a", 2}};
+            Ordering o = {{"a", 1}};
+            CreateEvmdd<NumericExpression> create;
+            Evmdd<NumericExpression> evmdd = create.create_evmdd(e, d, o);
+            // evmdd.print(std::cout);
+            THEN("Evaluation a=1 should be 0") {
+                std::vector<int> values_a{1};
+                std::map<std::string, std::vector<int>> state{{"a", values_a}};
+                auto result = evmdd.evaluate_partial(state);
+                REQUIRE(result[0].value == 0);
+            }
+            THEN("Evaluation a=0 should be 10") {
+                std::vector<int> values_a{0};
+                std::map<std::string, std::vector<int>> state{{"a", values_a}};
+                auto result = evmdd.evaluate_partial(state);
+                REQUIRE(result[0].value == 10);
+            }
+        }
+    }
 }
