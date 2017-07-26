@@ -4,6 +4,8 @@
 #include "Catch/include/catch.hpp"
 #include <iostream>
 
+using std::endl;
+
 SCENARIO("Testing basic EVMDD construction", "[evmddBuild]") {
     GIVEN("The expression (13) ") {
         std::string e = "13";
@@ -44,6 +46,78 @@ SCENARIO("Testing basic EVMDD construction", "[evmddBuild]") {
         }
     }
 
+    GIVEN("the Expression (X+1) with domain x=2") {
+        std::string e = "x + 1";
+        Polynomial p = Polynomial(e);
+        WHEN("Create EVMDD") {
+            Domains d = {{"x", 2}};
+            Ordering o = {{"x", 1}};
+            CreateEvmdd<NumericExpression> create;
+            Evmdd<NumericExpression> res =
+                create.create_evmdd(p.getExpression(), d, o);
+            THEN("evmdd has one variable node for x and one terminal node") {
+                std::stringstream ss;
+                res.print(ss);
+                std::stringstream expected;
+                expected << "input value: 1 nodes:" << endl;
+                expected << "ID: 1" << endl;
+                expected << "  w[0]: 0" << endl << "    ID: 0" << endl;
+                expected << "  w[1]: 1" << endl << "    ID: 0" << endl;
+                REQUIRE(ss.str() == expected.str());
+            }
+        }
+    }
+
+    GIVEN("the Expression (x*y+2) with domain x=2, y=2") {
+        std::string e = "(x*y) + 2";
+        Polynomial p = Polynomial(e);
+        WHEN("Create EVMDD") {
+            Domains d = {{"x", 2}, {"y", 2}};
+            Ordering o = {{"x", 1}, {"y", 2}};
+            CreateEvmdd<NumericExpression> create;
+            Evmdd<NumericExpression> res =
+                create.create_evmdd(p.getExpression(), d, o);
+            // node construction ids: [var(w[0], w[1])]
+            // 0: terminal, 1: x(0,1), 2:y(0,1), 3:x(0,0), 4:y(0,0)
+            THEN("evmdd has one variable node for y and two for x") {
+                std::stringstream ss;
+                res.print(ss);
+                std::stringstream expected;
+                expected << "input value: 2 nodes:" << endl;
+                expected << "ID: 4" << endl;
+                expected << "  w[0]: 0" << endl << "    ID: 3" << endl;
+                expected << "      w[0]: 0" << endl << "        ID: 0" << endl;
+                expected << "      w[1]: 0" << endl << "        ID: 0" << endl;
+                expected << "  w[1]: 0" << endl << "    ID: 1" << endl;
+                expected << "      w[0]: 0" << endl << "        ID: 0" << endl;
+                expected << "      w[1]: 1" << endl << "        ID: 0" << endl;
+                REQUIRE(ss.str() == expected.str());
+            }
+        }
+    }
+
+    GIVEN("the Expression (2*x) with domain x=2") {
+        std::string e = "2 * x";
+        Polynomial p = Polynomial(e);
+        WHEN("Create EVMDD") {
+            Domains d = {{"x", 2}};
+            Ordering o = {{"x", 1}};
+            CreateEvmdd<NumericExpression> create;
+            Evmdd<NumericExpression> res =
+                create.create_evmdd(p.getExpression(), d, o);
+            THEN("evmdd has one variable node for x and one terminal node") {
+                std::stringstream ss;
+                res.print(ss);
+                std::stringstream expected;
+                expected << "input value: 0 nodes:" << endl;
+                expected << "ID: 2" << endl;
+                expected << "  w[0]: 0" << endl << "    ID: 0" << endl;
+                expected << "  w[1]: 2" << endl << "    ID: 0" << endl;
+                REQUIRE(ss.str() == expected.str());
+            }
+        }
+    }
+
     GIVEN("the Expression (X+1) with domain x=5") {
         std::string e = "x + 1";
         Polynomial p = Polynomial(e);
@@ -53,11 +127,6 @@ SCENARIO("Testing basic EVMDD construction", "[evmddBuild]") {
             CreateEvmdd<NumericExpression> create;
             Evmdd<NumericExpression> res =
                 create.create_evmdd(p.getExpression(), d, o);
-            // std::cout << e << std::endl;
-            // res.print(std::cout);
-            //  std::cout << "created" << e << std::endl;
-            //  res.print();
-            //  std::cout << "Eval" << std::endl;
             THEN("get_min should be 1 and get_max should be 5") {
                 REQUIRE(res.get_min()[0].value == 1);
                 REQUIRE(res.get_max()[0].value == 5);
@@ -175,11 +244,6 @@ SCENARIO("Testing basic EVMDD construction", "[evmddBuild]") {
         CreateEvmdd<NumericExpression> create;
         Evmdd<NumericExpression> res =
             create.create_evmdd(p.getExpression(), d, o);
-        // std::cout << e << std::endl;
-        // res.print(std::cout);
-        // std::cout << "created" << e << std::endl;
-        // res.print();
-        // std::cout << "Eval" << std::endl;
         WHEN("Evaluating") {
             for (float x = 0; x <= 10; x++) {
                 for (float y = 0; y <= 5; y++) {
