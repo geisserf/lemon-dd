@@ -32,6 +32,9 @@ public:
 
 class VariableAssignment {
 public:
+    VariableAssignment() = default;
+    VariableAssignment(std::string variable, int value)
+        : variable(variable), value(value){};
     std::string variable;
     int value;
     std::string toString() const;

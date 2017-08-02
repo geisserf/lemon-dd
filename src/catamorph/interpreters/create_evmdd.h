@@ -9,6 +9,7 @@
 
 using Domains = std::map<ID, unsigned int>;
 using NumericEvmdd = Evmdd<NumericExpression>;
+using VariableEvmdd = Evmdd<VariableAssignmentExpression>;
 
 template <typename T>
 class CreateEvmdd {
@@ -18,14 +19,14 @@ private:
     auto create_evmdd_alg(Domains const &domains);
 
     template <typename F>
-    NumericEvmdd apply(std::vector<NumericEvmdd> const &evmdds, F op) {
+    Evmdd<T> apply(std::vector<Evmdd<T>> const &evmdds, F op) {
         if (evmdds.size() == 1) {
-            NumericEvmdd result = evmdds.front();
+            Evmdd<T> result = evmdds.front();
             // No unary apply implemented equals apply on same vmdd
             return factory.apply(result, result, op);
         }
 
-        NumericEvmdd result = evmdds.front();
+        Evmdd<T> result = evmdds.front();
         for (size_t i = 1; i < evmdds.size(); ++i) {
             result = factory.apply(result, evmdds[i], op);
         }

@@ -16,6 +16,7 @@ struct and_tag {};
 struct equals_tag {};
 struct or_tag {};
 struct not_tag {};
+struct effect_tag {};
 
 template <typename Tag, typename R>
 struct op {
@@ -48,6 +49,10 @@ template <typename R>
 using or_op = op<or_tag, R>;
 template <typename R>
 using not_op = op<not_tag, R>;
+// Effect operator matches a left evmdd to an output rigth evmdd
+// We must make sure, that the right evmdd consists of only one var.
+template <typename R>
+using effect_op = op<effect_tag, R>;
 
 template <typename R>
 using expression_r =

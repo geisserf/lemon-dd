@@ -254,8 +254,7 @@ VariableAssignmentExpression VariableAssignmentExpression::operator+(
     VariableAssignmentExpression *variableAssignmentExpression =
         new VariableAssignmentExpression();
     variableAssignmentExpression->value.insert(
-        variableAssignmentExpression->value.end(), this->value.begin(),
-        this->value.end());
+        variableAssignmentExpression->value.end(), value.begin(), value.end());
     variableAssignmentExpression->value.insert(
         variableAssignmentExpression->value.end(), right.value.begin(),
         right.value.end());
@@ -266,21 +265,38 @@ template <>
 VariableAssignmentExpression VariableAssignmentExpression::operator-(
     const VariableAssignmentExpression &right) const {
     (void)right;
-    throw std::logic_error("Not implemented");
+
+    VariableAssignmentExpression res; // = new VariableAssignmentExpression();
+
+    for (VariableAssignment va : value) {
+        bool found = false;
+        for (VariableAssignment va_1 : right.value) {
+            if (va.variable == va_1.variable) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            res.value.push_back(va);
+        }
+    }
+
+    return res;
+    //    throw std::logic_error("VAE \"-\" Not implemented");
 }
 
 template <>
 VariableAssignmentExpression VariableAssignmentExpression::operator*(
     const VariableAssignmentExpression &right) const {
     (void)right;
-    throw std::logic_error("Not implemented");
+    throw std::logic_error(" VAE \"*\"Not implemented");
 }
 
 template <>
 VariableAssignmentExpression VariableAssignmentExpression::operator/(
     const VariableAssignmentExpression &right) const {
     (void)right;
-    throw std::logic_error("Not implemented");
+    throw std::logic_error("VAE \"/\"  Not implemented");
 }
 
 template <>

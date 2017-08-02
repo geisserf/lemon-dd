@@ -6,7 +6,7 @@
 
 using std::endl;
 
-SCENARIO("Testing basic EVMDD construction", "[evmddBuild]") {
+SCENARIO("Testing basic numeric EVMDD construction", "[numericEVMDDBuild]") {
     GIVEN("The expression (13) ") {
         std::string e = "13";
         Polynomial p = Polynomial(e);
