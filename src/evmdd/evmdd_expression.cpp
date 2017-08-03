@@ -251,14 +251,12 @@ std::string VariableAssignmentExpression::toString() const {
 template <>
 VariableAssignmentExpression VariableAssignmentExpression::operator+(
     const VariableAssignmentExpression &right) const {
-    VariableAssignmentExpression *variableAssignmentExpression =
-        new VariableAssignmentExpression();
-    variableAssignmentExpression->value.insert(
-        variableAssignmentExpression->value.end(), value.begin(), value.end());
-    variableAssignmentExpression->value.insert(
-        variableAssignmentExpression->value.end(), right.value.begin(),
-        right.value.end());
-    return *variableAssignmentExpression;
+    VariableAssignmentExpression
+        result; // = new VariableAssignmentExpression();
+    result.value.insert(result.value.end(), value.begin(), value.end());
+    result.value.insert(result.value.end(), right.value.begin(),
+                        right.value.end());
+    return result;
 }
 
 template <>
@@ -281,6 +279,18 @@ VariableAssignmentExpression VariableAssignmentExpression::operator-(
         }
     }
 
+    for (VariableAssignment va : right.value) {
+        bool found = false;
+        for (VariableAssignment va_1 : value) {
+            if (va.variable == va_1.variable) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            res.value.push_back(va);
+        }
+    }
     return res;
     //    throw std::logic_error("VAE \"-\" Not implemented");
 }
@@ -302,8 +312,7 @@ VariableAssignmentExpression VariableAssignmentExpression::operator/(
 template <>
 bool VariableAssignmentExpression::operator==(
     const VariableAssignmentExpression &right) const {
-    return std::equal(this->value.begin(), this->value.end(),
-                      right.value.begin());
+    return std::equal(value.begin(), value.end(), right.value.begin());
 }
 
 template <>
@@ -312,13 +321,29 @@ bool VariableAssignmentExpression::operator<(
     // return
     // std::less(this->value.begin(),this->value.end(),right.value.begin());
     (void)right;
-    return false;
+    // self is subset?
+
+    for (VariableAssignment va : value) {
+        bool found = false;
+        for (VariableAssignment va_2 : right.value) {
+            if (va_2 == va) {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 template <>
 bool VariableAssignmentExpression::operator!=(
     const VariableAssignmentExpression &right) const {
-    return !(this->value == right.value);
+    return !(value == right.value);
 }
 
 template <>
