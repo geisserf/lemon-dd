@@ -14,9 +14,7 @@ SCENARIO("Testing basic numeric EVMDD construction", "[numericEVMDDBuild]") {
             THEN("Result should be ") {
                 Domains d = {};
                 Ordering o = {};
-                CreateEvmdd<NumericExpression> create;
-                Evmdd<NumericExpression> res =
-                    create.create_evmdd(p.getExpression(), d, o);
+                Evmdd<NumericExpression> res = p.create_evmdd(d, o);
                 // std::cout << e << std::endl;
                 // res.print(std::cout);
                 REQUIRE(res.get_min().size() == 1);
@@ -32,8 +30,7 @@ SCENARIO("Testing basic numeric EVMDD construction", "[numericEVMDDBuild]") {
             Domains d = {{"x", 5}};
             Ordering o = {{"x", 1}};
             CreateEvmdd<NumericExpression> create;
-            Evmdd<NumericExpression> res =
-                create.create_evmdd(p.getExpression(), d, o);
+            Evmdd<NumericExpression> res = p.create_evmdd(d, o);
             // std::cout << e << std::endl;
             // res.print(std::cout);
             //    std::cout << "created" << e << std::endl;
@@ -53,8 +50,7 @@ SCENARIO("Testing basic numeric EVMDD construction", "[numericEVMDDBuild]") {
             Domains d = {{"x", 2}};
             Ordering o = {{"x", 1}};
             CreateEvmdd<NumericExpression> create;
-            Evmdd<NumericExpression> res =
-                create.create_evmdd(p.getExpression(), d, o);
+            Evmdd<NumericExpression> res = p.create_evmdd(d, o);
             THEN("evmdd has one variable node for x and one terminal node") {
                 std::stringstream ss;
                 res.print(ss);
@@ -75,8 +71,7 @@ SCENARIO("Testing basic numeric EVMDD construction", "[numericEVMDDBuild]") {
             Domains d = {{"x", 2}, {"y", 2}};
             Ordering o = {{"x", 1}, {"y", 2}};
             CreateEvmdd<NumericExpression> create;
-            Evmdd<NumericExpression> res =
-                create.create_evmdd(p.getExpression(), d, o);
+            Evmdd<NumericExpression> res = p.create_evmdd(d, o);
             // node construction ids: [var(w[0], w[1])]
             // 0: terminal, 1: x(0,1), 2:y(0,1), 3:x(0,0), 4:y(0,0)
             THEN("evmdd has one variable node for y and two for x") {
@@ -107,8 +102,7 @@ SCENARIO("Testing basic numeric EVMDD construction", "[numericEVMDDBuild]") {
             Domains d = {{"x", 2}};
             Ordering o = {{"x", 1}};
             CreateEvmdd<NumericExpression> create;
-            Evmdd<NumericExpression> res =
-                create.create_evmdd(p.getExpression(), d, o);
+            Evmdd<NumericExpression> res = p.create_evmdd(d, o);
             THEN("evmdd has one variable node for x and one terminal node") {
                 std::stringstream ss;
                 res.print(ss);
@@ -129,8 +123,7 @@ SCENARIO("Testing basic numeric EVMDD construction", "[numericEVMDDBuild]") {
             Domains d = {{"x", 5}};
             Ordering o = {{"x", 1}};
             CreateEvmdd<NumericExpression> create;
-            Evmdd<NumericExpression> res =
-                create.create_evmdd(p.getExpression(), d, o);
+            Evmdd<NumericExpression> res = p.create_evmdd(d, o);
             THEN("get_min should be 1 and get_max should be 5") {
                 REQUIRE(res.get_min()[0].value == 1);
                 REQUIRE(res.get_max()[0].value == 5);
@@ -145,8 +138,7 @@ SCENARIO("Testing basic numeric EVMDD construction", "[numericEVMDDBuild]") {
             Domains d = {{"x", 5}, {"y", 2}};
             Ordering o = {{"x", 1}, {"y", 2}};
             CreateEvmdd<NumericExpression> create;
-            Evmdd<NumericExpression> res =
-                create.create_evmdd(p.getExpression(), d, o);
+            Evmdd<NumericExpression> res = p.create_evmdd(d, o);
             // std::cout << e << std::endl;
             // res.print(std::cout);
             // std::cout << "created" << e << std::endl;
@@ -166,8 +158,7 @@ SCENARIO("Testing basic numeric EVMDD construction", "[numericEVMDDBuild]") {
             Domains d = {{"x", 5}, {"y", 3}};
             Ordering o = {{"x", 1}, {"y", 2}};
             CreateEvmdd<NumericExpression> create;
-            Evmdd<NumericExpression> evmdd =
-                create.create_evmdd(p.getExpression(), d, o);
+            Evmdd<NumericExpression> evmdd = p.create_evmdd(d, o);
             THEN("get_min should be 0 and get_max should be 8") {
                 REQUIRE(evmdd.get_min()[0].value == 0);
                 REQUIRE(evmdd.get_max()[0].value == 8);
@@ -212,8 +203,7 @@ SCENARIO("Testing basic numeric EVMDD construction", "[numericEVMDDBuild]") {
             Domains d = {{"x", 5}, {"y", 3}};
             Ordering o = {{"x", 1}, {"y", 2}};
             CreateEvmdd<NumericExpression> create;
-            Evmdd<NumericExpression> res =
-                create.create_evmdd(p.getExpression(), d, o);
+            Evmdd<NumericExpression> res = p.create_evmdd(d, o);
 
             // std::cout << e << std::endl;
             // res.print(std::cout);
@@ -246,8 +236,7 @@ SCENARIO("Testing basic numeric EVMDD construction", "[numericEVMDDBuild]") {
         Domains d = {{"x", 10}, {"y", 5}};
         Ordering o = {{"x", 1}, {"y", 2}};
         CreateEvmdd<NumericExpression> create;
-        Evmdd<NumericExpression> res =
-            create.create_evmdd(p.getExpression(), d, o);
+        Evmdd<NumericExpression> res = p.create_evmdd(d, o);
         WHEN("Evaluating") {
             for (float x = 0; x <= 10; x++) {
                 for (float y = 0; y <= 5; y++) {

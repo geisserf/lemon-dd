@@ -2,8 +2,11 @@
 #define NUMERIC_CATAMORPH_POLYNOMIAL_H
 
 #include "catamorph/expression.h"
-
+#include "catamorph/interpreters/create_evmdd.h"
 #include <string>
+
+using Ordering = std::map<std::string, int>;
+using Domains = std::map<std::string, unsigned int>;
 
 class Polynomial {
 public:
@@ -28,6 +31,8 @@ public:
     std::string toString() const;
 
     Expression getExpression();
+
+    Evmdd<NumericExpression> create_evmdd(Domains const &d, Ordering const &o);
 
 private:
     Expression expression;
