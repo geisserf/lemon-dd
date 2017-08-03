@@ -60,9 +60,9 @@ SCENARIO("Testing basic numeric EVMDD construction", "[numericEVMDDBuild]") {
                 res.print(ss);
                 std::stringstream expected;
                 expected << "input value: 1 nodes:" << endl;
-                expected << "ID: 1" << endl;
-                expected << "  w[0]: 0" << endl << "    ID: 0" << endl;
-                expected << "  w[1]: 1" << endl << "    ID: 0" << endl;
+                expected << "ID: 1(x)" << endl;
+                expected << "  w[0]: 0" << endl << "    ID: 0( )" << endl;
+                expected << "  w[1]: 1" << endl << "    ID: 0( )" << endl;
                 REQUIRE(ss.str() == expected.str());
             }
         }
@@ -84,13 +84,17 @@ SCENARIO("Testing basic numeric EVMDD construction", "[numericEVMDDBuild]") {
                 res.print(ss);
                 std::stringstream expected;
                 expected << "input value: 2 nodes:" << endl;
-                expected << "ID: 4" << endl;
-                expected << "  w[0]: 0" << endl << "    ID: 3" << endl;
-                expected << "      w[0]: 0" << endl << "        ID: 0" << endl;
-                expected << "      w[1]: 0" << endl << "        ID: 0" << endl;
-                expected << "  w[1]: 0" << endl << "    ID: 1" << endl;
-                expected << "      w[0]: 0" << endl << "        ID: 0" << endl;
-                expected << "      w[1]: 1" << endl << "        ID: 0" << endl;
+                expected << "ID: 4(y)" << endl;
+                expected << "  w[0]: 0" << endl << "    ID: 3(x)" << endl;
+                expected << "      w[0]: 0" << endl
+                         << "        ID: 0( )" << endl;
+                expected << "      w[1]: 0" << endl
+                         << "        ID: 0( )" << endl;
+                expected << "  w[1]: 0" << endl << "    ID: 1(x)" << endl;
+                expected << "      w[0]: 0" << endl
+                         << "        ID: 0( )" << endl;
+                expected << "      w[1]: 1" << endl
+                         << "        ID: 0( )" << endl;
                 REQUIRE(ss.str() == expected.str());
             }
         }
@@ -110,9 +114,9 @@ SCENARIO("Testing basic numeric EVMDD construction", "[numericEVMDDBuild]") {
                 res.print(ss);
                 std::stringstream expected;
                 expected << "input value: 0 nodes:" << endl;
-                expected << "ID: 2" << endl;
-                expected << "  w[0]: 0" << endl << "    ID: 0" << endl;
-                expected << "  w[1]: 2" << endl << "    ID: 0" << endl;
+                expected << "ID: 2(x)" << endl;
+                expected << "  w[0]: 0" << endl << "    ID: 0( )" << endl;
+                expected << "  w[1]: 2" << endl << "    ID: 0( )" << endl;
                 REQUIRE(ss.str() == expected.str());
             }
         }

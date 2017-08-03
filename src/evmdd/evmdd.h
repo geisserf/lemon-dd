@@ -171,17 +171,16 @@ private:
         return result;
     }
 
+    T get_min(std::vector<Evmdd<T>> const &children);
+
     // Returns a evmdd with root node at level, with input value as the minimal
     // input value of all children. Weights to each child is its original
     // input value minus the minimal input value.
     Evmdd<T> create_evmdd(int level, std::string var,
                           std::vector<Evmdd<T>> const &children) {
-        Evmdd<T> min_weight_evmdd =
-            *std::min_element(children.begin(), children.end(),
-                              [](Evmdd<T> const &e1, Evmdd<T> const &e2) {
-                                  return e1.input_value < e2.input_value;
-                              });
-        T min_weight = min_weight_evmdd.input_value;
+        // TODO min -> Numeric= min VariableAssignment = intersection
+
+        T min_weight = get_min(children);
         std::vector<Edge<T>> edges;
         for (Evmdd<T> const &child : children) {
             edges.emplace_back(T{child.input_value - min_weight},

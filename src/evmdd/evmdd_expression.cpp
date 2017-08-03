@@ -251,8 +251,7 @@ std::string VariableAssignmentExpression::toString() const {
 template <>
 VariableAssignmentExpression VariableAssignmentExpression::operator+(
     const VariableAssignmentExpression &right) const {
-    VariableAssignmentExpression
-        result; // = new VariableAssignmentExpression();
+    VariableAssignmentExpression result;
     result.value.insert(result.value.end(), value.begin(), value.end());
     result.value.insert(result.value.end(), right.value.begin(),
                         right.value.end());
@@ -264,7 +263,7 @@ VariableAssignmentExpression VariableAssignmentExpression::operator-(
     const VariableAssignmentExpression &right) const {
     (void)right;
 
-    VariableAssignmentExpression res; // = new VariableAssignmentExpression();
+    VariableAssignmentExpression res;
 
     for (VariableAssignment va : value) {
         bool found = false;
@@ -279,20 +278,21 @@ VariableAssignmentExpression VariableAssignmentExpression::operator-(
         }
     }
 
-    for (VariableAssignment va : right.value) {
-        bool found = false;
-        for (VariableAssignment va_1 : value) {
-            if (va.variable == va_1.variable) {
-                found = true;
-                break;
+    /*
+        for (VariableAssignment va : right.value) {
+            bool found = false;
+            for (VariableAssignment va_1 : value) {
+                if (va.variable == va_1.variable) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                res.value.push_back(va);
             }
         }
-        if (!found) {
-            res.value.push_back(va);
-        }
-    }
+        */
     return res;
-    //    throw std::logic_error("VAE \"-\" Not implemented");
 }
 
 template <>
@@ -320,7 +320,7 @@ bool VariableAssignmentExpression::operator<(
     const VariableAssignmentExpression &right) const {
     // return
     // std::less(this->value.begin(),this->value.end(),right.value.begin());
-    (void)right;
+    //(void)right;
     // self is subset?
 
     for (VariableAssignment va : value) {
