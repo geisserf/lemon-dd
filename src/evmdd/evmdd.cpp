@@ -24,8 +24,6 @@ EvmddFactory<VariableAssignmentExpression>::get_min(
     VariableAssignmentExpression intersection;
     for (size_t i = 0; i < children.size(); ++i) {
         std::vector<VariableAssignment> tmp;
-        // std::sort(children[i].input_value.value.begin(),
-        //          children[i].input_value.value.end());
 
         std::set_intersection(
             children[i].input_value.value.begin(),

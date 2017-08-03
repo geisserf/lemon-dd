@@ -25,8 +25,6 @@ Evmdd<VariableAssignmentExpression> ConditionalEffects::create_evmdd(
     for (ConditionalEffect effect : effects) {
         Evmdd<NumericExpression> evmdd =
             create.create_evmdd(effect.getCondition(), d, o);
-        // std::cout<<"partial:"<<std::endl;
-        // evmdd.print(std::cout);
         // CONVERT
         EvmddFactory<VariableAssignmentExpression> factory;
         Evmdd<VariableAssignmentExpression> evmdd2 =
@@ -37,14 +35,9 @@ Evmdd<VariableAssignmentExpression> ConditionalEffects::create_evmdd(
     }
 
     // Union
-
     Evmdd<VariableAssignmentExpression> result = partial[0];
 
-    // std::cout<<"partial"<<0<<std::endl;
-    // partial[0].print(std::cout);
     for (size_t i = 1; i < partial.size(); ++i) {
-        // std::cout<<"partial"<<i<<std::endl;
-        // partial[i].print(std::cout);
         result = factory.apply(result, partial[i],
                                std::plus<VariableAssignmentExpression>());
     }

@@ -278,20 +278,6 @@ VariableAssignmentExpression VariableAssignmentExpression::operator-(
         }
     }
 
-    /*
-        for (VariableAssignment va : right.value) {
-            bool found = false;
-            for (VariableAssignment va_1 : value) {
-                if (va.variable == va_1.variable) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                res.value.push_back(va);
-            }
-        }
-        */
     return res;
 }
 
@@ -318,11 +304,6 @@ bool VariableAssignmentExpression::operator==(
 template <>
 bool VariableAssignmentExpression::operator<(
     const VariableAssignmentExpression &right) const {
-    // return
-    // std::less(this->value.begin(),this->value.end(),right.value.begin());
-    //(void)right;
-    // self is subset?
-
     for (VariableAssignment va : value) {
         bool found = false;
         for (VariableAssignment va_2 : right.value) {
@@ -443,8 +424,6 @@ std::vector<TupleExpression> greates_lower_bound<TupleExpression>::operator()(
     bool added = false;
     if (b.size() > 0) {
         for (const TupleExpression tuple_in : b) {
-            // std::cout<<"check if this.variable_assignments =
-            // tuple_in.variable_assignments"<<std::endl;
             bool subset = tuple_in.value.first.value.size() > 0;
 
             for (VariableAssignment tuple_va : tuple_in.value.first.value) {
@@ -452,7 +431,6 @@ std::vector<TupleExpression> greates_lower_bound<TupleExpression>::operator()(
                 for (VariableAssignment this_va : a.value.first.value) {
                     if (this_va.variable == tuple_va.variable &&
                         this_va.value == tuple_va.value) {
-                        // std::cout<<this_va.variable<<"=="<<tuple_va.variable<<"&&"<<this_va.value<<"=="<<tuple_va.value<<std::endl;
                         found = true;
                         break;
                     }
@@ -465,26 +443,19 @@ std::vector<TupleExpression> greates_lower_bound<TupleExpression>::operator()(
 
             if (subset || (tuple_in.value.first.value.size() == 0 &&
                            a.value.first.value.size() == 0)) {
-                //  std::cout<<"check true"<<std::endl;
                 TupleExpression n;
                 n.value.first = a.value.first;
                 n.value.second =
                     (a.value.second.value < tuple_in.value.second.value)
                         ? a.value.second
                         : tuple_in.value.second;
-                // std::cout << "Add this to with lower value: " <<
-                // n->toString()
-                //          << std::endl;
                 new_t.push_back(n);
                 added = true;
             } else {
-                // std::cout<<"check false"<<std::endl;
                 TupleExpression n;
                 n.value.first = tuple_in.value.first;
                 n.value.second = tuple_in.value.second;
                 new_t.push_back(n);
-                // std::cout << "Add other to result : " << n->toString()
-                //          << std::endl;
             }
         }
     }
@@ -493,8 +464,6 @@ std::vector<TupleExpression> greates_lower_bound<TupleExpression>::operator()(
         TupleExpression n;
         n.value.first = a.value.first;
         n.value.second = a.value.second;
-        // std::cout << "Add this to result (not in in): " << n->toString()
-        //          << std::endl;
         new_t.push_back(n);
     }
 
