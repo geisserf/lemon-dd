@@ -17,7 +17,7 @@ VariableAssignmentExpression convert_numeric_set::operator()(
 }
 
 Evmdd<VariableAssignmentExpression> ConditionalEffects::create_evmdd(
-    Domains d, Ordering o) {
+    Domains const &d, Ordering const &o) {
     std::vector<Evmdd<VariableAssignmentExpression>> partial;
     CreateEvmdd<NumericExpression> create;
     EvmddFactory<VariableAssignmentExpression> factory;

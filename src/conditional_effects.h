@@ -46,7 +46,8 @@ public:
     ConditionalEffects(std::vector<ConditionalEffect> const &effects)
         : effects(effects) {}
 
-    Evmdd<VariableAssignmentExpression> create_evmdd(Domains d, Ordering o);
+    Evmdd<VariableAssignmentExpression> create_evmdd(Domains const &d,
+                                                     Ordering const &o);
 
 private:
     std::vector<ConditionalEffect> effects;

@@ -44,7 +44,8 @@ set(SOURCE_FILES
         catamorph/printer.h
         evmdd/evmdd.h evmdd/evmdd.cpp
         evmdd/node.h evmdd/node.cpp evmdd/node_storage.h evmdd/node_storage.cpp
-        evmdd/evmdd_expression.h evmdd/evmdd_expression.cpp)
+        evmdd/evmdd_expression.h evmdd/evmdd_expression.cpp
+        combined.h combined.cpp)
 
 add_library(NumericCatamorph_lib ${SOURCE_FILES})
 target_link_libraries(NumericCatamorph_lib MiniBoost)
