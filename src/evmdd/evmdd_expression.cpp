@@ -1,8 +1,48 @@
 #include "evmdd_expression.h"
+#include "../utils/math_utils.h"
+
 #include <algorithm>
-#include <cmath>
+#include <cassert>
 #include <iomanip>
 #include <iostream>
+
+/*
+ * Logic not
+ */
+
+template <>
+NumericExpression logic_not<NumericExpression>::operator()(
+    const NumericExpression &first, const NumericExpression &second) const {
+    assert(first.value == second.value);
+    if (MathUtils::is_equal(first.value, 1)) {
+        return NumericExpression{0.0f};
+    }
+
+    if (MathUtils::is_equal(first.value, 0)) {
+        return NumericExpression{1.0f};
+    }
+
+    throw std::logic_error("NOT operator applied to non boolean value" +
+                           std::to_string(first.value));
+}
+
+template <>
+VariableAssignmentExpression logic_not<VariableAssignmentExpression>::
+operator()(const VariableAssignmentExpression &first,
+           const VariableAssignmentExpression &second) const {
+    (void)first;
+    (void)second;
+    throw std::logic_error(
+        "VariableAssignmentExpression logic NOT not supported");
+}
+
+template <>
+TupleExpression logic_not<TupleExpression>::operator()(
+    const TupleExpression &first, const TupleExpression &second) const {
+    (void)first;
+    (void)second;
+    throw std::logic_error("TupleExpression logic NOT not supported");
+}
 
 /*
  * Logic equals
@@ -11,8 +51,7 @@
 template <>
 NumericExpression logic_equals<NumericExpression>::operator()(
     const NumericExpression &first, const NumericExpression &second) const {
-    if (std::fabs(first.value - second.value) <=
-        std::numeric_limits<float>::epsilon()) {
+    if (MathUtils::is_equal(first.value, second.value)) {
         return NumericExpression{1.0f};
     } else {
         return NumericExpression{0.0f};
@@ -44,8 +83,8 @@ template <>
 NumericExpression logic_or<NumericExpression>::operator()(
     const NumericExpression &first, const NumericExpression &second) const {
     // float comparison to value ==1
-    if (std::fabs(first.value - 1) <= std::numeric_limits<float>::epsilon() ||
-        std::fabs(second.value - 1) <= std::numeric_limits<float>::epsilon()) {
+    if (MathUtils::is_equal(first.value, 1) ||
+        MathUtils::is_equal(second.value, 1)) {
         return NumericExpression{1.0f};
     }
 
@@ -67,8 +106,7 @@ TupleExpression logic_or<TupleExpression>::operator()(
     const TupleExpression &first, const TupleExpression &second) const {
     (void)first;
     (void)second;
-    throw std::logic_error(
-        "VariableAssignmentExpression logic OR not supported");
+    throw std::logic_error("TupleExpression logic OR not supported");
 }
 /*
  * Logic AND
@@ -77,8 +115,8 @@ template <>
 NumericExpression logic_and<NumericExpression>::operator()(
     const NumericExpression &first, const NumericExpression &second) const {
     // float comparison to value ==1
-    if (std::fabs(first.value - 1) <= std::numeric_limits<float>::epsilon() &&
-        std::fabs(second.value - 1) <= std::numeric_limits<float>::epsilon()) {
+    if (MathUtils::is_equal(first.value, 1) &&
+        MathUtils::is_equal(second.value, 1)) {
         return NumericExpression{1.0f};
     }
 
@@ -213,58 +251,64 @@ std::string VariableAssignmentExpression::toString() const {
 template <>
 VariableAssignmentExpression VariableAssignmentExpression::operator+(
     const VariableAssignmentExpression &right) const {
-    VariableAssignmentExpression *variableAssignmentExpression =
-        new VariableAssignmentExpression();
-    variableAssignmentExpression->value.insert(
-        variableAssignmentExpression->value.end(), this->value.begin(),
-        this->value.end());
-    variableAssignmentExpression->value.insert(
-        variableAssignmentExpression->value.end(), right.value.begin(),
-        right.value.end());
-    return *variableAssignmentExpression;
+    VariableAssignmentExpression result;
+    result.value.insert(result.value.end(), value.begin(), value.end());
+    result.value.insert(result.value.end(), right.value.begin(),
+                        right.value.end());
+    return result;
 }
 
 template <>
 VariableAssignmentExpression VariableAssignmentExpression::operator-(
     const VariableAssignmentExpression &right) const {
-    (void)right;
-    throw std::logic_error("Not implemented");
+    VariableAssignmentExpression res;
+    for (VariableAssignment const &va : value) {
+        if (std::find(right.value.begin(), right.value.end(), va) ==
+            right.value.end()) {
+            res.value.push_back(va);
+        }
+    }
+
+    return res;
 }
 
 template <>
 VariableAssignmentExpression VariableAssignmentExpression::operator*(
     const VariableAssignmentExpression &right) const {
     (void)right;
-    throw std::logic_error("Not implemented");
+    throw std::logic_error(" VAE \"*\"Not implemented");
 }
 
 template <>
 VariableAssignmentExpression VariableAssignmentExpression::operator/(
     const VariableAssignmentExpression &right) const {
     (void)right;
-    throw std::logic_error("Not implemented");
+    throw std::logic_error("VAE \"/\"  Not implemented");
 }
 
 template <>
 bool VariableAssignmentExpression::operator==(
     const VariableAssignmentExpression &right) const {
-    return std::equal(this->value.begin(), this->value.end(),
-                      right.value.begin());
+    return std::equal(value.begin(), value.end(), right.value.begin());
 }
 
 template <>
 bool VariableAssignmentExpression::operator<(
     const VariableAssignmentExpression &right) const {
-    // return
-    // std::less(this->value.begin(),this->value.end(),right.value.begin());
-    (void)right;
-    return false;
+    for (VariableAssignment const &va : value) {
+        if (std::find(right.value.begin(), right.value.end(), va) ==
+            right.value.end()) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 template <>
 bool VariableAssignmentExpression::operator!=(
     const VariableAssignmentExpression &right) const {
-    return !(this->value == right.value);
+    return value != right.value;
 }
 
 template <>
@@ -364,8 +408,6 @@ std::vector<TupleExpression> greates_lower_bound<TupleExpression>::operator()(
     bool added = false;
     if (b.size() > 0) {
         for (const TupleExpression tuple_in : b) {
-            // std::cout<<"check if this.variable_assignments =
-            // tuple_in.variable_assignments"<<std::endl;
             bool subset = tuple_in.value.first.value.size() > 0;
 
             for (VariableAssignment tuple_va : tuple_in.value.first.value) {
@@ -373,7 +415,6 @@ std::vector<TupleExpression> greates_lower_bound<TupleExpression>::operator()(
                 for (VariableAssignment this_va : a.value.first.value) {
                     if (this_va.variable == tuple_va.variable &&
                         this_va.value == tuple_va.value) {
-                        // std::cout<<this_va.variable<<"=="<<tuple_va.variable<<"&&"<<this_va.value<<"=="<<tuple_va.value<<std::endl;
                         found = true;
                         break;
                     }
@@ -386,26 +427,19 @@ std::vector<TupleExpression> greates_lower_bound<TupleExpression>::operator()(
 
             if (subset || (tuple_in.value.first.value.size() == 0 &&
                            a.value.first.value.size() == 0)) {
-                //  std::cout<<"check true"<<std::endl;
                 TupleExpression n;
                 n.value.first = a.value.first;
                 n.value.second =
                     (a.value.second.value < tuple_in.value.second.value)
                         ? a.value.second
                         : tuple_in.value.second;
-                // std::cout << "Add this to with lower value: " <<
-                // n->toString()
-                //          << std::endl;
                 new_t.push_back(n);
                 added = true;
             } else {
-                // std::cout<<"check false"<<std::endl;
                 TupleExpression n;
                 n.value.first = tuple_in.value.first;
                 n.value.second = tuple_in.value.second;
                 new_t.push_back(n);
-                // std::cout << "Add other to result : " << n->toString()
-                //          << std::endl;
             }
         }
     }
@@ -414,8 +448,6 @@ std::vector<TupleExpression> greates_lower_bound<TupleExpression>::operator()(
         TupleExpression n;
         n.value.first = a.value.first;
         n.value.second = a.value.second;
-        // std::cout << "Add this to result (not in in): " << n->toString()
-        //          << std::endl;
         new_t.push_back(n);
     }
 

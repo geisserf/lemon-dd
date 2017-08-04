@@ -1,9 +1,9 @@
 #include "polynomial.h"
-#include "parser.h"
-
-#include "catamorph/printer.h"
+#include "catamorph/interpreters/create_evmdd.h"
 #include "catamorph/interpreters/dependencies.h"
 #include "catamorph/interpreters/evaluate.h"
+#include "catamorph/printer.h"
+#include "parser.h"
 
 #include <string>
 
@@ -43,4 +43,10 @@ std::string Polynomial::toString() const {
 
 Expression Polynomial::getExpression() {
     return this->expression;
+}
+
+Evmdd<NumericExpression> Polynomial::create_evmdd(Domains const &d,
+                                                  Ordering const &o) {
+    CreateEvmdd<NumericExpression> create;
+    return create.create_evmdd(expression, d, o);
 }

@@ -7,6 +7,12 @@
 #include <vector>
 
 template <typename T>
+class logic_not {
+public:
+    T operator()(const T &first, const T &second) const;
+};
+
+template <typename T>
 class logic_equals {
 public:
     T operator()(const T &first, const T &second) const;
@@ -26,6 +32,9 @@ public:
 
 class VariableAssignment {
 public:
+    VariableAssignment() = default;
+    VariableAssignment(std::string variable, int value)
+        : variable(variable), value(value){};
     std::string variable;
     int value;
     std::string toString() const;

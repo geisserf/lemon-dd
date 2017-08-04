@@ -5,7 +5,7 @@ using std::shared_ptr;
 
 template <typename T>
 void Node<T>::print(std::ostream &out, std::string indent) const {
-    out << indent << "ID: " << id << std::endl;
+    out << indent << "ID: " << id << "(" << variable << ")" << std::endl;
     indent += "  ";
     for (size_t i = 0; i < children.size(); ++i) {
         out << indent << "w[" << i << "]: " << children[i].first.toString()

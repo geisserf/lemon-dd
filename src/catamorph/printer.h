@@ -13,6 +13,13 @@
 class Printer {
 private:
     template <typename Tag>
+    static std::string print_prefix_op(op<Tag, std::string> const &e,
+                                       std::string const &op_repr) {
+        return op_repr + std::string("(") +
+               boost::algorithm::join(e.rands(), " ") + ")";
+    }
+
+    template <typename Tag>
     static std::string print_op(op<Tag, std::string> const &e,
                                 std::string const &op_repr) {
         return std::string("(") + op_repr + " " +
@@ -44,6 +51,9 @@ private:
         }
         if (auto *v = Factories::get_as_var(e))
             return *v;
+        if (auto *o = Factories::get_as_not(e))
+            return Printer::print_prefix_op(*o, "!");
+
         throw std::logic_error("Missing case in pattern matching");
     }
 

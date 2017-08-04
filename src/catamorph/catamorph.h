@@ -42,6 +42,9 @@ public:
         if (auto *o = Factories::get_as_or(e))
             return Out(or_op<B>(o->rands() | transformed(map)));
 
+        if (auto *o = Factories::get_as_not(e))
+            return Out(not_op<B>(o->rands() | transformed(map)));
+
         if (auto *o = Factories::get_as_equals(e))
             return Out(equals_op<B>(o->rands() | transformed(map)));
 
