@@ -9,8 +9,7 @@
 using Ordering = std::map<std::string, int>;
 using Domains = std::map<std::string, unsigned int>;
 
-class convert_numeric_set {
-public:
+struct convert_numeric_set {
     VariableAssignmentExpression operator()(
         const NumericExpression &first,
         const VariableAssignmentExpression &second) const;
@@ -34,6 +33,9 @@ public:
         return value;
     }
 
+    Evmdd<VariableAssignmentExpression> create_evmdd(Domains const &d,
+                                                     Ordering const &o) const;
+
 private:
     Expression condition;
     std::string effect;
@@ -47,7 +49,7 @@ public:
         : effects(effects) {}
 
     Evmdd<VariableAssignmentExpression> create_evmdd(Domains const &d,
-                                                     Ordering const &o);
+                                                     Ordering const &o) const;
 
 private:
     std::vector<ConditionalEffect> effects;

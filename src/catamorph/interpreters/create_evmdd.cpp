@@ -63,5 +63,3 @@ Evmdd<T> CreateEvmdd<T>::create_evmdd(Expression const &expr,
 }
 
 template class CreateEvmdd<NumericExpression>;
-// template class CreateEvmdd<VariableAssignmentExpression>;
-// template class CreateEvmdd<TupleExpression>;

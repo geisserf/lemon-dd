@@ -1,39 +1,46 @@
 #include "conditional_effects.h"
 #include "catamorph/interpreters/create_evmdd.h"
 #include "evmdd/evmdd.h"
+#include "utils/math_utils.h"
+
+#include <cassert>
 #include <iostream>
 #include <vector>
 
 VariableAssignmentExpression convert_numeric_set::operator()(
     const NumericExpression &first,
     const VariableAssignmentExpression &second) const {
-    if (first.value == 1) {
+    if (MathUtils::is_equal(first.value, 1)) {
         return VariableAssignmentExpression(second);
-    } else {
-        std::vector<VariableAssignment> v;
-        return VariableAssignmentExpression(v);
     }
-    throw std::logic_error("Could not convert");
+    return VariableAssignmentExpression();
+}
+
+Evmdd<VariableAssignmentExpression> ConditionalEffect::create_evmdd(
+    Domains const &d, Ordering const &o) const {
+    // TODO ISSUE #12
+
+    CreateEvmdd<NumericExpression> create;
+    EvmddFactory<VariableAssignmentExpression> factory;
+    Evmdd<NumericExpression> condition_evmdd =
+        create.create_evmdd(condition, d, o);
+
+    Evmdd<VariableAssignmentExpression> effect_evmdd = factory.make_const_evmdd(
+        VariableAssignmentExpression({{effect, value}}));
+    return factory.apply(condition_evmdd, effect_evmdd, convert_numeric_set());
 }
 
 Evmdd<VariableAssignmentExpression> ConditionalEffects::create_evmdd(
-    Domains const &d, Ordering const &o) {
+    Domains const &d, Ordering const &o) const {
     std::vector<Evmdd<VariableAssignmentExpression>> partial;
-    CreateEvmdd<NumericExpression> create;
-    EvmddFactory<VariableAssignmentExpression> factory;
 
-    for (ConditionalEffect effect : effects) {
-        Evmdd<NumericExpression> evmdd =
-            create.create_evmdd(effect.getCondition(), d, o);
-        // CONVERT
-        EvmddFactory<VariableAssignmentExpression> factory;
-        Evmdd<VariableAssignmentExpression> evmdd2 =
-            factory.make_const_evmdd(VariableAssignmentExpression(
-                {{effect.getEffect(), effect.getValue()}}));
-
-        partial.push_back(factory.apply(evmdd, evmdd2, convert_numeric_set()));
+    for (ConditionalEffect const &effect : effects) {
+        partial.push_back(effect.create_evmdd(d, o));
     }
 
+    assert(!partial.empty());
+
+    EvmddFactory<VariableAssignmentExpression> factory;
     // Union
     Evmdd<VariableAssignmentExpression> result = partial[0];
 

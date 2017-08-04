@@ -29,10 +29,10 @@ SCENARIO("Testing basic logic expressions and evaluations", "[iverson]") {
         Expression e = Factories::lnot({Factories::var((ID) "x")});
         Polynomial p(e);
         WHEN("x =1") {
-            Env partial_env = {{"x", 2}};
+            Env partial_env = {{"x", 1}};
             THEN("result should be 0") {
                 Polynomial result(p.evaluate(partial_env));
-                REQUIRE(result.toString() == "1");
+                REQUIRE(result.toString() == "0");
             }
         }
     }

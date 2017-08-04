@@ -1,6 +1,8 @@
 #include "evmdd_expression.h"
+#include "../utils/math_utils.h"
+
 #include <algorithm>
-#include <cmath>
+#include <cassert>
 #include <iomanip>
 #include <iostream>
 
@@ -11,18 +13,17 @@
 template <>
 NumericExpression logic_not<NumericExpression>::operator()(
     const NumericExpression &first, const NumericExpression &second) const {
-    // float comparison to value ==1
-    if (std::fabs(first.value - 1) <= std::numeric_limits<float>::epsilon() &&
-        std::fabs(second.value - 1) <= std::numeric_limits<float>::epsilon()) {
+    assert(first.value == second.value);
+    if (MathUtils::is_equal(first.value, 1)) {
         return NumericExpression{0.0f};
     }
 
-    if (std::fabs(first.value) <= std::numeric_limits<float>::epsilon() &&
-        std::fabs(second.value) <= std::numeric_limits<float>::epsilon()) {
+    if (MathUtils::is_equal(first.value, 0)) {
         return NumericExpression{1.0f};
     }
 
-    throw std::logic_error("Edges not identical on union apply");
+    throw std::logic_error("NOT operator applied to non boolean value" +
+                           std::to_string(first.value));
 }
 
 template <>
@@ -50,8 +51,7 @@ TupleExpression logic_not<TupleExpression>::operator()(
 template <>
 NumericExpression logic_equals<NumericExpression>::operator()(
     const NumericExpression &first, const NumericExpression &second) const {
-    if (std::fabs(first.value - second.value) <=
-        std::numeric_limits<float>::epsilon()) {
+    if (MathUtils::is_equal(first.value, second.value)) {
         return NumericExpression{1.0f};
     } else {
         return NumericExpression{0.0f};
@@ -83,8 +83,8 @@ template <>
 NumericExpression logic_or<NumericExpression>::operator()(
     const NumericExpression &first, const NumericExpression &second) const {
     // float comparison to value ==1
-    if (std::fabs(first.value - 1) <= std::numeric_limits<float>::epsilon() ||
-        std::fabs(second.value - 1) <= std::numeric_limits<float>::epsilon()) {
+    if (MathUtils::is_equal(first.value, 1) ||
+        MathUtils::is_equal(second.value, 1)) {
         return NumericExpression{1.0f};
     }
 
@@ -115,8 +115,8 @@ template <>
 NumericExpression logic_and<NumericExpression>::operator()(
     const NumericExpression &first, const NumericExpression &second) const {
     // float comparison to value ==1
-    if (std::fabs(first.value - 1) <= std::numeric_limits<float>::epsilon() &&
-        std::fabs(second.value - 1) <= std::numeric_limits<float>::epsilon()) {
+    if (MathUtils::is_equal(first.value, 1) &&
+        MathUtils::is_equal(second.value, 1)) {
         return NumericExpression{1.0f};
     }
 
@@ -261,19 +261,10 @@ VariableAssignmentExpression VariableAssignmentExpression::operator+(
 template <>
 VariableAssignmentExpression VariableAssignmentExpression::operator-(
     const VariableAssignmentExpression &right) const {
-    (void)right;
-
     VariableAssignmentExpression res;
-
-    for (VariableAssignment va : value) {
-        bool found = false;
-        for (VariableAssignment va_1 : right.value) {
-            if (va.variable == va_1.variable) {
-                found = true;
-                break;
-            }
-        }
-        if (!found) {
+    for (VariableAssignment const &va : value) {
+        if (std::find(right.value.begin(), right.value.end(), va) ==
+            right.value.end()) {
             res.value.push_back(va);
         }
     }
@@ -304,16 +295,9 @@ bool VariableAssignmentExpression::operator==(
 template <>
 bool VariableAssignmentExpression::operator<(
     const VariableAssignmentExpression &right) const {
-    for (VariableAssignment va : value) {
-        bool found = false;
-        for (VariableAssignment va_2 : right.value) {
-            if (va_2 == va) {
-                found = true;
-                break;
-            }
-        }
-
-        if (!found) {
+    for (VariableAssignment const &va : value) {
+        if (std::find(right.value.begin(), right.value.end(), va) ==
+            right.value.end()) {
             return false;
         }
     }
@@ -324,7 +308,7 @@ bool VariableAssignmentExpression::operator<(
 template <>
 bool VariableAssignmentExpression::operator!=(
     const VariableAssignmentExpression &right) const {
-    return !(value == right.value);
+    return value != right.value;
 }
 
 template <>

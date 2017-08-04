@@ -8,8 +8,6 @@
 #include <functional>
 
 using Domains = std::map<ID, unsigned int>;
-using NumericEvmdd = Evmdd<NumericExpression>;
-using VariableEvmdd = Evmdd<VariableAssignmentExpression>;
 
 template <typename T>
 class CreateEvmdd {
@@ -22,7 +20,7 @@ private:
     Evmdd<T> apply(std::vector<Evmdd<T>> const &evmdds, F op) {
         if (evmdds.size() == 1) {
             Evmdd<T> result = evmdds.front();
-            // No unary apply implemented equals apply on same vmdd
+            // No unary apply implemented equals apply on same evmdd
             return factory.apply(result, result, op);
         }
 

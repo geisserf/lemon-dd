@@ -2,11 +2,11 @@
 #define NUMERIC_CATAMORPH_EVMDD_H
 
 #include "node.h"
+
 #include <algorithm>
 #include <cassert>
 #include <functional>
 #include <map>
-#include <memory>
 #include <memory>
 #include <ostream>
 #include <string>
@@ -30,7 +30,6 @@ private:
 
     Evmdd(T input, std::shared_ptr<Node<T> const> entry_node)
         : input_value(input), entry_node(entry_node) {}
-
     template <typename R>
     friend class EvmddFactory;
 
@@ -69,7 +68,12 @@ public:
     }
 
     std::shared_ptr<Node<T> const> get_entry_node() const {
+        assert(entry_node);
         return entry_node;
+    }
+
+    T get_input_value() const {
+        return input_value;
     }
 };
 
@@ -102,7 +106,7 @@ public:
     }
 
     // Creates a new evmdd representing the term 'left oper right'
-    template <typename F, typename L, typename R>
+    template <typename L, typename R, typename F>
     Evmdd<T> apply(Evmdd<L> const &left, Evmdd<R> const &right, F oper) {
         if (terminal_case(left, right, oper)) {
             return make_terminal_evmdd(left, right, oper);
@@ -117,12 +121,13 @@ public:
         // nodes
         int root_level;
         std::string var;
-        if (left.entry_node->get_level() <= right.entry_node->get_level()) {
+        if (left.get_entry_node()->get_level() <=
+            right.get_entry_node()->get_level()) {
             root_level = right.entry_node->get_level();
             var = right.entry_node->get_variable();
         } else {
-            root_level = left.entry_node->get_level();
-            var = left.entry_node->get_variable();
+            root_level = left.get_entry_node()->get_level();
+            var = left.get_entry_node()->get_variable();
         }
 
         std::vector<Evmdd<T>> new_children;
@@ -139,15 +144,16 @@ private:
     template <typename F, typename L, typename R>
     bool terminal_case(Evmdd<L> const &left, Evmdd<R> const &right,
                        F /*oper*/) {
-        return (left.entry_node->is_terminal() &&
-                right.entry_node->is_terminal());
+        // TODO use oper to determine earlier terminal case
+        return (left.get_entry_node()->is_terminal() &&
+                right.get_entry_node()->is_terminal());
     }
 
     // computation of 'left oper right' if it is a terminal operation
     template <typename F, typename L, typename R>
     Evmdd<T> make_terminal_evmdd(Evmdd<L> const &left, Evmdd<R> const &right,
                                  F oper) {
-        T input_value = oper(left.input_value, right.input_value);
+        T input_value = oper(left.get_input_value(), right.get_input_value());
         return make_const_evmdd(input_value);
     }
 
@@ -157,34 +163,34 @@ private:
     template <typename L, typename R>
     std::vector<Evmdd<L>> sub_evmdds(Evmdd<L> const &f, Evmdd<R> const &g) {
         std::vector<Evmdd<L>> result;
-        if (f.entry_node->get_level() >= g.entry_node->get_level()) {
-            for (Edge<L> const &edge : f.entry_node->get_children()) {
-                L input = f.input_value + edge.first;
+        if (f.get_entry_node()->get_level() >=
+            g.get_entry_node()->get_level()) {
+            for (Edge<L> const &edge : f.get_entry_node()->get_children()) {
+                L input = f.get_input_value() + edge.first;
                 Evmdd<L> evmdd(input, edge.second);
                 result.push_back(evmdd);
             }
         } else {
-            for (size_t i = 0; i < g.entry_node->get_children().size(); ++i) {
+            for (size_t i = 0; i < g.get_entry_node()->get_children().size();
+                 ++i) {
                 result.push_back(f);
             }
         }
         return result;
     }
-
-    T get_min(std::vector<Evmdd<T>> const &children);
+    // returns the greatest lower bound from the input_values
+    T greatest_lower_bound(std::vector<Evmdd<T>> const &children);
 
     // Returns a evmdd with root node at level, with input value as the minimal
     // input value of all children. Weights to each child is its original
     // input value minus the minimal input value.
     Evmdd<T> create_evmdd(int level, std::string var,
                           std::vector<Evmdd<T>> const &children) {
-        // TODO min -> Numeric= min VariableAssignment = intersection
-
-        T min_weight = get_min(children);
+        T min_weight = greatest_lower_bound(children);
         std::vector<Edge<T>> edges;
         for (Evmdd<T> const &child : children) {
-            edges.emplace_back(T{child.input_value - min_weight},
-                               child.entry_node);
+            edges.emplace_back(T{child.get_input_value() - min_weight},
+                               child.get_entry_node());
         }
         std::shared_ptr<Node<T> const> root_node =
             node_factory.make_node(level, var, edges);
