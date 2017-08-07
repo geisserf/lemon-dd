@@ -1,6 +1,7 @@
 #include "evmdd.h"
 #include <algorithm>
 #include <iterator>
+#include <limits>
 #include <vector>
 
 template <>
@@ -38,7 +39,24 @@ EvmddFactory<VariableAssignmentExpression>::greatest_lower_bound(
 template <>
 TupleExpression EvmddFactory<TupleExpression>::greatest_lower_bound(
     std::vector<Evmdd<TupleExpression>> const &children) {
-    (void)children;
-    throw std::logic_error("Not Implemented");
-    return TupleExpression();
+    NumericExpression min_weight = std::numeric_limits<float>::infinity();
+    VariableAssignmentExpression intersection;
+
+    for (size_t i = 0; i < children.size(); ++i) {
+        if (children[i].input_value.value.second < min_weight) {
+            min_weight = children[i].input_value.value.second;
+        }
+
+        std::vector<VariableAssignment> tmp;
+        // TODO BUG set not sorted!!
+        std::set_intersection(children[i].input_value.value.first.value.begin(),
+                              children[i].input_value.value.first.value.end(),
+                              intersection.value.begin(),
+                              intersection.value.end(),
+                              std::back_inserter(tmp));
+
+        intersection.value = tmp;
+    }
+
+    return TupleExpression({intersection, min_weight});
 }

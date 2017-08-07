@@ -11,7 +11,8 @@ set(TEST_SOURCES
         polynomial_class_tests.cpp
         parser_tests.cpp
         evmdd_build_tests.cpp
-       iverson_evmdd_tests.cpp conditional_effect_evmdd.cpp)
+       iverson_evmdd_tests.cpp conditional_effect_evmdd.cpp 
+       combined_evmdd_tests.cpp)
 
 add_executable(Test ${TEST_SOURCES})
 target_link_libraries(Test NumericCatamorph_lib Catch)
