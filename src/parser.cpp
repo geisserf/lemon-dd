@@ -36,6 +36,14 @@ Token Lexer::getNextToken() {
     // but must not start with a number
     std::regex varRegex("((?:[[:alpha:]|_]+)(?:[[:alnum:]|_]*))(.*)");
 
+    // Iversion regex
+    std::regex lSqrBrackRegex("\\[(.*)"); // Regex for [
+    std::regex rSqrBrackRegex("\\](.*)"); // Regex for ]
+    std::regex andRegex("\\&\\&(.*)");    // Regex for && (Logical and)
+    std::regex orRegex("\\|\\|(.*)");     // Regex for || (Logical or)
+    std::regex equalsRegex("\\=\\=(.*)"); // Regex for == (Logical equals)
+    std::regex notRegex("\\!(.*)");       // Regex for ! (Logical not)
+
     Token token;
     if (std::regex_match(input, addRegex)) {
         token.type = Token::OP;
@@ -53,6 +61,22 @@ Token Lexer::getNextToken() {
         token.type = Token::OP;
         token.value = "/";
         input = std::regex_replace(input, divRegex, "$1");
+    } else if (std::regex_match(input, andRegex)) {
+        token.type = Token::OP;
+        token.value = "&&";
+        input = std::regex_replace(input, andRegex, "$1");
+    } else if (std::regex_match(input, orRegex)) {
+        token.type = Token::OP;
+        token.value = "||";
+        input = std::regex_replace(input, orRegex, "$1");
+    } else if (std::regex_match(input, equalsRegex)) {
+        token.type = Token::OP;
+        token.value = "==";
+        input = std::regex_replace(input, equalsRegex, "$1");
+    } else if (std::regex_match(input, notRegex)) {
+        token.type = Token::OP;
+        token.value = "!";
+        input = std::regex_replace(input, notRegex, "$1");
     } else if (std::regex_match(input, constantRegex)) {
         token.type = Token::CONST;
         token.value = std::regex_replace(input, constantRegex, "$1");
@@ -63,6 +87,12 @@ Token Lexer::getNextToken() {
     } else if (std::regex_match(input, rParenRegex)) {
         token.type = Token::RPAREN;
         input = std::regex_replace(input, rParenRegex, "$1");
+    } else if (std::regex_match(input, lSqrBrackRegex)) {
+        token.type = Token::LSQRBRACK;
+        input = std::regex_replace(input, lSqrBrackRegex, "$1");
+    } else if (std::regex_match(input, rSqrBrackRegex)) {
+        token.type = Token::RSQRBRACK;
+        input = std::regex_replace(input, rSqrBrackRegex, "$1");
     } else if (std::regex_match(input, varRegex)) {
         token.type = Token::VAR;
         token.value = std::regex_replace(input, varRegex, "$1");
@@ -137,6 +167,20 @@ Expression Parser::parseExpression(Lexer &lexer) const {
         throw std::invalid_argument("No matching ( for substring " +
                                     lexer.input);
         break;
+    case Token::LSQRBRACK: {
+        string const beforeRParen = lexer.input;
+        Expression expression = parseExpression(lexer);
+        token = lexer.getNextToken();
+        if (token.type != Token::RSQRBRACK) {
+            throw std::invalid_argument("Missing ] for substring " +
+                                        beforeRParen);
+        }
+        return expression;
+        break;
+    }
+    case Token::RSQRBRACK:
+        throw std::invalid_argument("No matching [ for substring " +
+                                    lexer.input);
     default:
         throw std::invalid_argument("Illegal expression: " + lexer.input);
         break;
@@ -172,6 +216,14 @@ Expression Parser::parseOpExpression(Lexer &lexer) const {
         return Factories::sub(exprs);
     } else if (opType == "*") {
         return Factories::mul(exprs);
+    } else if (opType == "&&") {
+        return Factories::land(exprs);
+    } else if (opType == "||") {
+        return Factories::lor(exprs);
+    } else if (opType == "==") {
+        return Factories::equals(exprs);
+    } else if (opType == "!") {
+        return Factories::lnot(exprs);
     } else {
         throw std::invalid_argument("Unknown operator:" + opType);
     }
@@ -192,7 +244,8 @@ Expression InfixParser::parseExpression(Lexer &lexer) const {
         Expression rhs = parseTerm(lexer);
         Token next_token = lexer.getNextToken();
         lexer.revert();
-        if (next_token.type != Token::END && next_token.type != Token::RPAREN) {
+        if (next_token.type != Token::END && next_token.type != Token::RPAREN &&
+            next_token.type != Token::RSQRBRACK) {
             throw std::invalid_argument(
                 "Expected expression to end or ')' for " + lexer.input);
         }
@@ -205,6 +258,12 @@ Expression InfixParser::parseExpression(Lexer &lexer) const {
         break;
     }
     case Token::RPAREN: {
+        // expression is part of a factor, leave syntax check to factor function
+        lexer.revert();
+        return lhs;
+        break;
+    }
+    case Token::RSQRBRACK: {
         // expression is part of a factor, leave syntax check to factor function
         lexer.revert();
         return lhs;
@@ -253,6 +312,10 @@ Expression InfixParser::parseFactor(Lexer &lexer) const {
         if (token.value == "-") {
             return Factories::sub({Factories::cst(0), parseExpression(lexer)});
         }
+        if (token.value == "!") {
+            return Factories::lnot({parseExpression(lexer)});
+        }
+
         throw std::invalid_argument("Expected unary operator in factor " +
                                     lexer.input);
         break;
@@ -268,10 +331,27 @@ Expression InfixParser::parseFactor(Lexer &lexer) const {
         return expression;
         break;
     }
-    case Token::RPAREN:
+    case Token::RPAREN: {
         throw std::invalid_argument("No matching ( for substring " +
                                     lexer.input);
         break;
+    }
+    case Token::LSQRBRACK: {
+        string const beforeRParen = lexer.input;
+        Expression expression = parseExpression(lexer);
+        token = lexer.getNextToken();
+        if (token.type != Token::RSQRBRACK) {
+            throw std::invalid_argument("Missing ] for substring " +
+                                        beforeRParen);
+        }
+        return expression;
+        break;
+    }
+    case Token::RSQRBRACK: {
+        throw std::invalid_argument("No matching [ for substring " +
+                                    lexer.input);
+        break;
+    }
     default:
         throw std::invalid_argument("Illegal factor: " + lexer.input);
         break;
@@ -289,6 +369,14 @@ Expression InfixParser::createExpression(Expression const &lhs, Token op,
         return Factories::mul(exprs);
     } else if (op.value == "/") {
         return Factories::div(exprs);
+    } else if (op.value == "&&") {
+        return Factories::land(exprs);
+    } else if (op.value == "||") {
+        return Factories::lor(exprs);
+    } else if (op.value == "==") {
+        return Factories::equals(exprs);
+    } else if (op.value == "!") {
+        return Factories::lnot(exprs);
     } else {
         throw std::invalid_argument("Unknown operator:" + op.value);
     }

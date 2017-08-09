@@ -4,7 +4,17 @@
 #include <string>
 
 struct Token {
-    enum Type { OP, CONST, LPAREN, RPAREN, VAR, END, INVALID };
+    enum Type {
+        OP,
+        CONST,
+        LPAREN,
+        RPAREN,
+        LSQRBRACK,
+        RSQRBRACK,
+        VAR,
+        END,
+        INVALID
+    };
 
     Token(Type _type = INVALID, std::string val = "")
         : type(_type), value(val) {}
@@ -54,7 +64,7 @@ class Expression;
 class Parser {
     // EBNF of our context free grammar:
     // sign = "+" | "-"
-    // op =  sign | "*"
+    // op =  sign | "*" | "/" | "&&" | "||" | "!" | "=="
     // digit = "0"|...|"9"
     // number = [sign] {digit}[.{digit}]
     // variable = [{digit}]{"a"|"A",...,"z"|"Z"|"_"}[{digit}]
