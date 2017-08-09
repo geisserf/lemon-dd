@@ -2,6 +2,7 @@
 #include "conditional_effects.h"
 #include "parser.h"
 #include "polynomial.h"
+#include <iostream>
 
 TupleExpression merge::operator()(
     const NumericExpression &first,

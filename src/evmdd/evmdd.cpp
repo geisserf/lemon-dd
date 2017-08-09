@@ -23,13 +23,18 @@ EvmddFactory<VariableAssignmentExpression>::greatest_lower_bound(
     std::vector<Evmdd<VariableAssignmentExpression>> const &children) {
     // intersection
     VariableAssignmentExpression intersection;
-    for (size_t i = 0; i < children.size(); ++i) {
+    intersection.value = children[0].input_value.value;
+
+    for (size_t i = 1; i < children.size(); ++i) {
         std::vector<VariableAssignment> tmp;
-        // TODO BUG set not sorted!!
-        std::set_intersection(
-            children[i].input_value.value.begin(),
-            children[i].input_value.value.end(), intersection.value.begin(),
-            intersection.value.end(), std::back_inserter(tmp));
+        auto tmp_child = children[i].input_value.value;
+
+        for (VariableAssignment va : intersection.value) {
+            if (std::find(tmp_child.begin(), tmp_child.end(), va) !=
+                tmp_child.end()) {
+                tmp.push_back(va);
+            }
+        }
 
         intersection.value = tmp;
     }
@@ -39,21 +44,24 @@ EvmddFactory<VariableAssignmentExpression>::greatest_lower_bound(
 template <>
 TupleExpression EvmddFactory<TupleExpression>::greatest_lower_bound(
     std::vector<Evmdd<TupleExpression>> const &children) {
-    NumericExpression min_weight = std::numeric_limits<float>::infinity();
+    NumericExpression min_weight;
+    min_weight.value = children[0].input_value.value.second.value;
     VariableAssignmentExpression intersection;
-
-    for (size_t i = 0; i < children.size(); ++i) {
-        if (children[i].input_value.value.second < min_weight) {
-            min_weight = children[i].input_value.value.second;
+    intersection.value = children[0].input_value.value.first.value;
+    for (size_t i = 1; i < children.size(); ++i) {
+        if (children[i].input_value.value.second.value < min_weight.value) {
+            min_weight.value = children[i].input_value.value.second.value;
         }
 
         std::vector<VariableAssignment> tmp;
-        // TODO BUG set not sorted!!
-        std::set_intersection(children[i].input_value.value.first.value.begin(),
-                              children[i].input_value.value.first.value.end(),
-                              intersection.value.begin(),
-                              intersection.value.end(),
-                              std::back_inserter(tmp));
+        auto tmp_child = children[i].input_value.value.first.value;
+
+        for (VariableAssignment va : intersection.value) {
+            if (std::find(tmp_child.begin(), tmp_child.end(), va) !=
+                tmp_child.end()) {
+                tmp.push_back(va);
+            }
+        }
 
         intersection.value = tmp;
     }

@@ -295,13 +295,24 @@ bool VariableAssignmentExpression::operator==(
 template <>
 bool VariableAssignmentExpression::operator<(
     const VariableAssignmentExpression &right) const {
-    for (VariableAssignment const &va : value) {
-        if (std::find(right.value.begin(), right.value.end(), va) ==
-            right.value.end()) {
+    if (value.size() != right.value.size()) {
+        return value.size() < right.value.size();
+    }
+
+    for (size_t i = 0; i < value.size(); ++i) {
+        if (!(value[i] < right.value[i])) {
             return false;
         }
     }
 
+    /*
+        for (VariableAssignment const &va : value) {
+            if (std::find(right.value.begin(), right.value.end(), va) ==
+                right.value.end()) {
+                return false;
+            }
+        }
+    */
     return true;
 }
 
@@ -351,6 +362,7 @@ least_upper_bound<VariableAssignmentExpression>::operator()(
     const std::vector<VariableAssignmentExpression> &b) const {
     (void)a;
     (void)b;
+    throw std::logic_error("Least upper bound VAE Not Implemented");
     std::vector<VariableAssignmentExpression> result;
     return result;
 }
@@ -368,36 +380,36 @@ TupleExpression TupleExpression::identity() {
 
 template <>
 TupleExpression TupleExpression::operator+(const TupleExpression &right) const {
-    TupleExpression *tupleExpression = new TupleExpression();
-    tupleExpression->value.first = this->value.first + right.value.first;
-    tupleExpression->value.second = this->value.second + right.value.second;
-    return *tupleExpression;
+    TupleExpression tupleExpression;
+    tupleExpression.value.first = value.first + right.value.first;
+    tupleExpression.value.second = value.second + right.value.second;
+    return tupleExpression;
 }
 
 template <>
 TupleExpression TupleExpression::operator-(const TupleExpression &right) const {
-    TupleExpression *tupleExpression = new TupleExpression();
-    tupleExpression->value.first = this->value.first - right.value.first;
-    tupleExpression->value.second = this->value.second - right.value.second;
-    return *tupleExpression;
+    TupleExpression tupleExpression;
+    tupleExpression.value.first = value.first - right.value.first;
+    tupleExpression.value.second = value.second - right.value.second;
+    return tupleExpression;
 }
 
 template <>
 TupleExpression TupleExpression::operator*(
     const EvmddExpression<std::pair<VariableAssignmentExpression,
                                     NumericExpression>> &right) const {
-    TupleExpression *tupleExpression = new TupleExpression();
-    tupleExpression->value.first = this->value.first * right.value.first;
-    tupleExpression->value.second = this->value.second * right.value.second;
-    return *tupleExpression;
+    TupleExpression tupleExpression;
+    tupleExpression.value.first = value.first * right.value.first;
+    tupleExpression.value.second = value.second * right.value.second;
+    return tupleExpression;
 }
 
 template <>
 TupleExpression TupleExpression::operator/(const TupleExpression &right) const {
-    TupleExpression *tupleExpression = new TupleExpression();
-    tupleExpression->value.first = this->value.first / right.value.first;
-    tupleExpression->value.second = this->value.second / right.value.second;
-    return *tupleExpression;
+    TupleExpression tupleExpression;
+    tupleExpression.value.first = value.first / right.value.first;
+    tupleExpression.value.second = value.second / right.value.second;
+    return tupleExpression;
 }
 
 template <>
@@ -459,6 +471,7 @@ std::vector<TupleExpression> least_upper_bound<TupleExpression>::operator()(
     (void)a;
     (void)b;
     std::vector<TupleExpression> result;
+    throw std::logic_error("LUB TupleExpression Not implemented");
     return result;
 }
 
@@ -471,8 +484,10 @@ template <>
 bool TupleExpression::operator<(const TupleExpression &right) const {
     // return
     // std::less(this->value.begin(),this->value.end(),right.value.begin());
-    (void)right;
-    return false;
+
+    return value.first < right.value.first || value.second < right.value.second;
+
+    //    return false;
 }
 
 /* Variable Assignment */
@@ -485,7 +500,12 @@ bool VariableAssignment::operator!=(const VariableAssignment &rhs) const {
 }
 
 bool VariableAssignment::operator<(const VariableAssignment &rhs) const {
-    return this->variable < rhs.variable && this->value < rhs.value;
+    if (variable < rhs.variable) {
+        return true;
+    } else if (variable == rhs.variable) {
+        return value < rhs.value;
+    }
+    return false;
 }
 
 std::string VariableAssignment::toString() const {

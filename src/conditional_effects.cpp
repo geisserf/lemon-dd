@@ -27,6 +27,7 @@ Evmdd<VariableAssignmentExpression> ConditionalEffect::create_evmdd(
 
     Evmdd<VariableAssignmentExpression> effect_evmdd = factory.make_const_evmdd(
         VariableAssignmentExpression({{effect, value}}));
+
     return factory.apply(condition_evmdd, effect_evmdd, convert_numeric_set());
 }
 
