@@ -5,7 +5,7 @@
 
 #include "Catch/include/catch.hpp"
 #include <iostream>
-
+using std::endl;
 SCENARIO("Testing combining numeric anc Conditional effect EVMDDs",
          "[combined]") {
     GIVEN("CE: x=x+1, Cost x=x+1, Domain x=0..4") {
@@ -94,7 +94,42 @@ SCENARIO("Testing combining numeric anc Conditional effect EVMDDs",
         auto combined_evmdd = combined.create_evmdd(d, o);
         WHEN("No evaluation") {
             THEN("evmdd should be: ") {
-                combined_evmdd.print(std::cout);
+                std::stringstream ss;
+                combined_evmdd.print(ss);
+                std::stringstream expected;
+                expected << "input value: ({ w=1}, 1) nodes:" << endl;
+                expected << "ID: 7(x)" << endl;
+                expected << "  w[0]: ({ v=0}, 0)" << endl
+                         << "    ID: 3(y)" << endl;
+                expected << "      w[0]: ({}, 0)" << endl
+                         << "        ID: 1(z)" << endl;
+                expected << "          w[0]: ({}, 0)" << endl
+                         << "            ID: 0( )" << endl;
+                expected << "          w[1]: ({}, 1)" << endl
+                         << "            ID: 0( )" << endl;
+                expected << "      w[1]: ({ z=0}, 1)" << endl
+                         << "        ID: 2(z)" << endl;
+                expected << "          w[0]: ({}, 0)" << endl
+                         << "            ID: 0( )" << endl;
+                expected << "          w[1]: ({}, 2)" << endl
+                         << "            ID: 0( )" << endl;
+                expected << "  w[1]: ({ u=1 z=0}, 1)" << endl
+                         << "    ID: 6(y)" << endl;
+                expected << "      w[0]: ({}, 0)" << endl
+                         << "        ID: 4(z)" << endl;
+                expected << "          w[0]: ({}, 0)" << endl
+                         << "            ID: 0( )" << endl;
+                expected << "          w[1]: ({ v=1}, 1)" << endl
+                         << "            ID: 0( )" << endl;
+                expected << "      w[1]: ({}, 1)" << endl
+                         << "        ID: 5(z)" << endl;
+                expected << "          w[0]: ({}, 0)" << endl
+                         << "            ID: 0( )" << endl;
+                expected << "          w[1]: ({ v=1}, 2)" << endl
+                         << "            ID: 0( )" << endl;
+                REQUIRE(ss.str() == expected.str());
+
+                // combined_evmdd.print(std::cout);
             }
         }
     }
