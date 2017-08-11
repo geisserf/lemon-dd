@@ -9,13 +9,14 @@
 #include <iostream>
 #include <sys/stat.h>
 
-void execute_benchmark(std::string name, std::string expression) {
+void execute_benchmark(std::string name, std::string expression,
+                       std::string result_file) {
     std::cout << "Executing " << name << std::endl;
 
-    // std::chrono::time_point<std::chrono::system_clock> start, end;
+    std::chrono::time_point<std::chrono::system_clock> start, end;
 
     Polynomial p = Polynomial(expression);
-    /*
+
     std::set<ID> variables = Dependency::dependencies(p.getExpression());
 
     Domains d;
@@ -35,11 +36,14 @@ void execute_benchmark(std::string name, std::string expression) {
     int elapsed_seconds =
         std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
             .count();
+
+    std::ofstream r_file(result_file, std::ios_base::app);
+
+    if (r_file.is_open()) {
+        r_file << name << ", " << std::to_string(elapsed_seconds) << std::endl;
+    }
+
     std::cout << "Duration: " << std::to_string(elapsed_seconds) << std::endl;
-
-    */
-
-    std::cout << "Done" << std::endl;
 }
 
 int main() {
@@ -50,6 +54,11 @@ int main() {
     std::string directory = "benchmarkfiles/Prost";
 
     dir = opendir(directory.c_str());
+    std::string result_file = "benchmarkfiles/evmdd_create_results";
+    std::ofstream r_file(result_file);
+    if (r_file.is_open()) {
+        r_file << "File, Milliseconds" << std::endl;
+    }
 
     if (dir) {
         while ((ent = readdir(dir)) != NULL) {
@@ -76,7 +85,7 @@ int main() {
                 while (std::getline(benchmark_file, line)) {
                     expression = expression + " " + line;
                 }
-                execute_benchmark(file_name, expression);
+                execute_benchmark(file_name, expression, result_file);
             }
         }
     }
