@@ -1,21 +1,26 @@
 #ifndef PARSER_H
 #define PARSER_H
 
+#include <map>
+#include <stack>
 #include <string>
 
-struct Token {
-    enum Type {
-        OP,
-        CONST,
-        LPAREN,
-        RPAREN,
-        LSQRBRACK,
-        RSQRBRACK,
-        VAR,
-        END,
-        INVALID
-    };
+static std::map<std::string, int> op_precedence{
+    {"sentinel", 0}, {"-", 1},  {"+", 2},  {"/", 3}, {"*", 4},
+    {"==", 5},       {"||", 6}, {"&&", 7}, {"!", 8}};
 
+enum Type {
+    OP,
+    CONST,
+    LPAREN,
+    RPAREN,
+    LSQRBRACK,
+    RSQRBRACK,
+    VAR,
+    END,
+    INVALID
+};
+struct Token {
     Token(Type _type = INVALID, std::string val = "")
         : type(_type), value(val) {}
 
@@ -30,7 +35,7 @@ struct Token {
 class Lexer {
 public:
     Lexer(std::string const &s)
-        : input(s), previousToken(Token(Token::END)), returnPrevToken(false) {}
+        : input(s), previousToken(Token(Type::END)), returnPrevToken(false) {}
 
     // Generates the next token and removes it from the input string
     Token getNextToken();
@@ -81,25 +86,53 @@ private:
 
 class InfixParser {
     // EBNF
-    // expression = [(] term { ("+" | "-") term} [)]
-    // term = factor { ("*" | "/") factor}
-    // factor = {"+" | "-" } (constant |  variable | "(" expression ")")
-    // variable = [{"+"|"-"}] {"a"|"A",...,"z"|"Z"|"_"}[{digit}]
-    // number = [{"+"|"-"}]{digit}[.{digit}]
-    // digit = "0"|...|"9"
+    // Expression --> (P | LogicEXP) (BinaryOP P)*
+    // P --> variable| number | "(" Expression ")" | UnaryOP P | LogixEXP
+    // BinaryOP --> "+" | "-" | "*" | "/"
+    // UnaryOP --> "-"
+    //
+    // LogicEXP --> ("[" LP (LogicBinaryOP LP)* "]")*
+    // LP --> variable | number | LogicUnaryOP LP | LogicEXP
+    // LogicBinaryOP --> "&&" | "||" | "=="
+    // LogicUnaryOP "!"
 
 public:
     // Parses the string and returns an expression or throws an error
-    Expression parse(std::string const &input) const;
+    Expression parse(std::string const &input);
 
 private:
-    // Parse functions for BNF parts
-    Expression parseExpression(Lexer &lexer) const;
-    Expression parseTerm(Lexer &lexer) const;
-    Expression parseFactor(Lexer &lexer) const;
+    void E(Lexer &lexer);
+    void P(Lexer &lexer);
+
+    void LP(Lexer &lexer);
+    void LogicEXP(Lexer &lexer);
+
+    bool isBinaryOperator(Token const &token);
+    bool isUnaryOperator(Token const &token);
+    bool isLogicalBinaryOperator(Token const &token);
+    bool isLogicalUnaryOperator(Token const &token);
+    void expect(Type type, Lexer &lexer);
+    void pushOperator(Token const &token);
+    void popOperator();
+    bool hasHigherPrecedence(Token const &first, Token const &second);
+
+    /*
+        // Parse functions for BNF parts
+        Expression parseExpression(Lexer &lexer) const;
+        Expression parseTerm(Lexer &lexer) const;
+        Expression parseFactor(Lexer &lexer) const;
+        */
     // Creates an expression of type op(lhs, rhs)
     Expression createExpression(Expression const &lhs, Token op,
                                 Expression const &rhs) const;
+
+    Expression createUnaryExpression(Expression const &exp, Token op) const;
+
+    std::stack<Token> operators;
+    std::stack<Expression> operands;
+
+    Token next;
+    void consume(Lexer &lexer);
 };
 
 #endif /* PARSER_H */

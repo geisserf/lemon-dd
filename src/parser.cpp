@@ -46,61 +46,61 @@ Token Lexer::getNextToken() {
 
     Token token;
     if (std::regex_match(input, addRegex)) {
-        token.type = Token::OP;
+        token.type = Type::OP;
         token.value = "+";
         input = std::regex_replace(input, addRegex, "$1");
     } else if (std::regex_match(input, subRegex)) {
-        token.type = Token::OP;
+        token.type = Type::OP;
         token.value = "-";
         input = std::regex_replace(input, subRegex, "$1");
     } else if (std::regex_match(input, multRegex)) {
-        token.type = Token::OP;
+        token.type = Type::OP;
         token.value = "*";
         input = std::regex_replace(input, multRegex, "$1");
     } else if (std::regex_match(input, divRegex)) {
-        token.type = Token::OP;
+        token.type = Type::OP;
         token.value = "/";
         input = std::regex_replace(input, divRegex, "$1");
     } else if (std::regex_match(input, andRegex)) {
-        token.type = Token::OP;
+        token.type = Type::OP;
         token.value = "&&";
         input = std::regex_replace(input, andRegex, "$1");
     } else if (std::regex_match(input, orRegex)) {
-        token.type = Token::OP;
+        token.type = Type::OP;
         token.value = "||";
         input = std::regex_replace(input, orRegex, "$1");
     } else if (std::regex_match(input, equalsRegex)) {
-        token.type = Token::OP;
+        token.type = Type::OP;
         token.value = "==";
         input = std::regex_replace(input, equalsRegex, "$1");
     } else if (std::regex_match(input, notRegex)) {
-        token.type = Token::OP;
+        token.type = Type::OP;
         token.value = "!";
         input = std::regex_replace(input, notRegex, "$1");
     } else if (std::regex_match(input, constantRegex)) {
-        token.type = Token::CONST;
+        token.type = Type::CONST;
         token.value = std::regex_replace(input, constantRegex, "$1");
         input = std::regex_replace(input, constantRegex, "$2");
     } else if (std::regex_match(input, lParenRegex)) {
-        token.type = Token::LPAREN;
+        token.type = Type::LPAREN;
         input = std::regex_replace(input, lParenRegex, "$1");
     } else if (std::regex_match(input, rParenRegex)) {
-        token.type = Token::RPAREN;
+        token.type = Type::RPAREN;
         input = std::regex_replace(input, rParenRegex, "$1");
     } else if (std::regex_match(input, lSqrBrackRegex)) {
-        token.type = Token::LSQRBRACK;
+        token.type = Type::LSQRBRACK;
         input = std::regex_replace(input, lSqrBrackRegex, "$1");
     } else if (std::regex_match(input, rSqrBrackRegex)) {
-        token.type = Token::RSQRBRACK;
+        token.type = Type::RSQRBRACK;
         input = std::regex_replace(input, rSqrBrackRegex, "$1");
     } else if (std::regex_match(input, varRegex)) {
-        token.type = Token::VAR;
+        token.type = Type::VAR;
         token.value = std::regex_replace(input, varRegex, "$1");
         input = std::regex_replace(input, varRegex, "$2");
     } else if (input.empty()) {
-        token.type = Token::END;
+        token.type = Type::END;
     }
-    if (token.type == Token::INVALID) {
+    if (token.type == Type::INVALID) {
         string error = "Illegal token at start of substring: \"" + input;
         error += "\"";
         throw std::invalid_argument(error);
@@ -142,43 +142,43 @@ Expression Parser::parse(string const &input) const {
 Expression Parser::parseExpression(Lexer &lexer) const {
     Token token = lexer.getNextToken();
     switch (token.type) {
-    case Token::CONST:
+    case Type::CONST:
         return Factories::cst(stod(token.value));
         break;
-    case Token::VAR:
+    case Type::VAR:
         return Factories::var(token.value);
         break;
-    case Token::OP:
+    case Type::OP:
         lexer.revert();
         return parseOpExpression(lexer);
         break;
-    case Token::LPAREN: {
+    case Type::LPAREN: {
         string const beforeRParen = lexer.input;
         Expression expression = parseExpression(lexer);
         token = lexer.getNextToken();
-        if (token.type != Token::RPAREN) {
+        if (token.type != Type::RPAREN) {
             throw std::invalid_argument("Missing ) for substring " +
                                         beforeRParen);
         }
         return expression;
         break;
     }
-    case Token::RPAREN:
+    case Type::RPAREN:
         throw std::invalid_argument("No matching ( for substring " +
                                     lexer.input);
         break;
-    case Token::LSQRBRACK: {
+    case Type::LSQRBRACK: {
         string const beforeRParen = lexer.input;
         Expression expression = parseExpression(lexer);
         token = lexer.getNextToken();
-        if (token.type != Token::RSQRBRACK) {
+        if (token.type != Type::RSQRBRACK) {
             throw std::invalid_argument("Missing ] for substring " +
                                         beforeRParen);
         }
         return expression;
         break;
     }
-    case Token::RSQRBRACK:
+    case Type::RSQRBRACK:
         throw std::invalid_argument("No matching [ for substring " +
                                     lexer.input);
     default:
@@ -189,14 +189,14 @@ Expression Parser::parseExpression(Lexer &lexer) const {
 
 Expression Parser::parseOpExpression(Lexer &lexer) const {
     Token token = lexer.getNextToken();
-    assert(token.type == Token::OP);
+    assert(token.type == Type::OP);
     string opType = token.value;
 
     string const beforeRParen = lexer.input;
     token = lexer.getNextToken();
     vector<Expression> exprs;
-    while (token.type != Token::RPAREN) {
-        if (token.type == Token::END) {
+    while (token.type != Type::RPAREN) {
+        if (token.type == Type::END) {
             throw std::invalid_argument("Missing ) for substring " +
                                         beforeRParen);
         }
@@ -229,11 +229,167 @@ Expression Parser::parseOpExpression(Lexer &lexer) const {
     }
 }
 
-Expression InfixParser::parse(string const &input) const {
-    Lexer lexer(input);
-    return parseExpression(lexer);
+bool InfixParser::isBinaryOperator(Token const &token) {
+    return (token.value == "+" || token.value == "-" || token.value == "*" ||
+            token.value == "/");
 }
 
+bool InfixParser::isUnaryOperator(Token const &token) {
+    return token.value == "-";
+}
+
+bool InfixParser::hasHigherPrecedence(Token const &first, Token const &second) {
+    return op_precedence.at(first.value) > op_precedence.at(second.value);
+}
+
+bool InfixParser::isLogicalBinaryOperator(Token const &token) {
+    return (token.value == "&&" || token.value == "||" || token.value == "==");
+}
+
+bool InfixParser::isLogicalUnaryOperator(Token const &token) {
+    return (token.value == "!");
+}
+
+void InfixParser::expect(Type type, Lexer &lexer) {
+    if (type == next.type) {
+        consume(lexer);
+    } else {
+        throw std::invalid_argument("Expected " + std::to_string(type) +
+                                    " was " + std::to_string(next.type));
+    }
+}
+
+void InfixParser::popOperator() {
+    if (isBinaryOperator(operators.top()) ||
+        isLogicalBinaryOperator(operators.top())) {
+        Expression lhs = operands.top();
+        operands.pop();
+        Expression rhs = operands.top();
+        operands.pop();
+        operands.push(createExpression(rhs, operators.top(), lhs));
+        operators.pop();
+    } else {
+        Expression lhs = operands.top();
+        operands.pop();
+        operands.push(createUnaryExpression(lhs, operators.top()));
+        operators.pop();
+    }
+}
+
+void InfixParser::pushOperator(Token const &token) {
+    while (hasHigherPrecedence(operators.top(), token)) {
+        popOperator();
+    }
+    operators.push(token);
+}
+
+void InfixParser::consume(Lexer &lexer) {
+    next = lexer.getNextToken();
+}
+
+Expression InfixParser::parse(string const &input) {
+    Lexer lexer(input);
+    next = lexer.getNextToken();
+    Token sentinel = Token(Type::OP, "sentinel");
+    operators.push(sentinel);
+    E(lexer);
+    expect(Type::END, lexer);
+    return operands.top();
+
+    // return parseExpression(lexer);
+}
+
+void InfixParser::E(Lexer &lexer) {
+    if (next.type == Type::LSQRBRACK) {
+        LogicEXP(lexer);
+    } else {
+        P(lexer);
+    }
+    while (isBinaryOperator(next)) {
+        pushOperator(next);
+        consume(lexer);
+        P(lexer);
+    }
+
+    while (operators.top().value != "sentinel") {
+        popOperator();
+    }
+}
+
+void InfixParser::P(Lexer &lexer) {
+    if (next.type == Type::VAR) {
+        operands.push(Factories::var(next.value));
+        consume(lexer);
+    } else if (next.type == Type::CONST) {
+        operands.push(Factories::cst(stod(next.value)));
+        consume(lexer);
+    } else if (next.type == Type::LPAREN) {
+        consume(lexer);
+        Token sentinel = Token(Type::OP, "sentinel");
+        operators.push(sentinel);
+        E(lexer);
+        expect(Type::RPAREN, lexer);
+        operators.pop();
+    } else if (isUnaryOperator(next)) {
+        pushOperator(next);
+        consume(lexer);
+        P(lexer);
+    } else if (next.type == Type::LSQRBRACK) {
+        LogicEXP(lexer);
+    } else {
+        throw std::invalid_argument(
+            "P Unknown Token \"" + std::to_string(next.type) +
+            "\" with value: \"" + next.value + "\" at " + lexer.input);
+    }
+}
+
+void InfixParser::LogicEXP(Lexer &lexer) {
+    if (next.type != Type::LSQRBRACK) {
+        throw std::invalid_argument("exprected [");
+    }
+    Token sentinel = Token(Type::OP, "sentinel");
+    operators.push(sentinel);
+    consume(lexer); // consume [
+    LP(lexer);
+    while (isLogicalBinaryOperator(next)) {
+        std::cout << "Binary: " << next.value << std::endl;
+        pushOperator(next);
+        consume(lexer);
+        LP(lexer);
+    }
+
+    expect(Type::RSQRBRACK, lexer);
+
+    while (operators.top().value != "sentinel") {
+        popOperator();
+    }
+}
+
+void InfixParser::LP(Lexer &lexer) {
+    if (next.type == Type::VAR) {
+        std::cout << "VAR: " << next.value << std::endl;
+        operands.push(Factories::var(next.value));
+        consume(lexer);
+    } else if (next.type == Type::CONST) {
+        std::cout << "Const: " << next.value << std::endl;
+        operands.push(Factories::cst(stod(next.value)));
+        consume(lexer);
+    } else if (isLogicalUnaryOperator(next)) {
+        std::cout << "L Unary: " << next.value << std::endl;
+        pushOperator(next);
+        consume(lexer);
+        LP(lexer);
+    } else if (next.type == Type::LSQRBRACK) {
+        std::cout << "New Exp: " << next.value << std::endl;
+        LogicEXP(lexer);
+    } else {
+        throw std::invalid_argument(
+            " LP Unknown Token \"" + std::to_string(next.type) +
+            "\" with value \"" + next.value + "\" at " + lexer.input);
+    }
+}
+
+/*
 Expression InfixParser::parseExpression(Lexer &lexer) const {
     Expression lhs = parseTerm(lexer);
     Token token = lexer.getNextToken();
@@ -357,7 +513,7 @@ Expression InfixParser::parseFactor(Lexer &lexer) const {
         break;
     }
 }
-
+*/
 Expression InfixParser::createExpression(Expression const &lhs, Token op,
                                          Expression const &rhs) const {
     vector<Expression> exprs{lhs, rhs};
@@ -378,6 +534,19 @@ Expression InfixParser::createExpression(Expression const &lhs, Token op,
     } else if (op.value == "!") {
         return Factories::lnot(exprs);
     } else {
-        throw std::invalid_argument("Unknown operator:" + op.value);
+        throw std::invalid_argument("Unknown binary operator:" + op.value);
+    }
+}
+
+Expression InfixParser::createUnaryExpression(Expression const &exp,
+                                              Token op) const {
+    if (op.value == "!") {
+        vector<Expression> exprs{exp};
+        return Factories::lnot(exprs);
+    } else if (op.value == "-") {
+        vector<Expression> exprs{Factories::cst(0), exp};
+        return Factories::sub(exprs);
+    } else {
+        throw std::invalid_argument("Unknown unary operator:" + op.value);
     }
 }
