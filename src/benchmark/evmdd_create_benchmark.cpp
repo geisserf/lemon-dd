@@ -3,7 +3,6 @@
 
 #include <chrono>
 #include <dirent.h>
-#include <dirent.h>
 #include <fstream>
 #include <fstream>
 #include <gperftools/profiler.h>
@@ -13,9 +12,10 @@
 void execute_benchmark(std::string name, std::string expression) {
     std::cout << "Executing " << name << std::endl;
 
-    std::chrono::time_point<std::chrono::system_clock> start, end;
+    // std::chrono::time_point<std::chrono::system_clock> start, end;
 
     Polynomial p = Polynomial(expression);
+    /*
     std::set<ID> variables = Dependency::dependencies(p.getExpression());
 
     Domains d;
@@ -36,6 +36,10 @@ void execute_benchmark(std::string name, std::string expression) {
         std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
             .count();
     std::cout << "Duration: " << std::to_string(elapsed_seconds) << std::endl;
+
+    */
+
+    std::cout << "Done" << std::endl;
 }
 
 int main() {
@@ -63,7 +67,7 @@ int main() {
             if (is_directory)
                 continue;
 
-            // std::cout << "File: " << full_file_name << std::endl;
+            std::cout << "File: " << full_file_name << std::endl;
 
             std::ifstream benchmark_file(full_file_name);
             if (benchmark_file.is_open()) {

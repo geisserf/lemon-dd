@@ -138,4 +138,14 @@ SCENARIO("Testing parsing infix to prefix", "[infixparser]") {
             }
         }
     }
+
+    GIVEN("The Expression (a *-5)") {
+        std::string e = "(a * -5)";
+        Polynomial p = Polynomial(e);
+        WHEN("No evaluation") {
+            THEN("Result should be") {
+                REQUIRE(p.toString() == "(* a (- 0 5))");
+            }
+        }
+    }
 }

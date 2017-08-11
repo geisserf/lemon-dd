@@ -239,6 +239,13 @@ bool InfixParser::isUnaryOperator(Token const &token) {
 }
 
 bool InfixParser::hasHigherPrecedence(Token const &first, Token const &second) {
+    if (!second.binary && second.value == "-") {
+        return false;
+    }
+    if (!first.binary && first.value == "-") {
+        return true;
+    }
+
     return op_precedence.at(first.value) > op_precedence.at(second.value);
 }
 
@@ -260,8 +267,11 @@ void InfixParser::expect(Type type, Lexer &lexer) {
 }
 
 void InfixParser::popOperator() {
-    if (isBinaryOperator(operators.top()) ||
-        isLogicalBinaryOperator(operators.top())) {
+    // std::cout<<"Pop "<<operators.top().value<<std::endl;
+
+    if ((isBinaryOperator(operators.top()) ||
+         isLogicalBinaryOperator(operators.top())) &&
+        operators.top().binary) {
         Expression lhs = operands.top();
         operands.pop();
         Expression rhs = operands.top();
@@ -277,6 +287,7 @@ void InfixParser::popOperator() {
 }
 
 void InfixParser::pushOperator(Token const &token) {
+    // std::cout<<"push "<<token.value<<std::endl;
     while (hasHigherPrecedence(operators.top(), token)) {
         popOperator();
     }
@@ -307,6 +318,7 @@ void InfixParser::E(Lexer &lexer) {
         P(lexer);
     }
     while (isBinaryOperator(next)) {
+        // std::cout<< "Binary: "<<next.value<<std::endl;
         pushOperator(next);
         consume(lexer);
         P(lexer);
@@ -319,12 +331,15 @@ void InfixParser::E(Lexer &lexer) {
 
 void InfixParser::P(Lexer &lexer) {
     if (next.type == Type::VAR) {
+        // std::cout<< "VAR: "<<next.value<<std::endl;
         operands.push(Factories::var(next.value));
         consume(lexer);
     } else if (next.type == Type::CONST) {
+        // std::cout<< "Const: "<<next.value<<std::endl;
         operands.push(Factories::cst(stod(next.value)));
         consume(lexer);
     } else if (next.type == Type::LPAREN) {
+        // std::cout<< "LPAREN: "<<next.value<<std::endl;
         consume(lexer);
         Token sentinel = Token(Type::OP, "sentinel");
         operators.push(sentinel);
@@ -332,10 +347,13 @@ void InfixParser::P(Lexer &lexer) {
         expect(Type::RPAREN, lexer);
         operators.pop();
     } else if (isUnaryOperator(next)) {
+        // std::cout<< "unary: "<<next.value<<std::endl;
+        next.binary = false;
         pushOperator(next);
         consume(lexer);
         P(lexer);
     } else if (next.type == Type::LSQRBRACK) {
+        // std::cout<< "L Exp: "<<next.value<<std::endl;
         LogicEXP(lexer);
     } else {
         throw std::invalid_argument(
@@ -372,6 +390,7 @@ void InfixParser::LP(Lexer &lexer) {
         operands.push(Factories::cst(stod(next.value)));
         consume(lexer);
     } else if (isLogicalUnaryOperator(next)) {
+        next.binary = false;
         pushOperator(next);
         consume(lexer);
         LP(lexer);

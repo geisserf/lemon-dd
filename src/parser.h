@@ -26,6 +26,8 @@ struct Token {
 
     Type type;
 
+    bool binary = true;
+
     // Integer value for constants, name for variables, operator name for
     // operators, empty string otherwise
     std::string value;
