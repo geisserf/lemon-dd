@@ -68,11 +68,11 @@ SCENARIO("Testing combining numeric anc Conditional effect EVMDDs",
         "Cost function x+y+z+y*z+1 and the effects: (!x -> !v), (x->u), "
         "((x|y)->!z), ((x&z)->v), (True->w)") {
         std::string cost_function = "((((x+y)+z)+(y*z))+1)";
-        std::string cond_effect_1_expression = "(!(x))";
-        std::string cond_effect_2_expression = "(x)";
-        std::string cond_effect_3_expression = "(x || y)";
-        std::string cond_effect_4_expression = "(x && z)";
-        std::string cond_effect_5_expression = "(1)";
+        std::string cond_effect_1_expression = "[!x]";
+        std::string cond_effect_2_expression = "[x]";
+        std::string cond_effect_3_expression = "[x || y]";
+        std::string cond_effect_4_expression = "[x && z]";
+        std::string cond_effect_5_expression = "[1]";
         ConditionalEffect effect1 = ConditionalEffect(
             Polynomial(cond_effect_1_expression).getExpression(), "v", 0);
         ConditionalEffect effect2 = ConditionalEffect(

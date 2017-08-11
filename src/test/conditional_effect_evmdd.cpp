@@ -95,8 +95,8 @@ SCENARIO("Testing basic conditional effect EVMDD creation", "[CE_evmdd]") {
         }
     }
 
-    GIVEN("The conditional effect ((x|y)->!z)") {
-        std::string e = "(( x || y ))";
+    GIVEN("The conditional effect ([x|y]->!z)") {
+        std::string e = "[ x || y ]";
         ConditionalEffect effect =
             ConditionalEffect(Polynomial(e).getExpression(), "z", 0);
         ConditionalEffects effects = ConditionalEffects({effect});

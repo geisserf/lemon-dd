@@ -337,12 +337,8 @@ SCENARIO("Testing the infixparser on valid arithmetic expressions",
         string s = "2 * + 5";
         InfixParser parser;
         WHEN("We parse the expression") {
-            Expression expr = parser.parse(s);
-            AND_WHEN("We print the expression") {
-                string result = Printer::asString(expr);
-                THEN("the result is (* 2 (+ 0 5))") {
-                    REQUIRE(result == "(* 2 (+ 0 5))");
-                }
+            THEN("UInvalid Argument Exception is thrown") {
+                REQUIRE_THROWS_AS(parser.parse(s), std::invalid_argument);
             }
         }
     }
@@ -403,25 +399,12 @@ SCENARIO("Testing the infixparser on invalid expressions", "[parser]") {
             }
         }
     }
-    GIVEN("The expression 2 + 2 + 2") {
-        string s = "2 + 2 + 2";
-        InfixParser parser;
-        WHEN("We parse the expression") {
-            THEN("We get an invalid argument error") {
-                REQUIRE_THROWS_AS(parser.parse(s), std::invalid_argument);
-            }
-        }
-    }
     GIVEN("The expression a / b)") {
         string s = "a / b)";
         InfixParser parser;
         WHEN("We parse the expression") {
             THEN("We get an invalid argument error") {
-                // TODO this test currently fails, since it is not checked if
-                // ")" has a matching "(", as long as the expression before ")"
-                // is valid. This could actually be ok and not be an invalid
-                // argument, thus allowing more errors on the user side.
-                // REQUIRE_THROWS_AS(parser.parse(s), std::invalid_argument);
+                REQUIRE_THROWS_AS(parser.parse(s), std::invalid_argument);
             }
         }
     }

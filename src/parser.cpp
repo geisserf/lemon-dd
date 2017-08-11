@@ -294,6 +294,7 @@ Expression InfixParser::parse(string const &input) {
     operators.push(sentinel);
     E(lexer);
     expect(Type::END, lexer);
+
     return operands.top();
 
     // return parseExpression(lexer);
@@ -352,36 +353,37 @@ void InfixParser::LogicEXP(Lexer &lexer) {
     consume(lexer); // consume [
     LP(lexer);
     while (isLogicalBinaryOperator(next)) {
-        std::cout << "Binary: " << next.value << std::endl;
         pushOperator(next);
         consume(lexer);
         LP(lexer);
     }
-
     expect(Type::RSQRBRACK, lexer);
-
     while (operators.top().value != "sentinel") {
         popOperator();
     }
+    operators.pop(); // remove [
 }
 
 void InfixParser::LP(Lexer &lexer) {
     if (next.type == Type::VAR) {
-        std::cout << "VAR: " << next.value << std::endl;
         operands.push(Factories::var(next.value));
         consume(lexer);
     } else if (next.type == Type::CONST) {
-        std::cout << "Const: " << next.value << std::endl;
         operands.push(Factories::cst(stod(next.value)));
         consume(lexer);
     } else if (isLogicalUnaryOperator(next)) {
-        std::cout << "L Unary: " << next.value << std::endl;
         pushOperator(next);
         consume(lexer);
         LP(lexer);
     } else if (next.type == Type::LSQRBRACK) {
-        std::cout << "New Exp: " << next.value << std::endl;
         LogicEXP(lexer);
+    } else if (next.type == Type::LPAREN) {
+        consume(lexer);
+        Token sentinel = Token(Type::OP, "sentinel");
+        operators.push(sentinel);
+        E(lexer);
+        expect(Type::RPAREN, lexer);
+        operators.pop();
     } else {
         throw std::invalid_argument(
             " LP Unknown Token \"" + std::to_string(next.type) +
@@ -389,131 +391,6 @@ void InfixParser::LP(Lexer &lexer) {
     }
 }
 
-/*
-Expression InfixParser::parseExpression(Lexer &lexer) const {
-    Expression lhs = parseTerm(lexer);
-    Token token = lexer.getNextToken();
-
-    switch (token.type) {
-    case Token::OP: {
-        // expression is a binary expression
-        Expression rhs = parseTerm(lexer);
-        Token next_token = lexer.getNextToken();
-        lexer.revert();
-        if (next_token.type != Token::END && next_token.type != Token::RPAREN &&
-            next_token.type != Token::RSQRBRACK) {
-            throw std::invalid_argument(
-                "Expected expression to end or ')' for " + lexer.input);
-        }
-        return createExpression(lhs, token, rhs);
-        break;
-    }
-    case Token::END: {
-        // expression is a single term
-        return lhs;
-        break;
-    }
-    case Token::RPAREN: {
-        // expression is part of a factor, leave syntax check to factor function
-        lexer.revert();
-        return lhs;
-        break;
-    }
-    case Token::RSQRBRACK: {
-        // expression is part of a factor, leave syntax check to factor function
-        lexer.revert();
-        return lhs;
-        break;
-    }
-    default:
-        throw std::invalid_argument("Illegal expression: " + lexer.input +
-                                    "\n" + "token value: " + token.value);
-        break;
-    }
-}
-
-Expression InfixParser::parseTerm(Lexer &lexer) const {
-    // term = factor { ("*" | "/") factor}
-    Expression lhs = parseFactor(lexer);
-    Token token = lexer.getNextToken();
-
-    // TODO this is a little hacky, probably better to have two types of
-    // operand tokens (+,- and *,/)
-    if (token.type == Token::OP && (token.value == "*" || token.value == "/")) {
-        // expression is a binary expression
-        Expression rhs = parseFactor(lexer);
-        return createExpression(lhs, token, rhs);
-    } else {
-        // Syntax checking is handled by parent caller
-        lexer.revert();
-        return lhs;
-    }
-}
-
-Expression InfixParser::parseFactor(Lexer &lexer) const {
-    // factor = {"+" | "-" } (constant |  variable | "(" expression ")")
-    Token token = lexer.getNextToken();
-    switch (token.type) {
-    case Token::CONST:
-        return Factories::cst(stod(token.value));
-        break;
-    case Token::VAR: {
-        return Factories::var(token.value);
-        break;
-    }
-    case Token::OP: {
-        if (token.value == "+") {
-            return Factories::add({Factories::cst(0), parseExpression(lexer)});
-        }
-        if (token.value == "-") {
-            return Factories::sub({Factories::cst(0), parseExpression(lexer)});
-        }
-        if (token.value == "!") {
-            return Factories::lnot({parseExpression(lexer)});
-        }
-
-        throw std::invalid_argument("Expected unary operator in factor " +
-                                    lexer.input);
-        break;
-    }
-    case Token::LPAREN: {
-        string const beforeRParen = lexer.input;
-        Expression expression = parseExpression(lexer);
-        token = lexer.getNextToken();
-        if (token.type != Token::RPAREN) {
-            throw std::invalid_argument("Missing ) for substring " +
-                                        beforeRParen);
-        }
-        return expression;
-        break;
-    }
-    case Token::RPAREN: {
-        throw std::invalid_argument("No matching ( for substring " +
-                                    lexer.input);
-        break;
-    }
-    case Token::LSQRBRACK: {
-        string const beforeRParen = lexer.input;
-        Expression expression = parseExpression(lexer);
-        token = lexer.getNextToken();
-        if (token.type != Token::RSQRBRACK) {
-            throw std::invalid_argument("Missing ] for substring " +
-                                        beforeRParen);
-        }
-        return expression;
-        break;
-    }
-    case Token::RSQRBRACK: {
-        throw std::invalid_argument("No matching [ for substring " +
-                                    lexer.input);
-        break;
-    }
-    default:
-        throw std::invalid_argument("Illegal factor: " + lexer.input);
-        break;
-    }
-}
-*/
 Expression InfixParser::createExpression(Expression const &lhs, Token op,
                                          Expression const &rhs) const {
     vector<Expression> exprs{lhs, rhs};
@@ -531,8 +408,6 @@ Expression InfixParser::createExpression(Expression const &lhs, Token op,
         return Factories::lor(exprs);
     } else if (op.value == "==") {
         return Factories::equals(exprs);
-    } else if (op.value == "!") {
-        return Factories::lnot(exprs);
     } else {
         throw std::invalid_argument("Unknown binary operator:" + op.value);
     }

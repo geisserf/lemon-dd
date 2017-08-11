@@ -92,9 +92,11 @@ class InfixParser {
     // UnaryOP --> "-"
     //
     // LogicEXP --> ("[" LP (LogicBinaryOP LP)* "]")*
-    // LP --> variable | number | LogicUnaryOP LP | LogicEXP
+    // LP --> variable | number | LogicUnaryOP LP | LogicEXP | "(" Expression
+    // ")"
     // LogicBinaryOP --> "&&" | "||" | "=="
     // LogicUnaryOP "!"
+    //
 
 public:
     // Parses the string and returns an expression or throws an error
