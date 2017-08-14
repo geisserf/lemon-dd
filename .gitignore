@@ -5,3 +5,4 @@ builds/
 /MyProfileFilename
 /profile.callgrind
 benchmarkfiles/results
+*.q
