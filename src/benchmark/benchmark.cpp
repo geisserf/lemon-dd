@@ -3,7 +3,6 @@
 #include "../catamorph/interpreters/dependencies.h"
 #include <chrono>
 #include <fstream>
-#include <gperftools/profiler.h>
 #include <iostream>
 
 void run_benchmark_from_file_single_evaluation(int domain_size,

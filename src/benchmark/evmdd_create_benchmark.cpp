@@ -2,23 +2,25 @@
 #include "../polynomial.h"
 
 #include <chrono>
-#include <dirent.h>
+#include <experimental/filesystem>
 #include <fstream>
-#include <fstream>
-#include <gperftools/profiler.h>
 #include <iostream>
-#include <sys/stat.h>
 
-void execute_benchmark(std::string name, std::string expression,
-                       std::string result_file) {
-    std::cout << "Executing " << name << std::endl;
+using Time = std::chrono::steady_clock;
+using ms = std::chrono::milliseconds;
 
-    std::chrono::time_point<std::chrono::system_clock> start, end;
+using std::chrono::time_point;
+using std::string;
+using std::cout;
+using std::endl;
 
+namespace fs = std::experimental::filesystem;
+
+void execute_benchmark(std::ostream &output_stream, string const &expression) {
+    time_point<Time> start, end;
     Polynomial p = Polynomial(expression);
 
     std::set<ID> variables = Dependency::dependencies(p.getExpression());
-
     Domains d;
     Ordering o;
 
@@ -29,68 +31,45 @@ void execute_benchmark(std::string name, std::string expression,
         i++;
     }
 
-    start = std::chrono::system_clock::now();
+    start = Time::now();
     p.create_evmdd(d, o);
-    end = std::chrono::system_clock::now();
+    end = Time::now();
 
-    int elapsed_seconds =
-        std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
-            .count();
-
-    std::ofstream r_file(result_file, std::ios_base::app);
-
-    if (r_file.is_open()) {
-        r_file << name << ", " << std::to_string(elapsed_seconds) << std::endl;
-    }
-
-    std::cout << "Duration: " << std::to_string(elapsed_seconds) << std::endl;
+    int elapsed_time = std::chrono::duration_cast<ms>(end - start).count();
+    output_stream << "time (ms): " << std::to_string(elapsed_time) << endl;
+    cout << "Duration: " << std::to_string(elapsed_time) << endl;
 }
 
-int main() {
-    DIR *dir;
-    class dirent *ent;
-    class stat st;
+int main(int argc, char **argv) {
+    if (argc != 2) {
+        cout << "Usage: evmdd_create_benchmark <function_filename>" << endl;
+        exit(0);
+    }
+    string filepath{argv[1]};
 
-    std::string directory = "benchmarkfiles/Prost";
-
-    dir = opendir(directory.c_str());
-    std::string result_file = "benchmarkfiles/evmdd_create_results";
-    std::ofstream r_file(result_file);
-    if (r_file.is_open()) {
-        r_file << "File, Milliseconds" << std::endl;
+    if (!fs::exists(filepath)) {
+        throw std::invalid_argument(filepath + " does not exist.");
     }
 
-    if (dir) {
-        while ((ent = readdir(dir)) != NULL) {
-            const std::string file_name = ent->d_name;
-            const std::string full_file_name = directory + "/" + file_name;
+    string result_dir = "benchmarkfiles/results";
 
-            if (file_name[0] == '.')
-                continue;
-
-            if (stat(full_file_name.c_str(), &st) == -1)
-                continue;
-
-            const bool is_directory = (st.st_mode & S_IFDIR) != 0;
-
-            if (is_directory)
-                continue;
-
-            std::cout << "File: " << full_file_name << std::endl;
-
-            std::ifstream benchmark_file(full_file_name);
-            if (benchmark_file.is_open()) {
-                std::string expression;
-                std::string line;
-                while (std::getline(benchmark_file, line)) {
-                    expression = expression + " " + line;
-                }
-                execute_benchmark(file_name, expression, result_file);
-            }
-        }
+    try {
+        fs::create_directory(result_dir);
+    } catch (fs::filesystem_error err) {
+        cout << "Could not create benchmark directory " << result_dir << endl;
+        exit(0);
     }
 
-    closedir(dir);
+    std::ifstream input_stream(filepath);
+    string expression;
+    std::getline(input_stream, expression);
 
-    return 0;
+    // Used to retrieve filename without path and filetype extension
+    fs::path fs_path{filepath};
+
+    string result_file = result_dir + "/" + fs_path.stem().string() + ".result";
+    cout << "Executing " << filepath << endl;
+    cout << "Results are saved in " << result_file << endl;
+    std::ofstream result_stream(result_file, std::ios_base::app);
+    execute_benchmark(result_stream, expression);
 }
