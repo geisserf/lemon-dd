@@ -1,5 +1,6 @@
 #include "../catamorph/interpreters/dependencies.h"
 #include "../polynomial.h"
+#include "../utils/system_utils.h"
 
 #include <chrono>
 #include <experimental/filesystem>
@@ -8,6 +9,7 @@
 
 using Time = std::chrono::steady_clock;
 using ms = std::chrono::milliseconds;
+using util = SystemUtils;
 
 using std::chrono::time_point;
 using std::string;
@@ -31,13 +33,16 @@ void execute_benchmark(std::ostream &output_stream, string const &expression) {
         i++;
     }
 
+    cout << "Current RAM usage (KB): " << util::get_ram_used_by_this() << endl;
     start = Time::now();
-    p.create_evmdd(d, o);
+    auto evmdd = p.create_evmdd(d, o);
     end = Time::now();
 
     int elapsed_time = std::chrono::duration_cast<ms>(end - start).count();
     output_stream << "time (ms): " << std::to_string(elapsed_time) << endl;
-    cout << "Duration: " << std::to_string(elapsed_time) << endl;
+    output_stream << "memory(kb): " << util::get_ram_used_by_this() << endl;
+    cout << "Duration (ms): " << std::to_string(elapsed_time) << endl;
+    cout << "Current RAM usage (KB): " << util::get_ram_used_by_this() << endl;
 }
 
 int main(int argc, char **argv) {

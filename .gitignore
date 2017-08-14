@@ -4,3 +4,4 @@ builds/
 *.swp
 /MyProfileFilename
 /profile.callgrind
+benchmarkfiles/results
