@@ -39,8 +39,11 @@ void execute_benchmark(std::ostream &output_stream, string const &expression) {
     end = Time::now();
 
     int elapsed_time = std::chrono::duration_cast<ms>(end - start).count();
+    int size = evmdd.size();
+    output_stream << "size (nodes): " << std::to_string(size) << endl;
     output_stream << "time (ms): " << std::to_string(elapsed_time) << endl;
     output_stream << "memory(kb): " << util::get_ram_used_by_this() << endl;
+    cout << "Size (nodes): " << std::to_string(size) << endl;
     cout << "Duration (ms): " << std::to_string(elapsed_time) << endl;
     cout << "Current RAM usage (KB): " << util::get_ram_used_by_this() << endl;
 }

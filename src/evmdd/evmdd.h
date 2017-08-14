@@ -75,6 +75,14 @@ public:
     T get_input_value() const {
         return input_value;
     }
+
+    // Returns the number of nodes
+    int size() const {
+        // +1 to count the entry node
+        std::unordered_set<Node_ptr<T>> succ;
+        entry_node->unique_successor_nodes(succ);
+        return succ.size() + 1;
+    }
 };
 
 template <typename T>

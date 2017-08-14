@@ -10,13 +10,14 @@ SCENARIO("Testing basic numeric EVMDD construction", "[numericEVMDDBuild]") {
     GIVEN("The expression (13) ") {
         std::string e = "13";
         Polynomial p = Polynomial(e);
-        WHEN("No evaluation") {
-            THEN("Result should be ") {
-                Domains d = {};
-                Ordering o = {};
-                Evmdd<NumericExpression> res = p.create_evmdd(d, o);
-                // std::cout << e << std::endl;
-                // res.print(std::cout);
+        WHEN("We create the evmdd") {
+            Domains d = {};
+            Ordering o = {};
+            Evmdd<NumericExpression> res = p.create_evmdd(d, o);
+            THEN("Size is 1") {
+                REQUIRE(res.size() == 1);
+            }
+            THEN("Evaluation should be 13") {
                 REQUIRE(res.get_min().size() == 1);
                 REQUIRE(res.get_min()[0].value == 13);
             }
@@ -36,6 +37,9 @@ SCENARIO("Testing basic numeric EVMDD construction", "[numericEVMDDBuild]") {
             //    std::cout << "created" << e << std::endl;
             //    res.print();
             //    std::cout << "Eval" << std::endl;
+            THEN("Size is 2") {
+                REQUIRE(res.size() == 2);
+            }
             THEN("get_min should be 0 and get_max should be 4") {
                 REQUIRE(res.get_min()[0].value == 0);
                 REQUIRE(res.get_max()[0].value == 4);
@@ -51,6 +55,9 @@ SCENARIO("Testing basic numeric EVMDD construction", "[numericEVMDDBuild]") {
             Ordering o = {{"x", 1}};
             CreateEvmdd<NumericExpression> create;
             Evmdd<NumericExpression> res = p.create_evmdd(d, o);
+            THEN("Size is 2") {
+                REQUIRE(res.size() == 2);
+            }
             THEN("evmdd has one variable node for x and one terminal node") {
                 std::stringstream ss;
                 res.print(ss);
@@ -72,6 +79,9 @@ SCENARIO("Testing basic numeric EVMDD construction", "[numericEVMDDBuild]") {
             Ordering o = {{"x", 1}, {"y", 2}};
             CreateEvmdd<NumericExpression> create;
             Evmdd<NumericExpression> res = p.create_evmdd(d, o);
+            THEN("Size is 4") {
+                REQUIRE(res.size() == 4);
+            }
             // node construction ids: [var(w[0], w[1])]
             // 0: terminal, 1: x(0,1), 2:y(0,1), 3:x(0,0), 4:y(0,0)
             THEN("evmdd has one variable node for y and two for x") {
@@ -103,6 +113,9 @@ SCENARIO("Testing basic numeric EVMDD construction", "[numericEVMDDBuild]") {
             Ordering o = {{"x", 1}};
             CreateEvmdd<NumericExpression> create;
             Evmdd<NumericExpression> res = p.create_evmdd(d, o);
+            THEN("Size is 2") {
+                REQUIRE(res.size() == 2);
+            }
             THEN("evmdd has one variable node for x and one terminal node") {
                 std::stringstream ss;
                 res.print(ss);
@@ -139,6 +152,9 @@ SCENARIO("Testing basic numeric EVMDD construction", "[numericEVMDDBuild]") {
             Ordering o = {{"x", 1}, {"y", 2}};
             CreateEvmdd<NumericExpression> create;
             Evmdd<NumericExpression> res = p.create_evmdd(d, o);
+            THEN("Size is 3") {
+                REQUIRE(res.size() == 3);
+            }
             // std::cout << e << std::endl;
             // res.print(std::cout);
             // std::cout << "created" << e << std::endl;
