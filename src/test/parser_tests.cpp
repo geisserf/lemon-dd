@@ -218,14 +218,14 @@ SCENARIO("Testing the lexer on an expression with weird input", "[lexer]") {
 }
 
 SCENARIO("Testing the prefixparser on arithmetic expressions", "[parser]") {
-    GIVEN("The expression (+ 2 x)") {
+    GIVEN("The expression (+ 2.5 x)") {
         Parser parser;
         WHEN("We parse the expression") {
-            Expression expr = parser.parse("(+ 2 x)");
+            Expression expr = parser.parse("(+ 2.5 x)");
             AND_WHEN("We print the expression") {
                 string result = Printer::asString(expr);
-                THEN("the result is (+ 2 x)") {
-                    REQUIRE(result == "(+ 2 x)");
+                THEN("the result is (+ 2.5 x)") {
+                    REQUIRE(result == "(+ 2.5 x)");
                 }
             }
         }

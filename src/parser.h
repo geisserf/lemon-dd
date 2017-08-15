@@ -120,12 +120,6 @@ private:
     void popOperator();
     bool hasHigherPrecedence(Token const &first, Token const &second);
 
-    /*
-        // Parse functions for BNF parts
-        Expression parseExpression(Lexer &lexer) const;
-        Expression parseTerm(Lexer &lexer) const;
-        Expression parseFactor(Lexer &lexer) const;
-        */
     // Creates an expression of type op(lhs, rhs)
     Expression createExpression(Expression const &lhs, Token op,
                                 Expression const &rhs) const;

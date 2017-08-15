@@ -28,7 +28,7 @@ memout = "4G"
 
 revision = "203f615"
 
-TASK_TEMPLATE = "./%(executable)s benchmarkfiles/%(benchmark)s/prost/%(instance)s"
+TASK_TEMPLATE = "./%(executable)s benchmarkfiles/%(benchmark)s/%(instance)s"
 
 def create_tasks(filename, instances):
     tasks = []
