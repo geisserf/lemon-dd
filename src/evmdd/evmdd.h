@@ -12,8 +12,6 @@
 #include <string>
 #include <vector>
 
-enum EVMDD_TYPE { SDAC, ENF, COMBINED };
-
 using Ordering = std::map<std::string, int>;
 
 template <typename T>

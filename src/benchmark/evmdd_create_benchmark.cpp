@@ -1,4 +1,5 @@
 #include "../catamorph/interpreters/dependencies.h"
+#include "../evmdd/printer.h"
 #include "../polynomial.h"
 #include "../utils/system_utils.h"
 
@@ -18,7 +19,14 @@ using std::endl;
 
 namespace fs = std::experimental::filesystem;
 
-void execute_benchmark(std::ostream &output_stream, string const &expression) {
+void create_dot(std::ostream &output_stream,
+                Evmdd<NumericExpression> const &evmdd, Ordering const &o) {
+    DotPrinter<NumericExpression> printer(o);
+    printer.to_dot(output_stream, evmdd);
+}
+
+void execute_benchmark(std::ostream &output_stream, string const &expression,
+                       std::ostream &dot_stream) {
     time_point<Time> start, end;
     Polynomial p = Polynomial(expression);
 
@@ -46,6 +54,7 @@ void execute_benchmark(std::ostream &output_stream, string const &expression) {
     cout << "Size (nodes): " << std::to_string(size) << endl;
     cout << "Duration (ms): " << std::to_string(elapsed_time) << endl;
     cout << "Current RAM usage (KB): " << util::get_ram_used_by_this() << endl;
+    create_dot(dot_stream, evmdd, o);
 }
 
 int main(int argc, char **argv) {
@@ -76,8 +85,10 @@ int main(int argc, char **argv) {
     fs::path fs_path{filepath};
 
     string result_file = result_dir + "/" + fs_path.stem().string() + ".result";
+    string dot_file = result_dir + "/" + fs_path.stem().string() + ".dot";
     cout << "Executing " << filepath << endl;
     cout << "Results are saved in " << result_file << endl;
     std::ofstream result_stream(result_file, std::ios_base::app);
-    execute_benchmark(result_stream, expression);
+    std::ofstream dot_stream(dot_file);
+    execute_benchmark(result_stream, expression, dot_stream);
 }
