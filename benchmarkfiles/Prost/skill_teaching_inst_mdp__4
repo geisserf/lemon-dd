@@ -1,0 +1,1 @@
+((proficiencyHigh_s0_ * 1.36764) + (proficiencyHigh_s1_ * 1.45973) + (proficiencyHigh_s2_ * 2.21003) + (proficiencyHigh_s3_ * 3.36748) + (0 - (1.36764 - (proficiencyMed_s0_ * 1.36764))) + (0 - (1.45973 - (proficiencyMed_s1_ * 1.45973))) + (0 - (2.21003 - (proficiencyMed_s2_ * 2.21003))) + (0 - (3.36748 - (proficiencyMed_s3_ * 3.36748))))

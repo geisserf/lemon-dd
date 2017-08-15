@@ -1,8 +1,6 @@
 #include "node.h"
 #include "evmdd_expression.h"
 
-using std::shared_ptr;
-
 template <typename T>
 void Node<T>::print(std::ostream &out, std::string indent) const {
     out << indent << "ID: " << id << "(" << variable << ")" << std::endl;
@@ -11,6 +9,18 @@ void Node<T>::print(std::ostream &out, std::string indent) const {
         out << indent << "w[" << i << "]: " << children[i].first.toString()
             << std::endl;
         children[i].second->print(out, indent + "  ");
+    }
+}
+
+template <typename T>
+void Node<T>::unique_successor_nodes(
+    std::unordered_set<Node_ptr<T>> &successors) const {
+    for (auto const &edge : children) {
+        // Only evaluate children which were not yet evaluated
+        if (successors.find(edge.second) == successors.end()) {
+            successors.insert(edge.second);
+            edge.second->unique_successor_nodes(successors);
+        }
     }
 }
 
@@ -24,19 +34,17 @@ NodeFactory<T>::NodeFactory()
     : storage(NodeStorage<T>()), node_counter(storage.size()) {}
 
 template <typename T>
-shared_ptr<Node<T> const> NodeFactory<T>::get_terminal_node() const {
+Node_ptr<T> NodeFactory<T>::get_terminal_node() const {
     return storage.get_node(0);
 }
 
 template <typename T>
-shared_ptr<Node<T> const> NodeFactory<T>::make_node(
-    int level, std::string const &variable,
-    std::vector<Edge<T>> const &children) {
+Node_ptr<T> NodeFactory<T>::make_node(int level, std::string const &variable,
+                                      std::vector<Edge<T>> const &children) {
     if (auto cached = storage.exists(level, children)) {
         return cached;
     }
-    shared_ptr<Node<T> const> node(
-        new Node<T>(node_counter++, level, variable, children));
+    Node_ptr<T> node(new Node<T>(node_counter++, level, variable, children));
     storage.add_node(node);
     return node;
 }

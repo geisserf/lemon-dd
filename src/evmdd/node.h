@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <ostream>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -15,7 +16,7 @@ template <typename T>
 class Node;
 
 template <typename T>
-using Edge = std::pair<T, std::shared_ptr<Node<T> const>>;
+using Edge = std::pair<T, Node_ptr<T>>;
 using State = std::map<std::string, std::vector<int>>;
 
 template <typename T>
@@ -37,6 +38,9 @@ private:
 
 public:
     void print(std::ostream &out, std::string indent = "") const;
+
+    // Collect all successor nodes not yet evaluated in succ
+    void unique_successor_nodes(std::unordered_set<Node_ptr<T>> &succ) const;
 
     int get_id() const {
         return id;
@@ -105,13 +109,12 @@ public:
     NodeFactory();
 
     // Returns a pointer to the (unique) terminal node
-    std::shared_ptr<Node<T> const> get_terminal_node() const;
+    Node_ptr<T> get_terminal_node() const;
 
     // Returns a pointer to the given node. If the node is not yet stored, it is
     // created first.
-    std::shared_ptr<Node<T> const> make_node(
-        int level, std::string const &variable,
-        std::vector<Edge<T>> const &children);
+    Node_ptr<T> make_node(int level, std::string const &variable,
+                          std::vector<Edge<T>> const &children);
 
 private:
     // Manages node memory
@@ -121,7 +124,7 @@ private:
     int node_counter;
 
     // Retrieves the node with the given id
-    std::shared_ptr<Node<T> const> get_node(int id) const {
+    Node_ptr<T> get_node(int id) const {
         return storage.get_node(id);
     }
 };

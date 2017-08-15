@@ -14,6 +14,7 @@ template <>
 NumericExpression logic_not<NumericExpression>::operator()(
     const NumericExpression &first, const NumericExpression &second) const {
     assert(first.value == second.value);
+    (void)second;
     if (MathUtils::is_equal(first.value, 1)) {
         return NumericExpression{0.0f};
     }

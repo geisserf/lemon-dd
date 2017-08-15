@@ -1,0 +1,1 @@
+(((vehicle_at_la1a9_ * 100) - (goal_reward_received * vehicle_at_la1a9_ * 100)) + ((-1 - (goal_reward_received * -1)) - (((vehicle_at_la1a9_ * -1) - (goal_reward_received * vehicle_at_la1a9_ * -1)) - ((goal_reward_received * vehicle_at_la1a9_ * -1) - (goal_reward_received * goal_reward_received * vehicle_at_la1a9_ * -1)))))
