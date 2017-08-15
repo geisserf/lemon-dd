@@ -78,9 +78,9 @@ public:
 
     // Returns the number of nodes
     int size() const {
-        // +1 to count the entry node
         std::unordered_set<Node_ptr<T>> succ;
         entry_node->unique_successor_nodes(succ);
+	// +1 counts entry node
         return succ.size() + 1;
     }
 };

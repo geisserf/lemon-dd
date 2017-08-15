@@ -267,8 +267,7 @@ void InfixParser::expect(Type type, Lexer &lexer) {
 }
 
 void InfixParser::popOperator() {
-    // std::cout<<"Pop "<<operators.top().value<<std::endl;
-
+    // TODO FG: double check expression?
     if ((isBinaryOperator(operators.top()) ||
          isLogicalBinaryOperator(operators.top())) &&
         operators.top().binary) {
@@ -287,7 +286,6 @@ void InfixParser::popOperator() {
 }
 
 void InfixParser::pushOperator(Token const &token) {
-    // std::cout<<"push "<<token.value<<std::endl;
     while (hasHigherPrecedence(operators.top(), token)) {
         popOperator();
     }
@@ -307,8 +305,6 @@ Expression InfixParser::parse(string const &input) {
     expect(Type::END, lexer);
 
     return operands.top();
-
-    // return parseExpression(lexer);
 }
 
 void InfixParser::E(Lexer &lexer) {
@@ -318,7 +314,6 @@ void InfixParser::E(Lexer &lexer) {
         P(lexer);
     }
     while (isBinaryOperator(next)) {
-        // std::cout<< "Binary: "<<next.value<<std::endl;
         pushOperator(next);
         consume(lexer);
         P(lexer);
@@ -364,7 +359,7 @@ void InfixParser::P(Lexer &lexer) {
 
 void InfixParser::LogicEXP(Lexer &lexer) {
     if (next.type != Type::LSQRBRACK) {
-        throw std::invalid_argument("exprected [");
+        throw std::invalid_argument("expected [");
     }
     Token sentinel = Token(Type::OP, "sentinel");
     operators.push(sentinel);

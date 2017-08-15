@@ -41,7 +41,6 @@ public:
 
     // Collect all successor nodes not yet evaluated in succ
     void unique_successor_nodes(std::unordered_set<Node_ptr<T>> &succ) const;
-    int num_successor_nodes() const;
 
     int get_id() const {
         return id;

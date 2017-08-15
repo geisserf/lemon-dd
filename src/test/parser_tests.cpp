@@ -337,7 +337,7 @@ SCENARIO("Testing the infixparser on valid arithmetic expressions",
         string s = "2 * + 5";
         InfixParser parser;
         WHEN("We parse the expression") {
-            THEN("UInvalid Argument Exception is thrown") {
+            THEN("Invalid Argument Exception is thrown") {
                 REQUIRE_THROWS_AS(parser.parse(s), std::invalid_argument);
             }
         }

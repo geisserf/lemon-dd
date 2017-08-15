@@ -20,6 +20,7 @@ enum Type {
     END,
     INVALID
 };
+
 struct Token {
     Token(Type _type = INVALID, std::string val = "")
         : type(_type), value(val) {}
@@ -98,7 +99,6 @@ class InfixParser {
     // ")"
     // LogicBinaryOP --> "&&" | "||" | "=="
     // LogicUnaryOP "!"
-    //
 
 public:
     // Parses the string and returns an expression or throws an error
