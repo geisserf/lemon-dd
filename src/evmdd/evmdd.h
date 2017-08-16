@@ -12,8 +12,6 @@
 #include <string>
 #include <vector>
 
-enum EVMDD_TYPE { SDAC, ENF, COMBINED };
-
 using Ordering = std::map<std::string, int>;
 
 template <typename T>
@@ -80,7 +78,7 @@ public:
     int size() const {
         std::unordered_set<Node_ptr<T>> succ;
         entry_node->unique_successor_nodes(succ);
-	// +1 counts entry node
+        // +1 counts entry node
         return succ.size() + 1;
     }
 };

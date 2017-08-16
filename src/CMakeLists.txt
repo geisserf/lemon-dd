@@ -45,6 +45,7 @@ set(SOURCE_FILES
         evmdd/evmdd.h evmdd/evmdd.cpp
         evmdd/node.h evmdd/node.cpp evmdd/node_storage.h evmdd/node_storage.cpp
         evmdd/evmdd_expression.h evmdd/evmdd_expression.cpp
+        evmdd/printer.h
         combined.h combined.cpp
         utils/math_utils.h utils/math_utils.cpp
         utils/system_utils.h utils/system_utils.cpp)
