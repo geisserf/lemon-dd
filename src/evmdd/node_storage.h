@@ -3,7 +3,6 @@
 
 #include <cassert>
 #include <iostream>
-#include <map>
 #include <memory>
 #include <unordered_map>
 
@@ -60,7 +59,7 @@ public:
 private:
     // Storage for nodes, in case no evmdd uses a node, but we may want to use
     // them again for further evmdd construction
-    std::map<int, Node_ptr<T>> lookup;
+    std::unordered_map<int, Node_ptr<T>> lookup;
 
     // For each new node there is an entry (level,weights,children)->node
     using Sorting_key = size_t;
