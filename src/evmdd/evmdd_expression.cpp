@@ -202,7 +202,7 @@ NumericExpression NumericExpression::operator/(
 }
 
 template <>
-std::vector<NumericExpression> greates_lower_bound<NumericExpression>::
+std::vector<NumericExpression> greatest_lower_bound<NumericExpression>::
 operator()(const NumericExpression &a,
            const std::vector<NumericExpression> &b) const {
     std::vector<NumericExpression> result;
@@ -325,7 +325,7 @@ bool VariableAssignmentExpression::operator!=(
 
 template <>
 std::vector<VariableAssignmentExpression>
-greates_lower_bound<VariableAssignmentExpression>::operator()(
+greatest_lower_bound<VariableAssignmentExpression>::operator()(
     const VariableAssignmentExpression &a,
     const std::vector<VariableAssignmentExpression> &b) const {
     VariableAssignmentExpression e;
@@ -369,7 +369,7 @@ least_upper_bound<VariableAssignmentExpression>::operator()(
 }
 
 /*
- * Expression Tupel
+ * Expression Tuple
  */
 
 template <>
@@ -414,7 +414,7 @@ TupleExpression TupleExpression::operator/(const TupleExpression &right) const {
 }
 
 template <>
-std::vector<TupleExpression> greates_lower_bound<TupleExpression>::operator()(
+std::vector<TupleExpression> greatest_lower_bound<TupleExpression>::operator()(
     const TupleExpression &a, const std::vector<TupleExpression> &b) const {
     std::vector<TupleExpression> new_t;
     // bool add_this = false;
@@ -516,6 +516,6 @@ std::string VariableAssignment::toString() const {
 template class least_upper_bound<NumericExpression>;
 template class least_upper_bound<VariableAssignmentExpression>;
 template class least_upper_bound<TupleExpression>;
-template class greates_lower_bound<NumericExpression>;
-template class greates_lower_bound<VariableAssignmentExpression>;
-template class greates_lower_bound<TupleExpression>;
+template class greatest_lower_bound<NumericExpression>;
+template class greatest_lower_bound<VariableAssignmentExpression>;
+template class greatest_lower_bound<TupleExpression>;

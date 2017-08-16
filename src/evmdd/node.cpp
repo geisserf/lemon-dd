@@ -41,6 +41,7 @@ Node_ptr<T> NodeFactory<T>::get_terminal_node() const {
 template <typename T>
 Node_ptr<T> NodeFactory<T>::make_node(int level, std::string const &variable,
                                       std::vector<Edge<T>> const &children) {
+    assert(level != 0);
     if (auto cached = storage.exists(level, children)) {
         return cached;
     }

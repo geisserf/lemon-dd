@@ -6,6 +6,8 @@
 #include <utility>
 #include <vector>
 
+#include <boost/functional/hash.hpp>
+
 template <typename T>
 class logic_not {
 public:
@@ -43,6 +45,13 @@ public:
     bool operator<(const VariableAssignment &rhs) const;
 };
 
+inline std::size_t hash_value(VariableAssignment const &ass) {
+    size_t seed = 0;
+    boost::hash_combine(seed, ass.variable);
+    boost::hash_combine(seed, ass.value);
+    return seed;
+}
+
 template <typename T>
 class EvmddExpression {
 public:
@@ -63,8 +72,13 @@ public:
     static EvmddExpression<T> identity();
 };
 
+template <typename T>
+std::size_t hash_value(EvmddExpression<T> const &expr) {
+    return boost::hash<T>{}(expr.value);
+}
+
 template <class T>
-struct greates_lower_bound { // min
+struct greatest_lower_bound { // min
     std::vector<T> operator()(const T &a, const std::vector<T> &b) const;
     typedef T first_argument_type;
     typedef T second_argument_type;

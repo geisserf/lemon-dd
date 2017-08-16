@@ -39,7 +39,7 @@ public:
     }
     std::vector<T> evaluate_partial(
         std::map<std::string, std::vector<int>> const &state) {
-        return evaluate(state, greates_lower_bound<T>());
+        return evaluate(state, greatest_lower_bound<T>());
     }
 
     template <typename EvaluationFunction>
@@ -57,7 +57,7 @@ public:
 
     std::vector<T> get_min() {
         return evaluate(std::map<std::string, std::vector<int>>(),
-                        greates_lower_bound<T>());
+                        greatest_lower_bound<T>());
     }
 
     std::vector<T> get_max() {
