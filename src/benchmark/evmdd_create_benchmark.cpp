@@ -6,8 +6,8 @@
 #include <chrono>
 #include <experimental/filesystem>
 #include <fstream>
-#include <iostream>
 #include <gperftools/profiler.h>
+#include <iostream>
 
 using Time = std::chrono::steady_clock;
 using ms = std::chrono::milliseconds;
@@ -45,7 +45,7 @@ void execute_benchmark(std::ostream &output_stream, string const &expression,
     cout << "Current RAM usage (KB): " << util::get_ram_used_by_this() << endl;
     start = Time::now();
     ProfilerStart("evmdd.profile");
-    auto evmdd = p.create_evmdd(d, o);
+    Evmdd<NumericExpression> evmdd = p.create_evmdd(d, o);
     ProfilerStop();
     end = Time::now();
 
@@ -86,9 +86,9 @@ int main(int argc, char **argv) {
 
     // Used to retrieve filename without path and filetype extension
     fs::path fs_path{filepath};
-
-    string result_file = result_dir + "/" + fs_path.stem().string() + ".result";
-    string dot_file = result_dir + "/" + fs_path.stem().string() + ".dot";
+    string filename = result_dir + "/" + fs_path.stem().string();
+    string result_file = filename + ".result";
+    string dot_file = filename + ".dot";
     cout << "Executing " << filepath << endl;
     cout << "Results are saved in " << result_file << endl;
     std::ofstream result_stream(result_file, std::ios_base::app);
