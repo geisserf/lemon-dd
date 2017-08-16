@@ -43,11 +43,9 @@ private:
         if (printed_nodes.find(entry_node) != printed_nodes.end()) {
             return;
         }
-        print_dot(out, entry_node);
+        print_node(out, entry_node);
         printed_nodes.insert(entry_node);
-
-        int level = entry_node->get_level();
-        same_level_nodes[level].push_back(entry_node);
+        same_level_nodes[entry_node->get_level()].push_back(entry_node);
 
         for (Edge<T> const &edge : entry_node->get_children()) {
             print_edge(out, entry_node, edge.first, edge.second);
@@ -56,7 +54,7 @@ private:
     }
 
     // Prints the node
-    void print_dot(std::ostream &out, Node_ptr<T> node) const {
+    void print_node(std::ostream &out, Node_ptr<T> node) const {
         out << "\"" << node->get_id() << "\"";
         out << "[style=filled, fillcolor=lightgrey, label=\"";
         out << node->get_variable() << "\"];" << std::endl;
