@@ -4,7 +4,10 @@
 #include <cassert>
 #include <iostream>
 #include <map>
+#include <unordered_map>
 #include <memory>
+
+#include <boost/functional/hash.hpp>
 
 // Storage class to manage evmdd nodes.
 
@@ -24,16 +27,14 @@ public:
         return lookup.at(id);
     }
 
-    Node_ptr<T> exists(int id, std::vector<Edge<T>> const &children) {
-        Sorting_key key(id, children);
+    Node_ptr<T> exists(int level, std::vector<Edge<T>> const &edges) {
+        Sorting_key key = hash_value(level, edges);
         return id_cache[key];
     }
 
     void add_node(Node_ptr<T> node) {
         lookup.insert(std::make_pair<>(node->get_id(), node));
-        Sorting_key key(node->get_level(), node->get_children());
-        if (id_cache[key])
-            id_cache[key]->print(std::cout, "");
+        Sorting_key key = hash_value(node->get_level(), node->get_children());
         assert(id_cache[key] == nullptr);
         id_cache[key] = node;
     }
@@ -51,8 +52,18 @@ private:
     std::map<int, Node_ptr<T>> lookup;
 
     // For each new node there is an entry (level,weights,children)->node
-    using Sorting_key = std::tuple<int, std::vector<Edge<T>>>;
-    std::map<Sorting_key, Node_ptr<T>> id_cache;
+    // using Sorting_key = std::tuple<int, std::vector<Edge<T>>>;
+    using Sorting_key = size_t;
+    std::unordered_map<Sorting_key, Node_ptr<T>> id_cache;
+
+    // Calculates the hash value for a node, represented by level+children
+    Sorting_key hash_value(int level, std::vector<Edge<T>> const& edges) {
+        size_t hash = boost::hash_range(edges.begin(), edges.end());
+        size_t seed = 0;
+        boost::hash_combine(seed, level);
+        boost::hash_combine(seed, hash);
+        return seed;
+    }
 };
 
 #endif /* NODE_STORAGE_H */
