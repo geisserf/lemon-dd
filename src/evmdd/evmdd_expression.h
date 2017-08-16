@@ -78,7 +78,7 @@ std::size_t hash_value(EvmddExpression<T> const &expr) {
 }
 
 template <class T>
-struct greates_lower_bound { // min
+struct greatest_lower_bound { // min
     std::vector<T> operator()(const T &a, const std::vector<T> &b) const;
     typedef T first_argument_type;
     typedef T second_argument_type;

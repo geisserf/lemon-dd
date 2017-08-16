@@ -4,8 +4,8 @@
 #include <cassert>
 #include <iostream>
 #include <map>
-#include <unordered_map>
 #include <memory>
+#include <unordered_map>
 
 #include <boost/functional/hash.hpp>
 
@@ -23,6 +23,17 @@ using Edge = std::pair<T, Node_ptr<T>>;
 template <typename T>
 class NodeStorage {
 public:
+    // ~NodeStorage() {
+    //     int collisions = 0;
+    //     for (size_t i = 0; i < id_cache.size(); ++i) {
+    //         if (id_cache.bucket_size(i) > 1) {
+    //             ++collisions;
+    //         }
+    //     }
+    //     std::cout << "Nodes: " << lookup.size() << std::endl;
+    //     std::cout << "Collisions: " << collisions << std::endl;
+    // }
+
     Node_ptr<T> get_node(int id) const {
         return lookup.at(id);
     }
@@ -52,12 +63,12 @@ private:
     std::map<int, Node_ptr<T>> lookup;
 
     // For each new node there is an entry (level,weights,children)->node
-    // using Sorting_key = std::tuple<int, std::vector<Edge<T>>>;
     using Sorting_key = size_t;
     std::unordered_map<Sorting_key, Node_ptr<T>> id_cache;
 
-    // Calculates the hash value for a node, represented by level+children
-    Sorting_key hash_value(int level, std::vector<Edge<T>> const& edges) {
+    // Calculates the hash value for a node based on its by level and edges.
+    // This implies that every edge type T has to implement hash_value.
+    Sorting_key hash_value(int level, std::vector<Edge<T>> const &edges) {
         size_t hash = boost::hash_range(edges.begin(), edges.end());
         size_t seed = 0;
         boost::hash_combine(seed, level);
