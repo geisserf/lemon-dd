@@ -46,11 +46,11 @@ public:
         return id;
     }
 
-    std::vector<Edge<T>> get_children() const {
+    std::vector<Edge<T>> const& get_children() const {
         return children;
     }
 
-    std::string get_variable() const {
+    std::string const& get_variable() const {
         return variable;
     }
 

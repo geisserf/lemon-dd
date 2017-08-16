@@ -46,7 +46,6 @@ private:
         print_dot(out, entry_node);
         printed_nodes.insert(entry_node);
 
-        // TODO add level
         int level = entry_node->get_level();
         same_level_nodes[level].push_back(entry_node);
 
