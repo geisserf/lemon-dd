@@ -67,7 +67,7 @@ public:
                         least_upper_bound<T>());
     }
 
-    std::shared_ptr<Node<T> const> get_entry_node() const {
+    std::shared_ptr<Node<T> const> const &get_entry_node() const {
         assert(entry_node);
         return entry_node;
     }
@@ -189,7 +189,7 @@ private:
     // returns the greatest lower bound from the input_values
     T greatest_lower_bound(std::vector<Evmdd<T>> const &children);
 
-    // Returns a evmdd with root node at level, with input value as the minimal
+    // Returns an evmdd with root node at level, with input value as the minimal
     // input value of all children. Weights to each child is its original
     // input value minus the minimal input value.
     Evmdd<T> create_evmdd(int level, std::string var,
@@ -200,8 +200,7 @@ private:
             edges.emplace_back(T{child.get_input_value() - min_weight},
                                child.get_entry_node());
         }
-        std::shared_ptr<Node<T> const> root_node =
-            node_factory.make_node(level, var, edges);
+        Node_ptr<T> root_node = node_factory.make_node(level, var, edges);
         return Evmdd<T>(min_weight, root_node);
     }
 

@@ -6,6 +6,7 @@
 #include <experimental/filesystem>
 #include <fstream>
 #include <iostream>
+#include <gperftools/profiler.h>
 
 using Time = std::chrono::steady_clock;
 using ms = std::chrono::milliseconds;
@@ -35,7 +36,9 @@ void execute_benchmark(std::ostream &output_stream, string const &expression) {
 
     cout << "Current RAM usage (KB): " << util::get_ram_used_by_this() << endl;
     start = Time::now();
+    ProfilerStart("evmdd.profile");
     auto evmdd = p.create_evmdd(d, o);
+    ProfilerStop();
     end = Time::now();
 
     int elapsed_time = std::chrono::duration_cast<ms>(end - start).count();
