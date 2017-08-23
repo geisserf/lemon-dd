@@ -17,7 +17,7 @@ class Node;
 
 template <typename T>
 using Edge = std::pair<T, Node_ptr<T>>;
-using State = std::map<std::string, std::vector<int>>;
+using EvmddState = std::map<std::string, std::vector<int>>;
 
 template <typename T>
 class NodeFactory;
@@ -46,11 +46,11 @@ public:
         return id;
     }
 
-    std::vector<Edge<T>> const& get_children() const {
+    std::vector<Edge<T>> const &get_children() const {
         return children;
     }
 
-    std::string const& get_variable() const {
+    std::string const &get_variable() const {
         return variable;
     }
 
@@ -63,7 +63,8 @@ public:
     }
 
     template <typename EvaluationFunction>
-    std::vector<T> evaluate(State const &state, EvaluationFunction func) const {
+    std::vector<T> evaluate(EvmddState const &state,
+                            EvaluationFunction func) const {
         // Terminal node backpropagates identity element
         if (is_terminal()) {
             return std::vector<T>{T::identity()};

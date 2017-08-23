@@ -32,19 +32,20 @@ private:
     friend class EvmddFactory;
 
 public:
-    void print(std::ostream &out) {
+    Evmdd() = default;
+
+    void print(std::ostream &out) const {
         out << "input value: " << input_value.toString();
         out << " nodes:" << std::endl;
         entry_node->print(out);
     }
-    std::vector<T> evaluate_partial(
-        std::map<std::string, std::vector<int>> const &state) {
+    std::vector<T> evaluate_partial(EvmddState const &state) const {
         return evaluate(state, greatest_lower_bound<T>());
     }
 
     template <typename EvaluationFunction>
-    std::vector<T> evaluate(State const &state,
-                            EvaluationFunction eval_function) {
+    std::vector<T> evaluate(EvmddState const &state,
+                            EvaluationFunction eval_function) const {
         std::vector<T> per_state_result =
             entry_node->evaluate(state, eval_function);
         std::vector<T> result;
@@ -55,12 +56,12 @@ public:
         return result;
     }
 
-    std::vector<T> get_min() {
+    std::vector<T> get_min() const {
         return evaluate(std::map<std::string, std::vector<int>>(),
                         greatest_lower_bound<T>());
     }
 
-    std::vector<T> get_max() {
+    std::vector<T> get_max() const {
         return evaluate(std::map<std::string, std::vector<int>>(),
                         least_upper_bound<T>());
     }

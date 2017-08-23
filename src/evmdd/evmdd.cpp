@@ -41,6 +41,7 @@ EvmddFactory<VariableAssignmentExpression>::greatest_lower_bound(
 
     return intersection;
 }
+
 template <>
 TupleExpression EvmddFactory<TupleExpression>::greatest_lower_bound(
     std::vector<Evmdd<TupleExpression>> const &children) {
