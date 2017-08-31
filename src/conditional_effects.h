@@ -51,6 +51,10 @@ public:
     Evmdd<VariableAssignmentExpression> create_evmdd(Domains const &d,
                                                      Ordering const &o) const;
 
+    std::vector<ConditionalEffect> getEffects() {
+        return effects;
+    }
+
 private:
     std::vector<ConditionalEffect> effects;
 };

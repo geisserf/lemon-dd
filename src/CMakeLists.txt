@@ -39,7 +39,7 @@ set(SOURCE_FILES
         catamorph/interpreters/create_evmdd.cpp
         catamorph/expression.h
         polynomial.cpp polynomial.h
-        parser.cpp parser.h
+        parser.cpp parser.h effect_parser.h effect_parser.cpp
         conditional_effects.h conditional_effects.cpp
         catamorph/printer.h
         evmdd/evmdd.h evmdd/evmdd.cpp

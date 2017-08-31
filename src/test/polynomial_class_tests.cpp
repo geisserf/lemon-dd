@@ -35,8 +35,7 @@ SCENARIO("Testing Polynomial Interface Class", "[poly]") {
                 AND_WHEN("constant part is subtracted") {
                     Polynomial sub(result.subtractConstant(const_expr));
                     THEN("subtraction should be (- (+ (* y 2) 4) 4)") {
-                        REQUIRE(sub.toString() ==
-                                "(- (+ (* y 2) 4) 4)");
+                        REQUIRE(sub.toString() == "(- (+ (* y 2) 4) 4)");
                     }
                 }
             }
