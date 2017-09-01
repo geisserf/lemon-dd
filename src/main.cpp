@@ -1,68 +1,160 @@
+#include <fstream>
 #include <iostream>
+#include <map>
+#include <string>
 
-using NBR = float;
-using ID = std::string;
+#include "combined.h"
+#include "conditional_effects.h"
+#include "cxxopts.hpp"
+#include "effect_parser.h"
+#include "evmdd/printer.h"
+#include "polynomial.h"
 
-int main() {
-    std::cout << "\033[1;33m 10*2\033[0m" << '\n';
-    expression e4 = mul({cst(10), cst(2)});
-    std::cout << eval({}, e4) << '\n';
-    dependencies(e4);
+using Ordering = std::map<std::string, int>;
+using Domain = std::map<std::string, unsigned int>;
 
-    expression e5 = add(
-        {cst(1), cst(2), mul({cst(0), var((ID) "x"), var((ID) "y")}),
-         mul({cst(1), var((ID) "y"), cst(2)}), add({cst(0), var((ID) "x")})});
-    // Environment of evaluation
-    env full_env = {{"x", 1}, {"y", 2}};
-    env partial_env = {{"y", 2}};
-    // Evaluations
-    // std::cout << eval(full_env, e) << '\n';
-    std::cout
-        << "\033[1;33m (+ 1 2 (* 0 x y) (* 1 y 2) (+ 0 x)), x=1, y=2 \033[0m"
-        << '\n';
-    std::cout << eval(full_env, e5) << '\n';
-    try {
-        std::cout
-            << "\033[1;33m (+ 1 2 (* 0 x y) (* 1 y 2) (+ 0 x)), y=2 \033[0m"
-            << '\n';
-        std::cout << eval(partial_env, e5) << '\n';
-    } catch (std::logic_error e) {
-        std::cout << "\033[1;31m Exception in eval: " << e.what() << "\033[0m"
-                  << std::endl;
+struct domain_ordering {
+    Domain domains;
+    Ordering ordering;
+};
+
+domain_ordering parse_domain(std::string ordering_string) {
+    Domain domains;
+    Ordering ordering;
+    std::string current_var;
+    int begin = 0;
+    unsigned int pos = 0;
+    int current_ordering = 1;
+
+    for (char &c : ordering_string) {
+        if (c == ':')
+            current_var = ordering_string.substr(begin, pos - begin);
+        if (c == ',') {
+            int b = begin + current_var.size() + 1;
+            // std::cout<<"var: "<<current_var;
+            std::string domain = ordering_string.substr(b, pos - b);
+            // std::cout<<" domain: "<<domain<<std::endl;;
+            begin = pos + 1;
+            domains.insert(
+                std::pair<std::string, int>(current_var, std::stoi(domain)));
+            ordering.insert(
+                std::pair<std::string, int>(current_var, current_ordering));
+            current_ordering++;
+        }
+        if (pos + 1 == ordering_string.size()) {
+            int b = begin + current_var.size() + 1;
+            // std::cout<<"var: "<<current_var;
+            std::string domain = ordering_string.substr(b, pos - b + 1);
+            // std::cout<<" domain: "<<domain<<std::endl;;
+            begin = pos + 1;
+            domains.insert(
+                std::pair<std::string, int>(current_var, std::stoi(domain)));
+            ordering.insert(
+                std::pair<std::string, int>(current_var, current_ordering));
+            current_ordering++;
+        }
+
+        pos++;
     }
 
-    std::cout << "\033[1;33m (+ 1 2 (* 0 x y) (* 1 y 2) (+ 0 x)), y=2 \033[0m"
-              << '\n';
-    auto o = partial_eval(partial_env, e5);
-    std::cout << cata<std::string>(print_alg, o) << '\n';
+    domain_ordering o;
+    o.domains = domains;
+    o.ordering = ordering;
 
-    std::cout << "\033[1;33m 9/2\033[0m" << '\n';
-    expression e6 = div({cst(9), cst(2)});
-    std::cout << eval({}, e6) << '\n';
+    return o;
+}
+template <typename T>
+void create_dot(std::ostream &output_stream, Evmdd<T> const &evmdd,
+                Ordering const &o) {
+    DotPrinter<T> printer(o);
+    printer.to_dot(output_stream, evmdd);
+}
 
-    std::cout << "\033[1;33m x==2\033[0m" << '\n';
-    expression e7 = equals({var((ID) "x"), cst(2)});
-    o = partial_eval({}, e7);
-    std::cout << cata<std::string>(print_alg, o) << '\n';
+int main(int argc, char *argv[]) {
+    cxxopts::Options options("Numeric Catamorph",
+                             "Creates evmdds from numeric expressions, "
+                             "conditional effects, and combinations therof");
 
-    std::cout << "\033[1;33m x==2, x=2\033[0m" << '\n';
-    expression e8 = equals({var((ID) "x"), cst(2)});
-    o = partial_eval({{"x", 2}}, e8);
-    std::cout << cata<std::string>(print_alg, o) << '\n';
+    options.add_options()("t,type",
+                          "Type of Evmdd (cst: costfunction, ce: conditional "
+                          "effects in ENF, c:combined)",
+                          cxxopts::value<std::string>())(
+        "e,expression",
+        "The expression[s] of the evmdd add -e twice for 2 expressions. "
+        "conditional effects require the form (a->v)&(c->d)...",
+        cxxopts::value<std::vector<std::string>>())(
+        "d,domain",
+        "Domains and Ordering of the variables Ordering is reverse of domain "
+        "ordering",
+        cxxopts::value<std::string>())("f,filename", "dot output filename",
+                                       cxxopts::value<std::string>());
 
-    std::cout << "\033[1;33m x==2 ^ y==4\033[0m" << '\n';
-    expression e9 = land(
-        {equals({var((ID) "x"), cst(2)}), equals({var((ID) "y"), cst(4)})});
+    options.parse(argc, argv);
 
-    o = partial_eval({}, e9);
-    std::cout << cata<std::string>(print_alg, o) << '\n';
+    std::string type_;
+    std::vector<std::string> expressions;
+    std::string domain_str;
+    std::string filename;
 
-    std::cout << "\033[1;33m x==2 ^ y==4, x=2,y=4\033[0m" << '\n';
-    expression e10 = land(
-        {equals({var((ID) "x"), cst(2)}), equals({var((ID) "y"), cst(4)})});
+    if (options.count("f")) {
+        filename = options["f"].as<std::string>();
+    } else {
+        std::cout << options.help() << std::endl;
+        return -1;
+    }
 
-    o = partial_eval({{"x", 2}, {"y", 4}}, e10);
-    std::cout << cata<std::string>(print_alg, o) << '\n';
+    if (options.count("e")) {
+        expressions = options["e"].as<std::vector<std::string>>();
+    } else {
+        std::cout << options.help() << std::endl;
+        return -1;
+    }
+
+    if (options.count("t")) {
+        type_ = options["t"].as<std::string>();
+    } else {
+        std::cout << options.help() << std::endl;
+        return -1;
+    }
+
+    if (type_ == "c" && expressions.size() != 2) {
+        std::cout << options.help() << std::endl;
+        std::cout << "combined evmdd requires 2 expressions: first conditional "
+                     "effects,second cost function"
+                  << std::endl;
+        return -1;
+    }
+
+    if (options.count("d")) {
+        domain_str = options["d"].as<std::string>();
+    } else {
+        std::cout << options.help() << std::endl;
+        return -1;
+    }
+
+    domain_ordering d_o = parse_domain(domain_str);
+    std::string dot_file = filename + ".dot";
+    std::ofstream dot_stream(dot_file);
+    if (type_ == "ce") {
+        EffectParser parser;
+        ConditionalEffects effects = parser.parse(expressions[0]);
+        Evmdd<VariableAssignmentExpression> evmdd =
+            effects.create_evmdd(d_o.domains, d_o.ordering);
+        create_dot(dot_stream, evmdd, d_o.ordering);
+    } else if (type_ == "cst") {
+        Polynomial p = Polynomial(expressions[0]);
+        Evmdd<NumericExpression> evmdd =
+            p.create_evmdd(d_o.domains, d_o.ordering);
+        create_dot(dot_stream, evmdd, d_o.ordering);
+    } else if (type_ == "c") {
+        EffectParser parser;
+        ConditionalEffects effects = parser.parse(expressions[0]);
+        Combined combined = Combined(effects.getEffects(), expressions[1]);
+        auto evmdd = combined.create_evmdd(d_o.domains, d_o.ordering);
+        create_dot(dot_stream, evmdd, d_o.ordering);
+    } else {
+        std::cout << "unknown type" << std::endl;
+    }
 
     return 0;
 }

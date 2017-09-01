@@ -48,11 +48,13 @@ set(SOURCE_FILES
         evmdd/printer.h
         combined.h combined.cpp
         utils/math_utils.h utils/math_utils.cpp
-        utils/system_utils.h utils/system_utils.cpp)
+        utils/system_utils.h utils/system_utils.cpp cxxopts.hpp)
 
 add_library(NumericCatamorph_lib ${SOURCE_FILES})
 target_link_libraries(NumericCatamorph_lib MiniBoost)
 
 add_executable(Parser parser_main.cpp ${SOURCE_FILES})
+add_executable(NumericCatamorph main.cpp)
+target_link_libraries(NumericCatamorph NumericCatamorph_lib)
 
 add_subdirectory(test)
