@@ -290,7 +290,19 @@ VariableAssignmentExpression VariableAssignmentExpression::operator/(
 template <>
 bool VariableAssignmentExpression::operator==(
     const VariableAssignmentExpression &right) const {
-    return std::equal(value.begin(), value.end(), right.value.begin());
+    if (value.size() != right.value.size()) {
+        return false;
+    }
+
+    for (size_t i = 0; i < value.size(); ++i) {
+        if (!(value[i] != right.value[i])) {
+            return false;
+        }
+    }
+
+    return true;
+
+    // return std::equal(value.begin(), value.end(), right.value.begin());
 }
 
 template <>
@@ -320,7 +332,17 @@ bool VariableAssignmentExpression::operator<(
 template <>
 bool VariableAssignmentExpression::operator!=(
     const VariableAssignmentExpression &right) const {
-    return value != right.value;
+    if (value.size() != right.value.size()) {
+        return true;
+    }
+
+    for (size_t i = 0; i < value.size(); ++i) {
+        if (!(value[i] != right.value[i])) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 template <>
@@ -486,7 +508,7 @@ bool TupleExpression::operator<(const TupleExpression &right) const {
     // return
     // std::less(this->value.begin(),this->value.end(),right.value.begin());
 
-    return value.first < right.value.first || value.second < right.value.second;
+    return value.first < right.value.first && value.second < right.value.second;
 
     //    return false;
 }

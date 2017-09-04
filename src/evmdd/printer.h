@@ -20,6 +20,8 @@ public:
 
     // prints the .dot representation of an evmdd
     void to_dot(std::ostream &out, Evmdd<T> const &evmdd) {
+        node_count = 0;
+        edge_count = 0;
         write_header(out, evmdd.get_input_value(), evmdd.get_entry_node());
         process_nodes(out, evmdd.get_entry_node());
         write_alignment(out);
@@ -61,10 +63,11 @@ private:
         print_node(out, entry_node);
         printed_nodes.insert(entry_node);
         same_level_nodes[entry_node->get_level()].push_back(entry_node);
-
+        int i = 0;
         for (Edge<T> const &edge : entry_node->get_children()) {
-            print_edge(out, entry_node, edge.first, edge.second);
+            print_edge(out, entry_node, edge.first, edge.second, i);
             process_nodes(out, edge.second);
+            ++i;
         }
     }
 
@@ -80,11 +83,11 @@ private:
     // Note: We omit domain values, because graphviz has really bad alignment
     // for multiple labels on one edge.
     void print_edge(std::ostream &out, Node_ptr<T> parent, T weight,
-                    Node_ptr<T> child) {
+                    Node_ptr<T> child, int domain) {
         out << "\"" << parent->get_id() << "\" -> \"" << child->get_id()
             << "\"";
-        out << " [arrowhead=none,label=\"" << weight.toString() << "\"];"
-            << std::endl;
+        out << " [arrowhead=none,label=\"" << domain << " : "
+            << weight.toString() << "\"];" << std::endl;
         edge_count++;
     }
 

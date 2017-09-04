@@ -26,7 +26,6 @@ SCENARIO("Testing  conditional effect parsing", "[CE_parser]") {
         WHEN("parsing (x->y) & (c->d)") {
             EffectParser parser;
             ConditionalEffects effects = parser.parse(e);
-            THEN("No error should occur") {}
             THEN("Result should have 2 effects") {
                 REQUIRE(effects.getEffects().size() == 2);
                 std::string condition_string =
@@ -44,8 +43,8 @@ SCENARIO("Testing  conditional effect parsing", "[CE_parser]") {
         }
     }
     GIVEN("The conditional effect ((z||x) -> y) & (c -> !d)") {
-        std::string e = "((z||x)->y) & (c->!d)";
-        WHEN("parsing ((z||x)->y) & (c->!d)") {
+        std::string e = "([z||x]->y==5) & (c->!d)";
+        WHEN("parsing ([z||x]->y==5) & (c->!d)") {
             EffectParser parser;
             ConditionalEffects effects = parser.parse(e);
             THEN("Result should have 2 effects") {
@@ -54,7 +53,7 @@ SCENARIO("Testing  conditional effect parsing", "[CE_parser]") {
                     Printer::asString(effects.getEffects()[0].getCondition());
                 REQUIRE(condition_string == "z||x");
                 REQUIRE(effects.getEffects()[0].getEffect() == "y");
-                REQUIRE(effects.getEffects()[0].getValue() == 1);
+                REQUIRE(effects.getEffects()[0].getValue() == 5);
 
                 condition_string =
                     Printer::asString(effects.getEffects()[1].getCondition());

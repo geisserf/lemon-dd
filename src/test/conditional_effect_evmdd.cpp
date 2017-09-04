@@ -1,5 +1,6 @@
 #include "../catamorph/factories.h"
 #include "../conditional_effects.h"
+#include "../effect_parser.h"
 #include "../polynomial.h"
 #include "Catch/include/catch.hpp"
 #include <iostream>
@@ -126,6 +127,28 @@ SCENARIO("Testing basic conditional effect EVMDD creation", "[CE_evmdd]") {
             evmdd.print(ss);
 
             REQUIRE(ss.str() == expected.str());
+        }
+    }
+
+    GIVEN(
+        "The conditional effect:[var5==0 && var6==0 ]->var5==1) & ([var5==0 && "
+        "var6==0 ]->var6==1) & ([var5==0 && var6==1 ]->var5==1) & ([var5==0 && "
+        "var6==1 ]->var6==2)") {
+        std::string e =
+            "([[var5==0]&&[var6==0]]->var5==1) & "
+            "([[var5==0]&&[var6==0]]->var6==1) & "
+            "([[var5==0]&&[var6==1]]->var5==1) & "
+            "([[var5==0]&&[var6==1]]->var6==2)";
+        EffectParser parser;
+        ConditionalEffects effects = parser.parse(e);
+        Domains d = {{"var5", 3}, {"var6", 3}};
+        Ordering o = {{"var5", 2}, {"var6", 1}};
+        THEN("Result should have 4 effects") {
+            REQUIRE(effects.getEffects().size() == 4);
+        }
+        Evmdd<VariableAssignmentExpression> evmdd = effects.create_evmdd(d, o);
+        THEN("EVMDD should be: ") {
+            evmdd.print(std::cout);
         }
     }
 }

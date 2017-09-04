@@ -1,0 +1,40 @@
+digraph G {
+dummy [style=invis];
+dummy -> "8"[arrowhead=none, label="({}, 1)"];
+"8"[style=filled, fillcolor=lightgrey, label="var8"];
+"8" -> "4" [arrowhead=none,label="0 : ({}, 0)"];
+"4"[style=filled, fillcolor=lightgrey, label="var5"];
+"4" -> "1" [arrowhead=none,label="0 : ({}, 0)"];
+"1"[style=filled, fillcolor=lightgrey, label="var6"];
+"1" -> "0" [arrowhead=none,label="0 : ({ var5=1 var6=1}, 0)"];
+"0"[style=filled, fillcolor=lightgrey, label=" "];
+"1" -> "0" [arrowhead=none,label="1 : ({ var5=1 var6=2}, 0)"];
+"1" -> "0" [arrowhead=none,label="2 : ({}, 0)"];
+"4" -> "2" [arrowhead=none,label="1 : ({}, 1)"];
+"2"[style=filled, fillcolor=lightgrey, label="var6"];
+"2" -> "0" [arrowhead=none,label="0 : ({ var5=2 var6=1}, 2)"];
+"2" -> "0" [arrowhead=none,label="1 : ({ var5=2 var6=2}, 1)"];
+"2" -> "0" [arrowhead=none,label="2 : ({}, 0)"];
+"4" -> "3" [arrowhead=none,label="2 : ({}, 2)"];
+"3"[style=filled, fillcolor=lightgrey, label="var6"];
+"3" -> "0" [arrowhead=none,label="0 : ({}, 4)"];
+"3" -> "0" [arrowhead=none,label="1 : ({}, 2)"];
+"3" -> "0" [arrowhead=none,label="2 : ({}, 0)"];
+"8" -> "7" [arrowhead=none,label="1 : ({}, 0)"];
+"7"[style=filled, fillcolor=lightgrey, label="var5"];
+"7" -> "1" [arrowhead=none,label="0 : ({}, 0)"];
+"7" -> "5" [arrowhead=none,label="1 : ({}, 0)"];
+"5"[style=filled, fillcolor=lightgrey, label="var6"];
+"5" -> "0" [arrowhead=none,label="0 : ({ var5=2 var6=1}, 0)"];
+"5" -> "0" [arrowhead=none,label="1 : ({ var5=2 var6=2}, 0)"];
+"5" -> "0" [arrowhead=none,label="2 : ({}, 0)"];
+"7" -> "6" [arrowhead=none,label="2 : ({}, 0)"];
+"6"[style=filled, fillcolor=lightgrey, label="var6"];
+"6" -> "0" [arrowhead=none,label="0 : ({}, 0)"];
+"6" -> "0" [arrowhead=none,label="1 : ({}, 0)"];
+"6" -> "0" [arrowhead=none,label="2 : ({}, 0)"];
+{rank=same;"0";}
+{rank=same;"1";"2";"3";"5";"6";}
+{rank=same;"4";"7";}
+{rank=same;"8";}
+node [shape=plaintext]subgraph cluster_01 {label = "Legend";key [label=<<table border="0" cellpadding="2" cellspacing="0" cellborder="0">  <tr><td align="right" port="i1">#Nodes:</td><td>9</td></tr>  <tr><td align="right" port="i2">#Edges:</td><td>23</td></tr>  </table>>]}}

@@ -1,0 +1,50 @@
+digraph G {
+dummy [style=invis];
+dummy -> "11"[arrowhead=none, label="{}"];
+"11"[style=filled, fillcolor=lightgrey, label="affectedsd11"];
+"11" -> "10" [arrowhead=none,label="0 : {}"];
+"10"[style=filled, fillcolor=lightgrey, label="affectedsd10"];
+"10" -> "9" [arrowhead=none,label="0 : {}"];
+"9"[style=filled, fillcolor=lightgrey, label="affectedsd9"];
+"9" -> "8" [arrowhead=none,label="0 : {}"];
+"8"[style=filled, fillcolor=lightgrey, label="affectedsd8"];
+"8" -> "7" [arrowhead=none,label="0 : {}"];
+"7"[style=filled, fillcolor=lightgrey, label="affectedsd7"];
+"7" -> "6" [arrowhead=none,label="0 : {}"];
+"6"[style=filled, fillcolor=lightgrey, label="affectedsd6"];
+"6" -> "5" [arrowhead=none,label="0 : {}"];
+"5"[style=filled, fillcolor=lightgrey, label="affectedsd5"];
+"5" -> "4" [arrowhead=none,label="0 : {}"];
+"4"[style=filled, fillcolor=lightgrey, label="affectedsd4"];
+"4" -> "3" [arrowhead=none,label="0 : {}"];
+"3"[style=filled, fillcolor=lightgrey, label="affectedsd3"];
+"3" -> "2" [arrowhead=none,label="0 : {}"];
+"2"[style=filled, fillcolor=lightgrey, label="affectedsd2"];
+"2" -> "1" [arrowhead=none,label="0 : {}"];
+"1"[style=filled, fillcolor=lightgrey, label="affectedsd1"];
+"1" -> "0" [arrowhead=none,label="0 : {}"];
+"0"[style=filled, fillcolor=lightgrey, label=" "];
+"1" -> "0" [arrowhead=none,label="1 : { closedsd1=0}"];
+"2" -> "1" [arrowhead=none,label="1 : { closedsd2=0}"];
+"3" -> "2" [arrowhead=none,label="1 : { closedsd3=0}"];
+"4" -> "3" [arrowhead=none,label="1 : { closedsd4=0}"];
+"5" -> "4" [arrowhead=none,label="1 : { closedsd5=0}"];
+"6" -> "5" [arrowhead=none,label="1 : { closedsd6=0}"];
+"7" -> "6" [arrowhead=none,label="1 : { closedsd7=0}"];
+"8" -> "7" [arrowhead=none,label="1 : { closedsd8=0}"];
+"9" -> "8" [arrowhead=none,label="1 : { closedsd9=0}"];
+"10" -> "9" [arrowhead=none,label="1 : { closedsd10=0}"];
+"11" -> "10" [arrowhead=none,label="1 : { closedsd11=0}"];
+{rank=same;"0";}
+{rank=same;"1";}
+{rank=same;"2";}
+{rank=same;"3";}
+{rank=same;"4";}
+{rank=same;"5";}
+{rank=same;"6";}
+{rank=same;"7";}
+{rank=same;"8";}
+{rank=same;"9";}
+{rank=same;"10";}
+{rank=same;"11";}
+node [shape=plaintext]subgraph cluster_01 {label = "Legend";key [label=<<table border="0" cellpadding="2" cellspacing="0" cellborder="0">  <tr><td align="right" port="i1">#Nodes:</td><td>12</td></tr>  <tr><td align="right" port="i2">#Edges:</td><td>22</td></tr>  </table>>]}}

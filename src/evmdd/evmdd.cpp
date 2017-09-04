@@ -30,12 +30,21 @@ EvmddFactory<VariableAssignmentExpression>::greatest_lower_bound(
         auto tmp_child = children[i].input_value.value;
 
         for (VariableAssignment va : intersection.value) {
-            if (std::find(tmp_child.begin(), tmp_child.end(), va) !=
-                tmp_child.end()) {
-                tmp.push_back(va);
-            }
-        }
+            for (VariableAssignment c_va : children[i].input_value.value) {
+                if (va == c_va) {
+                    tmp.push_back(va);
 
+                    // std::cout<< "interseciton between " << va.toString()<< "
+                    // and "<<c_va.toString()<<std::endl;
+                }
+            }
+
+            // if (std::find(tmp_child.begin(), tmp_child.end(), va) !=
+            //    tmp_child.end()) {
+            //    tmp.push_back(va);
+            //}
+        }
+        // std::cout<<"new intersection"<<std::endl;
         intersection.value = tmp;
     }
 

@@ -1,0 +1,20 @@
+Wait psr-s17-n2-l2-f30
+
+D(fed(l1)) = 2
+D(aff(sd1)) = 2
+
+fed(l1)+fed(l2).....sd1 sd2 sd3 sd4 sd5 sd6 sd7 sd8 sd9 sd10 sd11
+
+aff(sd1) -> ! closed(sd1) ..l1 l2 l3 l4 l5 l6 l7 l8 l9 l10 l11
+.
+.
+.
+
+
+
+COST: fedl1+fedl2+fedl3+fedl4+fedl5+fedl6+fedl7+fedl8+fedl9+fedl10+fedl11
+
+Effect: ([affectedsd1]->closedsd1==0) & ([affectedsd2]->closedsd2==0) & ([affectedsd3]->closedsd3==0) & ([affectedsd4]->closedsd4==0) & ([affectedsd5]->closedsd5==0) & ([affectedsd6]->closedsd6==0) & ([affectedsd7]->closedsd7==0) & ([affectedsd8]->closedsd8==0) & ([affectedsd9]->closedsd9==0) & ([affectedsd10]->closedsd10==0) & ([affectedsd11]->closedsd11==0)
+
+
+Domain: "affectedsd1:2,affectedsd2:2,affectedsd3:2,affectedsd4:2,affectedsd5:2,affectedsd6:2,affectedsd7:2,affectedsd8:2,affectedsd9:2,affectedsd10:2,affectedsd11:2,fedl1:2,fedl2:2,fedl3:2,fedl4:2,fedl5:2,fedl6:2,fedl7:2,fedl8:2,fedl9:2,fedl10:2,fedl11:2"

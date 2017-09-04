@@ -1,0 +1,11 @@
+digraph G {
+dummy [style=invis];
+dummy -> "1"[arrowhead=none, label="{}"];
+"1"[style=filled, fillcolor=lightgrey, label="var6"];
+"1" -> "0" [arrowhead=none,label="0 : { var6=1}"];
+"0"[style=filled, fillcolor=lightgrey, label=" "];
+"1" -> "0" [arrowhead=none,label="1 : { var6=2}"];
+"1" -> "0" [arrowhead=none,label="2 : {}"];
+{rank=same;"0";}
+{rank=same;"1";}
+node [shape=plaintext]subgraph cluster_01 {label = "Legend";key [label=<<table border="0" cellpadding="2" cellspacing="0" cellborder="0">  <tr><td align="right" port="i1">#Nodes:</td><td>2</td></tr>  <tr><td align="right" port="i2">#Edges:</td><td>3</td></tr>  </table>>]}}

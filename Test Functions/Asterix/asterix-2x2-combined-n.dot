@@ -1,0 +1,32 @@
+digraph G {
+dummy [style=invis];
+dummy -> "6"[arrowhead=none, label="({}, 1)"];
+"6"[style=filled, fillcolor=lightgrey, label="var8"];
+"6" -> "4" [arrowhead=none,label="0 : ({}, 0)"];
+"4"[style=filled, fillcolor=lightgrey, label="var5"];
+"4" -> "1" [arrowhead=none,label="0 : ({}, 0)"];
+"1"[style=filled, fillcolor=lightgrey, label="var6"];
+"1" -> "0" [arrowhead=none,label="0 : ({ var6=1}, 0)"];
+"0"[style=filled, fillcolor=lightgrey, label=" "];
+"1" -> "0" [arrowhead=none,label="1 : ({ var6=2}, 0)"];
+"1" -> "0" [arrowhead=none,label="2 : ({}, 0)"];
+"4" -> "2" [arrowhead=none,label="1 : ({}, 1)"];
+"2"[style=filled, fillcolor=lightgrey, label="var6"];
+"2" -> "0" [arrowhead=none,label="0 : ({ var6=1}, 2)"];
+"2" -> "0" [arrowhead=none,label="1 : ({ var6=2}, 1)"];
+"2" -> "0" [arrowhead=none,label="2 : ({}, 0)"];
+"4" -> "3" [arrowhead=none,label="2 : ({}, 2)"];
+"3"[style=filled, fillcolor=lightgrey, label="var6"];
+"3" -> "0" [arrowhead=none,label="0 : ({ var6=1}, 4)"];
+"3" -> "0" [arrowhead=none,label="1 : ({ var6=2}, 2)"];
+"3" -> "0" [arrowhead=none,label="2 : ({}, 0)"];
+"6" -> "5" [arrowhead=none,label="1 : ({}, 0)"];
+"5"[style=filled, fillcolor=lightgrey, label="var5"];
+"5" -> "1" [arrowhead=none,label="0 : ({}, 0)"];
+"5" -> "1" [arrowhead=none,label="1 : ({}, 0)"];
+"5" -> "1" [arrowhead=none,label="2 : ({}, 0)"];
+{rank=same;"0";}
+{rank=same;"1";"2";"3";}
+{rank=same;"4";"5";}
+{rank=same;"6";}
+node [shape=plaintext]subgraph cluster_01 {label = "Legend";key [label=<<table border="0" cellpadding="2" cellspacing="0" cellborder="0">  <tr><td align="right" port="i1">#Nodes:</td><td>7</td></tr>  <tr><td align="right" port="i2">#Edges:</td><td>17</td></tr>  </table>>]}}

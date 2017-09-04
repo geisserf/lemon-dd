@@ -1,4 +1,5 @@
 #include "conditional_effects.h"
+#include "../catamorph/printer.h"
 #include "catamorph/interpreters/create_evmdd.h"
 #include "evmdd/evmdd.h"
 #include "utils/math_utils.h"
@@ -24,6 +25,9 @@ Evmdd<VariableAssignmentExpression> ConditionalEffect::create_evmdd(
     EvmddFactory<VariableAssignmentExpression> factory;
     Evmdd<NumericExpression> condition_evmdd =
         create.create_evmdd(condition, d, o);
+    // std::string condition_string = Printer::asString(condition);
+    // std::cout << "evmdd for: " << condition_string << std::endl;
+    // condition_evmdd.print(std::cout);
 
     Evmdd<VariableAssignmentExpression> effect_evmdd = factory.make_const_evmdd(
         VariableAssignmentExpression({{effect, value}}));
@@ -46,6 +50,9 @@ Evmdd<VariableAssignmentExpression> ConditionalEffects::create_evmdd(
     Evmdd<VariableAssignmentExpression> result = partial[0];
 
     for (size_t i = 1; i < partial.size(); ++i) {
+        // std::cout<<"Partial start"<<std::endl;
+        // partial[1].print(std::cout);
+        // std::cout<<"Partial end"<<std::endl;
         result = factory.apply(result, partial[i],
                                std::plus<VariableAssignmentExpression>());
     }
