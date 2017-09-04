@@ -23,11 +23,26 @@ public:
         write_header(out, evmdd.get_input_value(), evmdd.get_entry_node());
         process_nodes(out, evmdd.get_entry_node());
         write_alignment(out);
+        print_legend(out);
         write_end(out);
         reset_internals();
     }
 
 private:
+    void print_legend(std::ostream &out) {
+        out << "node [shape=plaintext]";
+        out << "subgraph cluster_01 {";
+        out << "label = \"Legend\";";
+        out << "key [label=<<table border=\"0\" cellpadding=\"2\" "
+               "cellspacing=\"0\" cellborder=\"0\">";
+        out << "  <tr><td align=\"right\" port=\"i1\">#Nodes:</td><td>"
+            << node_count << "</td></tr>";
+        out << "  <tr><td align=\"right\" port=\"i2\">#Edges:</td><td>"
+            << edge_count << "</td></tr>";
+        out << "  </table>>]";
+        out << "}";
+    }
+
     // Prints start of dot file and the first edge connecting to the entry node
     void write_header(std::ostream &out, T const &input_value,
                       Node_ptr<T> entry_node) const {
@@ -54,21 +69,23 @@ private:
     }
 
     // Prints the node
-    void print_node(std::ostream &out, Node_ptr<T> node) const {
+    void print_node(std::ostream &out, Node_ptr<T> node) {
         out << "\"" << node->get_id() << "\"";
         out << "[style=filled, fillcolor=lightgrey, label=\"";
         out << node->get_variable() << "\"];" << std::endl;
+        node_count++;
     }
 
     // Prints an edge between two nodes with its weight.
     // Note: We omit domain values, because graphviz has really bad alignment
     // for multiple labels on one edge.
     void print_edge(std::ostream &out, Node_ptr<T> parent, T weight,
-                    Node_ptr<T> child) const {
+                    Node_ptr<T> child) {
         out << "\"" << parent->get_id() << "\" -> \"" << child->get_id()
             << "\"";
         out << " [arrowhead=none,label=\"" << weight.toString() << "\"];"
             << std::endl;
+        edge_count++;
     }
 
     // Aligns nodes on the same level
@@ -96,6 +113,8 @@ private:
     std::map<int, std::vector<Node_ptr<T>>> same_level_nodes;
     // Nodes which were already printed
     std::unordered_set<Node_ptr<T>> printed_nodes;
+    int node_count;
+    int edge_count;
 };
 
 #endif /* PRINTER_H */
