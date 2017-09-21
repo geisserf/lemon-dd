@@ -1,26 +1,24 @@
 #include "../monoid.h"
 
 #include <algorithm>
+#include <cassert>
 #include <iomanip>
 #include <iostream>
+
+using std::vector;
 
 // Monoids for built-in number data types like int, float, double
 
 template <typename M>
-bool less(Monoid<M> const &l, Monoid<M> const &r) {
-    return l.get_value() <= r.get_value();
-}
-
-template <typename M>
-template <typename Container>
-M Monoid<M>::greatest_lower_bound(Container const &subset) const {
+Monoid<M> Monoid<M>::greatest_lower_bound(vector<Monoid<M>> const &subset) {
     // For greatest lower bound we can use min_element with <
-    return *std::min_element(std::begin(subset), std::end(subset));
+    auto min = *std::min_element(subset.begin(), subset.end());
+    return min;
 }
 
 template <typename M>
-M constexpr Monoid<M>::neutral_element() {
-    return 0;
+Monoid<M> Monoid<M>::neutral_element() {
+    return {0};
 }
 
 template <typename M>
