@@ -10,6 +10,7 @@ set(TEST_SOURCES
         simple_iverson_tests.cpp
         polynomial_class_tests.cpp
         parser_tests.cpp
+        monoid_tests.cpp
         evmdd_build_tests.cpp
        iverson_evmdd_tests.cpp conditional_effect_evmdd.cpp 
        combined_evmdd_tests.cpp infix_parser_tests.cpp effect_parser_test.cpp)

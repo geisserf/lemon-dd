@@ -2,15 +2,10 @@
 
 #include <algorithm>
 #include <cassert>
-#include <set>
 
 using std::vector;
 
 // Monoid over the set of facts 2^F
-
-// A fact is a variable-value pair
-using Fact = std::pair<std::string, int>;
-using Facts = std::set<Fact>;
 
 // greatest lower bound is set intersection between all sets
 template <>
@@ -39,9 +34,10 @@ Monoid<Facts> Monoid<Facts>::neutral_element() {
 template <>
 std::string Monoid<Facts>::to_string() const {
     std::string result = "{";
+    std::string token = "";
     for (Fact const &f : value) {
-        std::string fact_string = f.first + "=" + std::to_string(f.second);
-        result += " " + fact_string;
+        result += token + f.first + "=" + std::to_string(f.second);
+        token = " ";
     }
     return result + "}";
 }

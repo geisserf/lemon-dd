@@ -3,8 +3,13 @@
 
 #include <string>
 #include <vector>
+#include <set>
 
-// Required for non-inlined friend definition of less, 
+// A fact is a variable-value pair
+using Fact = std::pair<std::string, int>;
+using Facts = std::set<Fact>;
+
+// Required for non-inlined friend definition of less,
 // see https://stackoverflow.com/questions/4660123/
 template <typename M>
 class Monoid;
@@ -30,8 +35,13 @@ public:
         return lhs;
     }
 
-    friend bool operator<(Monoid const& l, Monoid const& r) {
-        l.value < r.value;
+    friend bool operator<(Monoid const &l, Monoid const &r) {
+        return l.value < r.value;
+    }
+
+
+    friend bool operator==(Monoid const &l, Monoid const &r) {
+        return l.value == r.value;
     }
 
     // Greatest lower bound such that greatest_lower_bound(M) = '0'.
