@@ -1,35 +1,50 @@
 #ifndef MONOID_H
 #define MONOID_H
 
+#include <functional>
+#include <set>
 #include <string>
 #include <vector>
-#include <set>
 
-// A fact is a variable-value pair
-using Fact = std::pair<std::string, int>;
-using Facts = std::set<Fact>;
+/* This is the base class for monoids over carrier set M. A monoid has a binary
+ * associative operation '+' over M and a neutral element. Additionally, these
+ * monoids are semi-lattice ordered, i.e. there exists a greatest lower bound
+ * operator, defined such the greatest lower bound of the whole carrier set M
+ * is the neutral element.
+ *
+ * Implementations for particular monoids can be found in monoids/. To define
+ * a new monoid, we have to know what is the carrier set (M) and what is
+ * operator+ (F). Then we only have to write the specialization for 
+ * neutral_element() and greatest_lower_bound(). If F is not specified, it is
+ * by default std::plus<M>.
+ *
+ * One particular implementation is the product of two monoids L,R = LxR with
+ * '+' given as function F and G  * defined in monoids/product.h, 
+ * which allows to create the product of any two monoids.
+ */
+
 
 // Required for non-inlined friend definition of less,
 // see https://stackoverflow.com/questions/4660123/
-template <typename M>
+template <typename M, typename F = std::plus<M>>
 class Monoid;
 
-template <typename M>
-bool less(Monoid<M> const &l, Monoid<M> const &r);
+template <typename M, typename F>
+bool less(Monoid<M, F> const &l, Monoid<M, F> const &r);
 
-// Monoid over carrier set M
-template <typename M>
+template <typename M, typename F>
 class Monoid {
 public:
     Monoid() = default;
     Monoid(M value) : value(value) {}
 
-    // Binary associative operator '+' over M
-    Monoid<M> &operator+=(Monoid<M> const &rhs) {
-        value += rhs.get_value();
+    // Binary associative operator '+' over M calls Functor F.
+    Monoid<M, F> &operator+=(Monoid<M,F> const &rhs) {
+        value = F()(value, rhs.value);
         return *this;
     }
 
+    // TODO uniform const T& syntax
     friend Monoid operator+(Monoid lhs, const Monoid &rhs) {
         lhs += rhs;
         return lhs;
@@ -39,13 +54,13 @@ public:
         return l.value < r.value;
     }
 
-
     friend bool operator==(Monoid const &l, Monoid const &r) {
         return l.value == r.value;
     }
 
     // Greatest lower bound such that greatest_lower_bound(M) = '0'.
-    static Monoid<M> greatest_lower_bound(std::vector<Monoid<M>> const &subset);
+    static Monoid<M, F> greatest_lower_bound(
+        std::vector<Monoid<M, F>> const &subset);
 
     // Returns the value associated with this monoid object.
     M get_value() const {
@@ -55,7 +70,7 @@ public:
     // Neutral element '0' such that m + '0' = m for every m in M.
     // This is not constexpr, since M may be a non-literal type. See
     // http://en.cppreference.com/w/cpp/concept/LiteralType
-    static Monoid<M> neutral_element();
+    static Monoid<M, F> neutral_element();
 
     // Prints the value
     std::string to_string() const;
@@ -64,4 +79,8 @@ private:
     M value;
 };
 
+#include "monoids/variable_assignment.h"
+#include "monoids/product.h"
+
 #endif /* MONOID_H */
+

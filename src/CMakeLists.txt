@@ -47,8 +47,9 @@ set(SOURCE_FILES
         evmdd/evmdd_expression.h evmdd/evmdd_expression.cpp
         evmdd/printer.h
         evmdd/monoid.h
+        evmdd/monoids/product.h
         evmdd/monoids/numbers.cpp
-        evmdd/monoids/variable_assignment.cpp
+        evmdd/monoids/variable_assignment.h evmdd/monoids/variable_assignment.cpp
         combined.h combined.cpp
         utils/math_utils.h utils/math_utils.cpp
         utils/system_utils.h utils/system_utils.cpp cxxopts.hpp)

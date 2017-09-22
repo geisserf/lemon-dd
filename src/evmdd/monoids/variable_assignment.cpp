@@ -5,12 +5,12 @@
 
 using std::vector;
 
-// Monoid over the set of facts 2^F
+// Monoid over the set of facts 2^F with set union as operator.
 
-// greatest lower bound is set intersection between all sets
+// Greatest lower bound is set intersection between all sets
 template <>
-Monoid<Facts> Monoid<Facts>::greatest_lower_bound(
-    vector<Monoid<Facts>> const &monoids) {
+Monoid<Facts, Union> Monoid<Facts, Union>::greatest_lower_bound(
+    vector<Monoid<Facts, Union>> const &monoids) {
     assert(!monoids.empty());
     Facts current = monoids[0].value;
     Facts next;
@@ -24,15 +24,15 @@ Monoid<Facts> Monoid<Facts>::greatest_lower_bound(
     return {current};
 }
 
+// Neutral element is the empty set
 template <>
-Monoid<Facts> Monoid<Facts>::neutral_element() {
-    // neutral element is the empty set
+Monoid<Facts, Union> Monoid<Facts,Union>::neutral_element() {
     auto result = std::set<Fact>{};
     return result;
 }
 
 template <>
-std::string Monoid<Facts>::to_string() const {
+std::string Monoid<Facts, Union>::to_string() const {
     std::string result = "{";
     std::string token = "";
     for (Fact const &f : value) {
