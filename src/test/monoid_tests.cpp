@@ -23,8 +23,8 @@ TEST_CASE("Operator+ of monoids", "[monoids]") {
     }
 
     SECTION("Operator+ for product monoids") {
-        IntFactMonoid first{1, Facts{{"a",1}}};
-        IntFactMonoid second{2, Facts{{"b",2}}};
+        IntFactMonoid first{1, Facts{{"a", 1}}};
+        IntFactMonoid second{2, Facts{{"b", 2}}};
         auto addition = first + second;
         REQUIRE(addition.to_string() == "3,{a=1 b=2}");
     }
@@ -44,8 +44,8 @@ TEST_CASE("Neutral elements for monoids", "[monoids]") {
 
     SECTION("Neutral element for product of numbers and variable assignments") {
         auto neutral = IntFactMonoid::neutral_element();
-        REQUIRE(neutral.first().get_value() == 0);
-        REQUIRE(neutral.second().get_value().empty());
+        REQUIRE(neutral.get_value().first == 0);
+        REQUIRE(neutral.get_value().second.empty());
     }
 }
 

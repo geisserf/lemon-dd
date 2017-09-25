@@ -13,13 +13,13 @@
  * is the neutral element.
  *
  * Implementations for particular monoids can be found in monoids/. To define
- * a new monoid, we have to know what is the carrier set (M) and what is
+ * a new monoid, we have to know the carrier set (M) and the binary associative
  * operator+ (F). Then we only have to write the specialization for 
  * neutral_element() and greatest_lower_bound(). If F is not specified, it is
  * by default std::plus<M>.
  *
  * One particular implementation is the product of two monoids L,R = LxR with
- * '+' given as function F and G  * defined in monoids/product.h, 
+ * '+' of L given as function F, '+' of R as G, defined in monoids/product.h, 
  * which allows to create the product of any two monoids.
  */
 

@@ -3,33 +3,24 @@
 
 // Cartesian Product of Monoids L and R with functions f and g as binary
 // operator '+'
-template <typename L, typename R, typename F = std::plus<L>,
-          typename G = std::plus<R>>
-using MonoidPair = std::pair<Monoid<L, F>, Monoid<R, G>>;
-
-// Required for non-inlined friend definition of less,
-// see https://stackoverflow.com/questions/4660123/
 template <typename L, typename R, typename F, typename G>
-class Monoid<MonoidPair<L, R, F, G>>;
-
-template <typename L, typename R, typename F, typename G>
-bool less(Monoid<MonoidPair<L, R, F, G>> const &l,
-          Monoid<MonoidPair<L, R, F, G>> const &r);
+using ProductMonoid = Monoid<std::pair<L, R>, std::pair<F, G>>;
 
 // We have to fully specialize the class, since partial specializations for
 // functions are not allowed
 template <typename L, typename R, typename F, typename G>
-class Monoid<MonoidPair<L, R, F, G>> {
+class Monoid<std::pair<L, R>, std::pair<F, G>> {
 public:
     Monoid() = default;
-    Monoid(MonoidPair<L, R, F, G> value) : value(value) {}
-    Monoid(Monoid<L, F> const &l, Monoid<R, G> const &r) : value({l, r}) {}
+    Monoid(std::pair<L, R> value) : value(value) {}
+    Monoid(Monoid<L, F> const &l, Monoid<R, G> const &r)
+        : value({l.get_value(), r.get_value()}) {}
 
-    // Binary associative operator '+' over M
-    Monoid<MonoidPair<L, R, F, G>> &operator+=(
-        Monoid<MonoidPair<L, R, F, G>> const &rhs) {
-        value.first += rhs.value.first;
-        value.second += rhs.value.second;
+    // (l1,r1) + (l2,r2) = (F(l1,l2),G(r1,r2))
+    ProductMonoid<L, R, F, G> &operator+=(
+        ProductMonoid<L, R, F, G> const &rhs) {
+        value.first = F()(value.first, rhs.value.first);
+        value.second = G()(value.second, rhs.value.second);
         return *this;
     }
 
@@ -46,38 +37,33 @@ public:
         return l.value == r.value;
     }
 
-    static Monoid<MonoidPair<L, R, F, G>> greatest_lower_bound(
-        std::vector<Monoid<MonoidPair<L, R, F, G>>> const &subset);
+    static ProductMonoid<L, R, F, G> greatest_lower_bound(
+        std::vector<ProductMonoid<L, R, F, G>> const &subset);
 
-    MonoidPair<L, R, F, G> get_value() const {
+    std::pair<L, R> get_value() const {
         return value;
     }
 
-    static Monoid<MonoidPair<L, R, F, G>> neutral_element() {
-        return Monoid<MonoidPair<L, R, F, G>>(Monoid<L, F>::neutral_element(),
-                                              Monoid<R, G>::neutral_element());
+    static ProductMonoid<L, R, F, G> neutral_element() {
+        return ProductMonoid<L, R, F, G>(Monoid<L, F>::neutral_element(),
+                                         Monoid<R, G>::neutral_element());
     }
+
     std::string to_string() const {
-        return value.first.to_string() + "," + value.second.to_string();
-    }
-
-    // Convenience function to retrieve first element
-    Monoid<L, F> const &first() const {
-        return value.first;
-    }
-
-    // Convenience function to retrieve second element
-    Monoid<R, G> const &second() const {
-        return value.second;
+        // This is a little overhead, but we do not have a method
+        // std::pair<L,R>::to_string. In a perfect world we would delegate
+        // printing in a monoid<L,F> to L and then we could call L.to_string()
+        // here.
+        Monoid<L, F> l(value.first);
+        std::string result = l.to_string() + ",";
+        Monoid<R, G> r(value.second);
+        result += r.to_string();
+        return result;
     }
 
 private:
-    MonoidPair<L, R, F, G> value;
+    std::pair<L, R> value;
 };
-
-template <typename L, typename R, typename F = std::plus<L>,
-          typename G = std::plus<R>>
-using ProductMonoid = Monoid<std::pair<Monoid<L, F>, Monoid<R, G>>>;
 
 template <typename L, typename R, typename F, typename G>
 ProductMonoid<L, R, F, G> ProductMonoid<L, R, F, G>::greatest_lower_bound(
@@ -87,14 +73,16 @@ ProductMonoid<L, R, F, G> ProductMonoid<L, R, F, G>::greatest_lower_bound(
     // allow us to use containers that contain other things than monoids (e.g.
     // monoid pairs) and use the function to retrieve the monoid we want.
     std::vector<Monoid<L, F>> l_monoids;
-    std::transform(
-        subset.begin(), subset.end(), std::back_inserter(l_monoids),
-        [](ProductMonoid<L, R, F, G> const &p) { return p.first(); });
+    std::transform(subset.begin(), subset.end(), std::back_inserter(l_monoids),
+                   [](ProductMonoid<L, R, F, G> const &p) {
+                       return Monoid<L, F>(p.get_value().first);
+                   });
     Monoid<L, F> l_glb = Monoid<L>::greatest_lower_bound(l_monoids);
     std::vector<Monoid<R, G>> r_monoids;
-    std::transform(
-        subset.begin(), subset.end(), std::back_inserter(r_monoids),
-        [](ProductMonoid<L, R, F, G> const &p) { return p.second(); });
+    std::transform(subset.begin(), subset.end(), std::back_inserter(r_monoids),
+                   [](ProductMonoid<L, R, F, G> const &p) {
+                       return Monoid<R, G>(p.get_value().second);
+                   });
     Monoid<R, G> r_glb = Monoid<R, G>::greatest_lower_bound(r_monoids);
     return {l_glb, r_glb};
 }
