@@ -45,8 +45,8 @@ Expression Polynomial::getExpression() {
     return this->expression;
 }
 
-Evmdd<NumericExpression> Polynomial::create_evmdd(Domains const &d,
-                                                  Ordering const &o) {
-    CreateEvmdd<NumericExpression> create;
+Evmdd<double, std::plus<double>> Polynomial::create_evmdd(Domains const &d,
+                                                          Ordering const &o) {
+    CreateEvmdd<double, std::plus<double>> create;
     return create.create_evmdd(expression, d, o);
 }

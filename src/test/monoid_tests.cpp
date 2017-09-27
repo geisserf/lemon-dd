@@ -30,22 +30,45 @@ TEST_CASE("Operator+ of monoids", "[monoids]") {
     }
 }
 
+TEST_CASE("Operator- of monoids", "[monoids]") {
+    SECTION("Operator- for number monoids") {
+        Monoid<int> one(1);
+        Monoid<int> two(2);
+        auto diff = two - one;
+        REQUIRE(diff.get_value() == 1);
+    }
+
+    SECTION("Operator- for fact monoids") {
+        FactMonoid monoid_ab(Facts{{"a", 1},{"b",2}});
+        FactMonoid monoid_b(Facts{{"b", 2}});
+        FactMonoid diff = monoid_ab - monoid_b;
+        REQUIRE(diff.to_string() == "{a=1}");
+    }
+
+    SECTION("Operator- for product monoids") {
+        IntFactMonoid first{1, Facts{{"a", 1}}};
+        IntFactMonoid second{2, Facts{{"b", 2}}};
+        auto diff = second - first;
+        REQUIRE(diff.to_string() == "1,{b=2}");
+    }
+}
+
 TEST_CASE("Neutral elements for monoids", "[monoids]") {
     SECTION("Neutral element for numbers is zero") {
-        REQUIRE(Monoid<int>::neutral_element().get_value() == 0);
-        REQUIRE(Monoid<double>::neutral_element().get_value() == 0);
-        REQUIRE(Monoid<float>::neutral_element().get_value() == 0);
+        REQUIRE(Monoid<int>::neutral_element() == 0);
+        REQUIRE(Monoid<double>::neutral_element() == 0);
+        REQUIRE(Monoid<float>::neutral_element() == 0);
     }
 
     SECTION("Neutral element for variable assignments is the empty set") {
         auto neutral = FactMonoid::neutral_element();
-        REQUIRE(neutral.get_value().empty());
+        REQUIRE(neutral.empty());
     }
 
     SECTION("Neutral element for product of numbers and variable assignments") {
         auto neutral = IntFactMonoid::neutral_element();
-        REQUIRE(neutral.get_value().first == 0);
-        REQUIRE(neutral.get_value().second.empty());
+        REQUIRE(neutral.first == 0);
+        REQUIRE(neutral.second.empty());
     }
 }
 
@@ -76,52 +99,24 @@ TEST_CASE("String printing of monoids", "[monoids]") {
 
 TEST_CASE("Greatest lower bound of monoids", "[monoids]") {
     SECTION("Greatest lower bound for number monoids") {
-        Monoid<int> i1(1);
-        Monoid<int> i2(3);
-        Monoid<int> i3(5);
-        vector<Monoid<int>> int_vector{i1, i2, i3};
-        REQUIRE(Monoid<int>::greatest_lower_bound(int_vector).get_value() == 1);
-
-        Monoid<float> f1(1.5);
-        Monoid<float> f2(3.3);
-        Monoid<float> f3(5.6);
-        vector<Monoid<float>> float_vector{f1, f2, f3};
-        REQUIRE(Monoid<float>::greatest_lower_bound(float_vector).get_value() ==
-                1.5);
-
-        Monoid<double> d1(1.1);
-        Monoid<double> d2(3.2);
-        Monoid<double> d3(1.1);
-        vector<Monoid<double>> double_vector{d1, d2, d3};
-        REQUIRE(
-            Monoid<double>::greatest_lower_bound(double_vector).get_value() ==
-            1.1);
+        REQUIRE(Monoid<int>::greatest_lower_bound(1, 3) == 1);
+        REQUIRE(Monoid<float>::greatest_lower_bound(1.5, 5) == 1.5);
+        REQUIRE(Monoid<double>::greatest_lower_bound(1.5, 2.2) == 1.5);
     }
 
     SECTION("Greatest lower bound for variable assignment monoids") {
-        Facts facts1{{"a", 1}, {"b", 2}, {"c", 3}};
-        FactMonoid fact_monoid1(facts1);
+        Facts abc{{"a", 1}, {"b", 2}, {"c", 3}};
+        Facts ab{{"a", 1}, {"b", 2}};
+        Facts ac{{"a", 1}, {"c", 3}};
+        Facts other_ac{{"a", 2}, {"c", 2}};
 
-        Facts facts2{{"a", 1}, {"b", 2}};
-        FactMonoid fact_monoid2(facts2);
-
-        Facts facts3{{"a", 1}, {"c", 3}};
-        FactMonoid fact_monoid3(facts3);
-
-        Facts facts4{{"a", 2}, {"c", 2}};
-        FactMonoid fact_monoid4(facts4);
-
-        vector<FactMonoid> all{fact_monoid1, fact_monoid2, fact_monoid3};
-        vector<FactMonoid> ab_and_abc{facts1, facts2};
-        vector<FactMonoid> ac_and_abc{facts1, facts3};
-        vector<FactMonoid> empty_intersection{facts3, facts4};
-
-        REQUIRE("{a=1}" == FactMonoid::greatest_lower_bound(all).to_string());
-        REQUIRE("{a=1 b=2}" ==
-                FactMonoid::greatest_lower_bound(ab_and_abc).to_string());
-        REQUIRE("{a=1 c=3}" ==
-                FactMonoid::greatest_lower_bound(ac_and_abc).to_string());
-        REQUIRE(FactMonoid::greatest_lower_bound(empty_intersection) ==
+        Facts glb = FactMonoid::greatest_lower_bound(ab, abc);
+        std::string res = Monoid<Facts, Union>{glb}.to_string();
+        REQUIRE("{a=1 b=2}" == res);
+        glb = FactMonoid::greatest_lower_bound(ac, abc);
+        res = Monoid<Facts, Union>{glb}.to_string();
+        REQUIRE("{a=1 c=3}" == res);
+        REQUIRE(FactMonoid::greatest_lower_bound(ac, other_ac) ==
                 FactMonoid::neutral_element());
     }
 
@@ -129,15 +124,14 @@ TEST_CASE("Greatest lower bound of monoids", "[monoids]") {
         Fact a{"a", 1};
         Fact b{"b", 1};
         Fact c{"c", 1};
-        IntFactMonoid product_one_ab{1, Facts{a, b}};
-        IntFactMonoid product_two_ac(2, Facts{a, c});
-        auto glb = IntFactMonoid::greatest_lower_bound(
-            {product_one_ab, product_two_ac});
-        REQUIRE(glb.to_string() == "1,{a=1}");
-        IntFactMonoid product_one_a{1, Facts{a}};
-        IntFactMonoid product_two_b{2, Facts{b}};
-        glb =
-            IntFactMonoid::greatest_lower_bound({product_one_a, product_two_b});
-        REQUIRE(glb.to_string() == "1,{}");
+        std::pair<int, Facts> product_one_ab{1, Facts{a, b}};
+        std::pair<int, Facts> product_two_ac(2, Facts{a, c});
+        auto glb =
+            IntFactMonoid::greatest_lower_bound(product_one_ab, product_two_ac);
+        REQUIRE(IntFactMonoid{glb}.to_string() == "1,{a=1}");
+        std::pair<int, Facts> product_one_a{1, Facts{a}};
+        std::pair<int, Facts> product_two_b{2, Facts{b}};
+        glb = IntFactMonoid::greatest_lower_bound(product_one_a, product_two_b);
+        REQUIRE(IntFactMonoid{glb}.to_string() == "1,{}");
     }
 }

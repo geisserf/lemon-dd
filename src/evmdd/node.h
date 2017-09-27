@@ -1,7 +1,6 @@
 #ifndef NODE_H
 #define NODE_H
 
-#include "evmdd_expression.h"
 #include "node_storage.h"
 
 #include <cassert>
@@ -17,7 +16,8 @@ class Node;
 
 template <typename T>
 using Edge = std::pair<T, Node_ptr<T>>;
-using EvmddState = std::map<std::string, std::vector<int>>;
+
+using PartialState = std::map<std::string, std::vector<int>>;
 
 template <typename T>
 class NodeFactory;
@@ -62,46 +62,46 @@ public:
         return id == 0;
     }
 
-    template <typename EvaluationFunction>
-    std::vector<T> evaluate(EvmddState const &state,
-                            EvaluationFunction func) const {
-        // Terminal node backpropagates identity element
-        if (is_terminal()) {
-            return std::vector<T>{T::identity()};
-        }
+    // template <typename EvaluationFunction>
+    // std::vector<T> evaluate(PartialState const &state,
+    //                         EvaluationFunction func) const {
+    //     // Terminal node backpropagates neutral element
+    //     if (is_terminal()) {
+    //         return std::vector<T>{T{T::neutral_element()}};
+    //     }
 
-        std::vector<T> result;
-        auto state_it = state.find(variable);
-        // state does not permit every domain value for this variable
-        if (state_it != state.end()) {
-            for (int domain_value : state_it->second) {
-                assert(static_cast<size_t>(domain_value) < children.size());
-                std::vector<T> child_result =
-                    children[domain_value].second->evaluate(state, func);
-                T const &weight = children[domain_value].first;
+    //     std::vector<T> result;
+    //     auto state_it = state.find(variable);
+    //     // state does not permit every domain value for this variable
+    //     if (state_it != state.end()) {
+    //         for (int domain_value : state_it->second) {
+    //             assert(static_cast<size_t>(domain_value) < children.size());
+    //             std::vector<T> child_result =
+    //                 children[domain_value].second->evaluate(state, func);
+    //             T const &weight = children[domain_value].first;
 
-                // add weight to child evaluation:
-                for (T child_expr : child_result) {
-                    result = func(child_expr + weight, result);
-                }
-            }
-        } else {
-            // TODO This is basically the same code as above, just for the case
-            // that the whole domain is covered. It would be nice if we could
-            // remove this code duplication
-            for (size_t domain_value = 0; domain_value < children.size();
-                 ++domain_value) {
-                std::vector<T> child_result =
-                    children[domain_value].second->evaluate(state, func);
-                T const &weight = children[domain_value].first;
-                // add weight to child evaluations:
-                for (T child_expr : child_result) {
-                    result = func(child_expr + weight, result);
-                }
-            }
-        }
-        return result;
-    }
+    //             // add weight to child evaluation:
+    //             for (T child_expr : child_result) {
+    //                 result = func(child_expr + weight, result);
+    //             }
+    //         }
+    //     } else {
+    //         // TODO This is basically the same code as above, just for the case
+    //         // that the whole domain is covered. It would be nice if we could
+    //         // remove this code duplication
+    //         for (size_t domain_value = 0; domain_value < children.size();
+    //              ++domain_value) {
+    //             std::vector<T> child_result =
+    //                 children[domain_value].second->evaluate(state, func);
+    //             T const &weight = children[domain_value].first;
+    //             // add weight to child evaluations:
+    //             for (T child_expr : child_result) {
+    //                 result = func(child_expr + weight, result);
+    //             }
+    //         }
+    //     }
+    //     return result;
+    // }
 };
 
 template <typename T>

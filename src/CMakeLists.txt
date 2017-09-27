@@ -29,36 +29,39 @@ add_subdirectory(boost_dependencies/libs)
 
 
 set(SOURCE_FILES
-        catamorph/catamorph.h
-        catamorph/factories.cpp catamorph/factories.h
-        catamorph/interpreters/optimizations.cpp catamorph/interpreters/optimizations.h
-        catamorph/interpreters/evaluate.cpp catamorph/interpreters/evaluate.h
-        catamorph/interpreters/dependencies.cpp catamorph/interpreters/dependencies.h
-        catamorph/interpreters/iverson.cpp catamorph/interpreters/iverson.h
-        catamorph/interpreters/create_evmdd.h
-        catamorph/interpreters/create_evmdd.cpp
-        catamorph/expression.h
-        polynomial.cpp polynomial.h
-        parser.cpp parser.h effect_parser.h effect_parser.cpp
-        conditional_effects.h conditional_effects.cpp
-        catamorph/printer.h
-        evmdd/evmdd.h evmdd/evmdd.cpp
-        evmdd/node.h evmdd/node.cpp evmdd/node_storage.h evmdd/node_storage.cpp
-        evmdd/evmdd_expression.h evmdd/evmdd_expression.cpp
-        evmdd/printer.h
-        evmdd/monoid.h
-        evmdd/monoids/product.h
-        evmdd/monoids/numbers.cpp
-        evmdd/monoids/variable_assignment.h evmdd/monoids/variable_assignment.cpp
-        combined.h combined.cpp
-        utils/math_utils.h utils/math_utils.cpp
-        utils/system_utils.h utils/system_utils.cpp cxxopts.hpp)
+    catamorph/catamorph.h
+     catamorph/factories.cpp catamorph/factories.h
+     catamorph/interpreters/optimizations.cpp catamorph/interpreters/optimizations.h
+     catamorph/interpreters/evaluate.cpp catamorph/interpreters/evaluate.h
+     catamorph/interpreters/dependencies.cpp catamorph/interpreters/dependencies.h
+     catamorph/interpreters/iverson.cpp catamorph/interpreters/iverson.h
+     catamorph/interpreters/create_evmdd.h
+     catamorph/interpreters/create_evmdd.cpp
+     catamorph/expression.h
+     polynomial.cpp polynomial.h
+     parser.cpp parser.h
+     #effect_parser.h effect_parser.cpp
+    #  conditional_effects.h conditional_effects.cpp
+    # catamorph/printer.h
+    evmdd/evmdd.h evmdd/evmdd.cpp
+    evmdd/node.h evmdd/node.cpp evmdd/node_storage.h evmdd/node_storage.cpp
+    # evmdd/evmdd_expression.h evmdd/evmdd_expression.cpp
+    # evmdd/printer.h
+    evmdd/monoid.h
+    evmdd/monoids/product.h
+    evmdd/monoids/numbers.cpp
+    evmdd/monoids/variable_assignment.h evmdd/monoids/variable_assignment.cpp
+    # combined.h combined.cpp
+    #utils/math_utils.h utils/math_utils.cpp
+    #utils/system_utils.h utils/system_utils.cpp cxxopts.hpp
+    )
 
 add_library(NumericCatamorph_lib ${SOURCE_FILES})
 target_link_libraries(NumericCatamorph_lib MiniBoost)
 
-add_executable(Parser parser_main.cpp ${SOURCE_FILES})
-add_executable(NumericCatamorph main.cpp)
-target_link_libraries(NumericCatamorph NumericCatamorph_lib)
+#add_executable(Parser parser_main.cpp ${SOURCE_FILES})
+#add_executable(NumericCatamorph main.cpp)
+#add_executable(NumericCatamorph ${SOURCE_FILES})
+#target_link_libraries(NumericCatamorph NumericCatamorph_lib)
 
 add_subdirectory(test)

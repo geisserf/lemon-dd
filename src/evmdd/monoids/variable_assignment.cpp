@@ -7,28 +7,31 @@ using std::vector;
 
 // Monoid over the set of facts 2^F with set union as operator.
 
-// Greatest lower bound is set intersection between all sets
+// Monus is set minus
 template <>
-Monoid<Facts, Union> Monoid<Facts, Union>::greatest_lower_bound(
-    vector<Monoid<Facts, Union>> const &monoids) {
-    assert(!monoids.empty());
-    Facts current = monoids[0].value;
-    Facts next;
-    for (size_t i = 1; i < monoids.size(); ++i) {
-        std::set_intersection(current.begin(), current.end(),
-                              monoids[i].value.begin(), monoids[i].value.end(),
-                              std::inserter(next, next.end()));
-        current = next;
-        next.clear();
-    }
-    return {current};
+Monoid<Facts, Union> &Monoid<Facts, Union>::operator-=(
+    Monoid<Facts, Union> const &rhs) {
+    Facts diff;
+    std::set_difference(value.begin(), value.end(), rhs.value.begin(),
+                        rhs.value.end(), std::inserter(diff, diff.begin()));
+    value = diff;
+    return *this;
+}
+
+// Greatest lower bound is set intersection
+template <>
+Facts Monoid<Facts, Union>::greatest_lower_bound(Facts const &l,
+                                                 Facts const &r) {
+    Facts result;
+    std::set_intersection(l.begin(), l.end(), r.begin(), r.end(),
+                          std::inserter(result, result.end()));
+    return result;
 }
 
 // Neutral element is the empty set
 template <>
-Monoid<Facts, Union> Monoid<Facts,Union>::neutral_element() {
-    auto result = std::set<Fact>{};
-    return result;
+Facts Monoid<Facts, Union>::neutral_element() {
+    return std::set<Fact>{};
 }
 
 template <>

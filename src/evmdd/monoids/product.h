@@ -29,6 +29,26 @@ public:
         return lhs;
     }
 
+    // Monus operator '-'
+    ProductMonoid<L, R, F, G> &operator-=(
+        ProductMonoid<L, R, F, G> const &rhs) {
+        // TODO The current concept requires us to create monoid objects for
+        // <L,F> and <R,G> because otherwise we can't access their operator-.
+        // There is probably a better concept.
+        Monoid<L, F> l_monus =
+            Monoid<L, F>{value.first} - Monoid<L, F>{rhs.value.first};
+        Monoid<R, G> r_monus =
+            Monoid<R, G>{value.second} - Monoid<R, G>{rhs.value.second};
+        value.first = l_monus.get_value();
+        value.second = r_monus.get_value();
+        return *this;
+    }
+
+    friend Monoid operator-(Monoid lhs, Monoid const &rhs) {
+        lhs -= rhs;
+        return lhs;
+    }
+
     friend bool operator<(Monoid const &l, Monoid const &r) {
         return l.value < r.value;
     }
@@ -37,16 +57,20 @@ public:
         return l.value == r.value;
     }
 
-    static ProductMonoid<L, R, F, G> greatest_lower_bound(
-        std::vector<ProductMonoid<L, R, F, G>> const &subset);
+    static std::pair<L, R> greatest_lower_bound(std::pair<L, R> const &l,
+                                                std::pair<L, R> const &r) {
+        L l_glb = Monoid<L, F>::greatest_lower_bound(l.first, r.first);
+        R r_glb = Monoid<R, G>::greatest_lower_bound(l.second, r.second);
+        return std::make_pair(l_glb, r_glb);
+    }
 
     std::pair<L, R> get_value() const {
         return value;
     }
 
-    static ProductMonoid<L, R, F, G> neutral_element() {
-        return ProductMonoid<L, R, F, G>(Monoid<L, F>::neutral_element(),
-                                         Monoid<R, G>::neutral_element());
+    static std::pair<L, R> neutral_element() {
+        return std::make_pair(Monoid<L, F>::neutral_element(),
+                              Monoid<R, G>::neutral_element());
     }
 
     std::string to_string() const {
@@ -64,25 +88,3 @@ public:
 private:
     std::pair<L, R> value;
 };
-
-template <typename L, typename R, typename F, typename G>
-ProductMonoid<L, R, F, G> ProductMonoid<L, R, F, G>::greatest_lower_bound(
-    std::vector<ProductMonoid<L, R, F, G>> const &subset) {
-    // Maybe we should give greatest_lower_bound optionally a function which
-    // retrieves the monoid of a container of monoid combinations. This would
-    // allow us to use containers that contain other things than monoids (e.g.
-    // monoid pairs) and use the function to retrieve the monoid we want.
-    std::vector<Monoid<L, F>> l_monoids;
-    std::transform(subset.begin(), subset.end(), std::back_inserter(l_monoids),
-                   [](ProductMonoid<L, R, F, G> const &p) {
-                       return Monoid<L, F>(p.get_value().first);
-                   });
-    Monoid<L, F> l_glb = Monoid<L>::greatest_lower_bound(l_monoids);
-    std::vector<Monoid<R, G>> r_monoids;
-    std::transform(subset.begin(), subset.end(), std::back_inserter(r_monoids),
-                   [](ProductMonoid<L, R, F, G> const &p) {
-                       return Monoid<R, G>(p.get_value().second);
-                   });
-    Monoid<R, G> r_glb = Monoid<R, G>::greatest_lower_bound(r_monoids);
-    return {l_glb, r_glb};
-}

@@ -1,12 +1,12 @@
 #include "node.h"
-#include "evmdd_expression.h"
+#include "monoid.h"
 
 template <typename T>
 void Node<T>::print(std::ostream &out, std::string indent) const {
     out << indent << "ID: " << id << "(" << variable << ")" << std::endl;
     indent += "  ";
     for (size_t i = 0; i < children.size(); ++i) {
-        out << indent << "w[" << i << "]: " << children[i].first.toString()
+        out << indent << "w[" << i << "]: " << children[i].first.to_string()
             << std::endl;
         children[i].second->print(out, indent + "  ");
     }
@@ -50,10 +50,9 @@ Node_ptr<T> NodeFactory<T>::make_node(int level, std::string const &variable,
     return node;
 }
 
-template class Node<NumericExpression>;
-template class Node<VariableAssignmentExpression>;
-template class Node<TupleExpression>;
-
-template class NodeFactory<NumericExpression>;
-template class NodeFactory<VariableAssignmentExpression>;
-template class NodeFactory<TupleExpression>;
+template class Node<Monoid<float>>;
+template class NodeFactory<Monoid<float>>;
+template class Node<Monoid<double>>;
+template class NodeFactory<Monoid<double>>;
+template class Node<Monoid<int>>;
+template class NodeFactory<Monoid<int>>;

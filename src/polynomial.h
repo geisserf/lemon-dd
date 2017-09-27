@@ -32,7 +32,8 @@ public:
 
     Expression getExpression();
 
-    Evmdd<NumericExpression> create_evmdd(Domains const &d, Ordering const &o);
+    Evmdd<double, std::plus<double>> create_evmdd(Domains const &d,
+                                                  Ordering const &o);
 
 private:
     Expression expression;

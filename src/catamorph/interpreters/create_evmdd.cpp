@@ -1,65 +1,67 @@
 #include "create_evmdd.h"
 #include "../catamorph.h"
+
 #include <functional>
 #include <iostream>
 
 using std::vector;
 using std::string;
 
-template <typename T>
-auto CreateEvmdd<T>::create_evmdd_alg(Domains const &domains) {
-    return [&domains, this](expression_r<Evmdd<T>> const &e) -> Evmdd<T> {
+template <typename M, typename F>
+auto CreateEvmdd<M, F>::create_evmdd_alg(Domains const &domains) {
+    return [&domains, this](expression_r<Evmdd<M, F>> const &e) -> Evmdd<M, F> {
         if (const NBR *cst = Factories::get_as_cst(e)) {
-            return factory.make_const_evmdd(NumericExpression(*cst));
+            return factory.make_const_evmdd(*cst);
         }
         if (auto *var = Factories::get_as_var(e)) {
             string name(*var);
             int domain_size = domains.at(*var);
-            vector<NumericExpression> domain;
+            vector<M> domain;
             for (int i = 0; i < domain_size; ++i) {
                 domain.emplace_back(i);
             }
             return factory.make_var_evmdd(name, domain);
         }
         if (auto *o = Factories::get_as_add(e)) {
-            return apply(o->rands(), std::plus<NumericExpression>());
+            return apply(o->rands(), std::plus<M>());
         }
         if (auto *o = Factories::get_as_sub(e)) {
-            return apply(o->rands(), std::minus<NumericExpression>());
+            return apply(o->rands(), std::minus<M>());
         }
         if (auto *o = Factories::get_as_mul(e)) {
-            return apply(o->rands(), std::multiplies<NumericExpression>());
+            return apply(o->rands(), std::multiplies<M>());
         }
         if (auto *o = Factories::get_as_div(e)) {
-            return apply(o->rands(), std::divides<NumericExpression>());
+            return apply(o->rands(), std::divides<M>());
         }
-        if (auto *o = Factories::get_as_and(e)) {
-            return apply(o->rands(), logic_and<NumericExpression>());
-        }
-        if (auto *o = Factories::get_as_equals(e)) {
-            return apply(o->rands(), logic_equals<NumericExpression>());
-        }
-        if (auto *o = Factories::get_as_or(e)) {
-            return apply(o->rands(), logic_or<NumericExpression>());
-        }
-        if (auto *o = Factories::get_as_not(e)) {
-            return apply(o->rands(), logic_not<NumericExpression>());
-        }
+        // if (auto *o = Factories::get_as_and(e)) {
+        //     return apply(o->rands(), logic_and<M>());
+        // }
+        // if (auto *o = Factories::get_as_equals(e)) {
+        //     return apply(o->rands(), logic_equals<M>());
+        // }
+        // if (auto *o = Factories::get_as_or(e)) {
+        //     return apply(o->rands(), logic_or<M>());
+        // }
+        // if (auto *o = Factories::get_as_not(e)) {
+        //     return apply(o->rands(), logic_not<M>());
+        // }
 
         throw std::logic_error("Unknown Operator in Apply");
     };
 }
 
-template <typename T>
-Evmdd<T> CreateEvmdd<T>::create_evmdd(Expression const &expr,
-                                      Domains const &domains,
-                                      Ordering const &ordering) {
+template <typename M, typename F>
+Evmdd<M, F> CreateEvmdd<M, F>::create_evmdd(Expression const &expr,
+                                            Domains const &domains,
+                                            Ordering const &ordering) {
     factory.set_ordering(ordering);
-    return Catamorph::cata<Evmdd<T>>(
-        [&domains, this](expression_r<Evmdd<T>> const &expr_r) -> Evmdd<T> {
-            return create_evmdd_alg(domains)(expr_r);
-        },
+    return Catamorph::cata<Evmdd<M, F>>(
+        [&domains, this](expression_r<Evmdd<M, F>> const &expr_r)
+            -> Evmdd<M, F> { return create_evmdd_alg(domains)(expr_r); },
         expr);
 }
 
-template class CreateEvmdd<NumericExpression>;
+template class CreateEvmdd<float, std::plus<float>>;
+template class CreateEvmdd<int, std::plus<int>>;
+template class CreateEvmdd<double, std::plus<double>>;

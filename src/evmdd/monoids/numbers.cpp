@@ -10,16 +10,20 @@ using std::vector;
 // Monoids for built-in number data types like int, float, double
 
 template <typename M, typename F>
-Monoid<M, F> Monoid<M, F>::greatest_lower_bound(
-    vector<Monoid<M, F>> const &subset) {
-    // For greatest lower bound we can use min_element with <
-    auto min = *std::min_element(subset.begin(), subset.end());
-    return min;
+Monoid<M, F> & Monoid<M,F>::operator-=(Monoid<M, F> const &rhs) {
+    value -= rhs.value;
+    return *this;
 }
 
 template <typename M, typename F>
-Monoid<M,F> Monoid<M,F>::neutral_element() {
-    return {0};
+M Monoid<M,F>::greatest_lower_bound(M const& l, M const& r) {
+    // For greatest lower bound we can use min with <
+    return std::min(l, r);
+}
+
+template <typename M, typename F>
+M Monoid<M,F>::neutral_element() {
+    return 0;
 }
 
 template <typename M, typename F>
