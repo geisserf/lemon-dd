@@ -37,7 +37,8 @@ bool less(Monoid<M, F> const &l, Monoid<M, F> const &r);
 template <typename M, typename F>
 class Monoid {
 public:
-    Monoid() = default;
+    // Default constructor is the neutral element
+    Monoid() : value(neutral_element()) {}
     Monoid(M value) : value(value) {}
 
     // Binary associative operator '+' over M calls Functor F.
@@ -90,7 +91,7 @@ private:
 // Required to calculate hash values of monoids
 template <typename M, typename F>
 std::size_t hash_value(Monoid<M,F> const &monoid) {
-    return boost::hash<Monoid<M,F>>{}(monoid.get_value());
+    return boost::hash<M>{}(monoid.get_value());
 }
 
 #include "monoids/product.h"
