@@ -14,7 +14,7 @@
 #include <vector>
 
 using Ordering = std::map<std::string, int>;
-using ConcreteState = std::vector<int>;
+using ConcreteState = std::vector<unsigned int>;
 
 template <typename M, typename F>
 class EvmddFactory;
@@ -40,41 +40,55 @@ public:
         source_node->print(out);
     }
 
-    // Evaluates the evmdd with the given state. 
+    // Evaluates the evmdd with the given state.
     // If the evmdd represents function E:S->M, this computes E(s).
-    M evaluate(ConcreteState const& state) const {
-        Monoid<M,F> res = input;
+    // Assumes state is ordered according to evmdd ordering.
+    M evaluate(ConcreteState const &state) const {
+        Monoid<M, F> res = input;
         auto node = source_node;
         while (!node->is_terminal()) {
-            int domain_value = state[node->get_level()];
+            assert(node->get_level() <= state.size());
+            // TODO implement correct ordering
+            size_t domain_value = state[node->get_level() - 1];
+            assert(domain_value < node->get_children().size());
             res += node->get_children()[domain_value].first;
             node = node->get_children()[domain_value].second;
         }
         return res.get_value();
     }
 
-    // template <typename EvaluationFunction>
-    // std::vector<Monoid<M, F>> evaluate_partial(PartialState const &state,
-    //                                    EvaluationFunction eval_function) const {
-    //     std::vector<Monoid<M, F>> per_state_result =
-    //         source_node->evaluate(state, eval_function);
-    //     std::vector<Monoid<M, F>> result;
-    //     for (Monoid<M, F> const &res : per_state_result) {
-    //         Monoid<M, F> current = res + input;
-    //         result = eval_function(current, result);
-    //     }
-    //     return result;
-    // }
+    // Evaluates the evmdd given a partial state, according to some evaluation
+    // strategy. When evaluating a node, the evaluation strategy decides for
+    // a node how the results of its children are 'merged' together to return
+    // type Res.
+    //
+    // An example for evmdds over numbers is to use min/max as evaluation
+    // function to return the minimal/maximal cost for a partial state.
 
-    // std::vector<Monoid<M, F>> get_min() const {
-    //     return evaluate_partial(std::map<std::string, std::vector<int>>(),
-    //                     greatest_lower_bound<Monoid<M, F>>());
-    // }
+    template <typename Res, typename EvaluationFunction>
+    Res evaluate_partial(PartialState const &state,
+                         EvaluationFunction func) const {
+        Res source_result = source_node->template evaluate<Res>(state, func);
+        return source_result + input;
+    }
 
-    // std::vector<Monoid<M, F>> get_max() const {
-    //     return evaluate_partial(std::map<std::string, std::vector<int>>(),
-    //                     least_upper_bound<Monoid<M, F>>());
-    // }
+    // Computes min_{s \in S} E(s)
+    Monoid<M, F> get_min() const {
+        auto complete_state = std::map<std::string, std::vector<int>>();
+        auto eval = [](std::vector<Monoid<M, F>> const &vec) {
+            return *std::min_element(vec.begin(), vec.end());
+        };
+        return evaluate_partial<Monoid<M,F>>(complete_state, eval);
+    }
+
+    // Computes max_{s \in S} E(s)
+    Monoid<M, F> get_max() const {
+        auto complete_state = std::map<std::string, std::vector<int>>();
+        auto eval = [](std::vector<Monoid<M, F>> const &vec) {
+            return *std::max_element(vec.begin(), vec.end());
+        };
+        return evaluate_partial<Monoid<M,F>>(complete_state, eval);
+    }
 
     Node_ptr<Monoid<M, F>> const &get_source_node() const {
         assert(source_node);
@@ -124,7 +138,7 @@ public:
         return Evmdd<M, F>(Monoid<M, F>::neutral_element(), node);
     }
 
-    // Given two evmdds left, right over monoids <L,G> and <R,H> and given an
+    // Given two evmdds 'left', 'right' over monoids <L,G> and <R,H> and given
     // operator op: LxR->M, apply returns an evmdd over monoid <M,F> which
     // represents function 'left op right'.
     template <typename L, typename G, typename R, typename H, typename OP>

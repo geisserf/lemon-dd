@@ -25,11 +25,11 @@ class NodeFactory;
 template <typename T>
 class Node {
 private:
-    Node(int id, int level, std::string const &var,
+    Node(int id, unsigned int level, std::string const &var,
          std::vector<Edge<T>> const &children);
 
     int id;
-    int level;
+    unsigned int level;
     std::string variable;
     std::vector<Edge<T>> children;
 
@@ -54,7 +54,7 @@ public:
         return variable;
     }
 
-    int get_level() const {
+    unsigned int get_level() const {
         return level;
     }
 
@@ -62,46 +62,37 @@ public:
         return id == 0;
     }
 
-    // template <typename EvaluationFunction>
-    // std::vector<T> evaluate(PartialState const &state,
-    //                         EvaluationFunction func) const {
-    //     // Terminal node backpropagates neutral element
-    //     if (is_terminal()) {
-    //         return std::vector<T>{T{T::neutral_element()}};
-    //     }
+    template <typename Res, typename EvaluationFunction>
+    Res evaluate(PartialState const &state, EvaluationFunction func) const {
+        // Terminal node backpropagates neutral element
+        if (is_terminal()) {
+            return Res();
+        }
 
-    //     std::vector<T> result;
-    //     auto state_it = state.find(variable);
-    //     // state does not permit every domain value for this variable
-    //     if (state_it != state.end()) {
-    //         for (int domain_value : state_it->second) {
-    //             assert(static_cast<size_t>(domain_value) < children.size());
-    //             std::vector<T> child_result =
-    //                 children[domain_value].second->evaluate(state, func);
-    //             T const &weight = children[domain_value].first;
-
-    //             // add weight to child evaluation:
-    //             for (T child_expr : child_result) {
-    //                 result = func(child_expr + weight, result);
-    //             }
-    //         }
-    //     } else {
-    //         // TODO This is basically the same code as above, just for the case
-    //         // that the whole domain is covered. It would be nice if we could
-    //         // remove this code duplication
-    //         for (size_t domain_value = 0; domain_value < children.size();
-    //              ++domain_value) {
-    //             std::vector<T> child_result =
-    //                 children[domain_value].second->evaluate(state, func);
-    //             T const &weight = children[domain_value].first;
-    //             // add weight to child evaluations:
-    //             for (T child_expr : child_result) {
-    //                 result = func(child_expr + weight, result);
-    //             }
-    //         }
-    //     }
-    //     return result;
-    // }
+        std::vector<Res> child_results;
+        auto state_it = state.find(variable);
+        if (state_it != state.end()) {
+            // Only compute for domain values contained in the partial state
+            for (int d_val : state_it->second) {
+                assert(static_cast<size_t>(d_val) < children.size());
+                Res child_res =
+                    children[d_val].second->evaluate<Res>(state, func);
+                child_res += children[d_val].first;
+                child_results.push_back(child_res);
+            }
+        } else {
+            // TODO This is basically the same code as above, just for the case
+            // that the whole domain is covered. It would be nice if we could
+            // remove this code duplication.
+            for (size_t d_val = 0; d_val < children.size(); ++d_val) {
+                Res child_res =
+                    children[d_val].second->evaluate<Res>(state, func);
+                child_res += children[d_val].first;
+                child_results.push_back(child_res);
+            }
+        }
+        return func(child_results);
+    }
 };
 
 template <typename T>
@@ -114,7 +105,7 @@ public:
 
     // Returns a pointer to the given node. If the node is not yet stored, it is
     // created first.
-    Node_ptr<T> make_node(int level, std::string const &variable,
+    Node_ptr<T> make_node(unsigned int level, std::string const &variable,
                           std::vector<Edge<T>> const &children);
 
 private:

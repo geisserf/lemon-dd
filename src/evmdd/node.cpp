@@ -25,7 +25,7 @@ void Node<T>::unique_successor_nodes(
 }
 
 template <typename T>
-Node<T>::Node(int id, int level, std::string const &var,
+Node<T>::Node(int id, unsigned int level, std::string const &var,
               std::vector<Edge<T>> const &children)
     : id(id), level(level), variable(var), children(children) {}
 
@@ -39,7 +39,8 @@ Node_ptr<T> NodeFactory<T>::get_terminal_node() const {
 }
 
 template <typename T>
-Node_ptr<T> NodeFactory<T>::make_node(int level, std::string const &variable,
+Node_ptr<T> NodeFactory<T>::make_node(unsigned int level,
+                                      std::string const &variable,
                                       std::vector<Edge<T>> const &children) {
     assert(level != 0);
     if (auto cached = storage.exists(level, children)) {
