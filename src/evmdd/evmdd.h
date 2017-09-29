@@ -73,21 +73,23 @@ public:
     }
 
     // Computes min_{s \in S} E(s)
-    Monoid<M, F> get_min() const {
+    M get_min() const {
         auto complete_state = std::map<std::string, std::vector<int>>();
         auto eval = [](std::vector<Monoid<M, F>> const &vec) {
             return *std::min_element(vec.begin(), vec.end());
         };
-        return evaluate_partial<Monoid<M,F>>(complete_state, eval);
+        auto min = evaluate_partial<Monoid<M, F>>(complete_state, eval);
+        return min.get_value();
     }
 
     // Computes max_{s \in S} E(s)
-    Monoid<M, F> get_max() const {
+    M get_max() const {
         auto complete_state = std::map<std::string, std::vector<int>>();
         auto eval = [](std::vector<Monoid<M, F>> const &vec) {
             return *std::max_element(vec.begin(), vec.end());
         };
-        return evaluate_partial<Monoid<M,F>>(complete_state, eval);
+        auto max = evaluate_partial<Monoid<M, F>>(complete_state, eval);
+        return max.get_value();
     }
 
     Node_ptr<Monoid<M, F>> const &get_source_node() const {

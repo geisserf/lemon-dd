@@ -34,8 +34,8 @@ SCENARIO("Testing basic numeric EVMDD construction", "[numericEVMDDBuild]") {
                 REQUIRE(evmdd.size() == 2);
             }
             THEN("get_min should be 0 and get_max should be 4") {
-                REQUIRE(evmdd.get_min().get_value() == 0);
-                REQUIRE(evmdd.get_max().get_value() == 4);
+                REQUIRE(evmdd.get_min() == 0);
+                REQUIRE(evmdd.get_max() == 4);
             }
         }
     }
