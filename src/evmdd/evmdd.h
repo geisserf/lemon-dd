@@ -16,10 +16,10 @@
 using Ordering = std::map<std::string, int>;
 using ConcreteState = std::vector<unsigned int>;
 
-template <typename M, typename F>
+template <typename M, typename F = std::plus<M>>
 class EvmddFactory;
 
-template <typename M, typename F>
+template <typename M, typename F = std::plus<M>>
 class Evmdd {
 private:
     Monoid<M, F> input;
