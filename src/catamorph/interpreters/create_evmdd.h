@@ -8,7 +8,7 @@
 
 using Domains = std::map<ID, unsigned int>;
 
-template <typename M, typename F>
+template <typename M, typename F = std::plus<M>>
 class CreateEvmdd {
 private:
     EvmddFactory<M, F> factory;

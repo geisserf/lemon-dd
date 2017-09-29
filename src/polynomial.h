@@ -32,8 +32,11 @@ public:
 
     Expression getExpression();
 
-    Evmdd<double, std::plus<double>> create_evmdd(Domains const &d,
-                                                  Ordering const &o);
+    template <typename M, typename F = std::plus<M>>
+    Evmdd<M, F> create_evmdd(Domains const &d, Ordering const &o) {
+        CreateEvmdd<M, F> create;
+        return create.create_evmdd(expression, d, o);
+    }
 
 private:
     Expression expression;
