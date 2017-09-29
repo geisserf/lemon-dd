@@ -1,43 +1,39 @@
 #include "conditional_effects.h"
 #include "../catamorph/printer.h"
 #include "catamorph/interpreters/create_evmdd.h"
-#include "evmdd/evmdd.h"
 #include "utils/math_utils.h"
 
 #include <cassert>
 #include <iostream>
 #include <vector>
 
-VariableAssignmentExpression convert_numeric_set::operator()(
-    const NumericExpression &first,
-    const VariableAssignmentExpression &second) const {
-    if (MathUtils::is_equal(first.value, 1)) {
-        return VariableAssignmentExpression(second);
+Monoid<Facts, Union> convert_numeric_set::operator()(
+    const Monoid<int> &first, const Monoid<Facts, Union> &second) const {
+    if (first.get_value() == 1) {
+        return Monoid<Facts, Union>(second);
     }
-    return VariableAssignmentExpression();
+    return Monoid<Facts, Union>::neutral_element();
 }
 
-Evmdd<VariableAssignmentExpression> ConditionalEffect::create_evmdd(
-    Domains const &d, Ordering const &o) const {
+Evmdd<Facts, Union> ConditionalEffect::create_evmdd(Domains const &d,
+                                                    Ordering const &o) const {
     // TODO ISSUE #12
-
-    CreateEvmdd<NumericExpression> create;
-    EvmddFactory<VariableAssignmentExpression> factory;
-    Evmdd<NumericExpression> condition_evmdd =
-        create.create_evmdd(condition, d, o);
+    CreateEvmdd<int> create;
+    EvmddFactory<Facts, Union> factory;
+    Evmdd<int> condition_evmdd = create.create_evmdd(condition, d, o);
     // std::string condition_string = Printer::asString(condition);
     // std::cout << "evmdd for: " << condition_string << std::endl;
     // condition_evmdd.print(std::cout);
 
-    Evmdd<VariableAssignmentExpression> effect_evmdd = factory.make_const_evmdd(
-        VariableAssignmentExpression({{effect, value}}));
+    Evmdd<Facts, Union> effect_evmdd =
+        factory.make_const_evmdd(Facts{Fact{effect, value}});
 
     return factory.apply(condition_evmdd, effect_evmdd, convert_numeric_set());
 }
 
-Evmdd<VariableAssignmentExpression> ConditionalEffects::create_evmdd(
-    Domains const &d, Ordering const &o) const {
-    std::vector<Evmdd<VariableAssignmentExpression>> partial;
+Evmdd<Facts, Union> ConditionalEffects::create_evmdd(Domains const &d,
+                                                     Ordering const &o) const {
+    std::vector<Evmdd<Facts, Union>> partial;
 
     for (ConditionalEffect const &effect : effects) {
         partial.push_back(effect.create_evmdd(d, o));
@@ -45,16 +41,12 @@ Evmdd<VariableAssignmentExpression> ConditionalEffects::create_evmdd(
 
     assert(!partial.empty());
 
-    EvmddFactory<VariableAssignmentExpression> factory;
+    EvmddFactory<Facts, Union> factory;
     // Union
-    Evmdd<VariableAssignmentExpression> result = partial[0];
+    Evmdd<Facts, Union> result = partial[0];
 
     for (size_t i = 1; i < partial.size(); ++i) {
-        // std::cout<<"Partial start"<<std::endl;
-        // partial[1].print(std::cout);
-        // std::cout<<"Partial end"<<std::endl;
-        result = factory.apply(result, partial[i],
-                               std::plus<VariableAssignmentExpression>());
+        result = factory.apply(result, partial[i], Union());
     }
 
     return result;

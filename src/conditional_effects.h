@@ -9,10 +9,12 @@
 using Ordering = std::map<std::string, int>;
 using Domains = std::map<std::string, unsigned int>;
 
+// TODO forward declarations
+
 struct convert_numeric_set {
-    VariableAssignmentExpression operator()(
-        const NumericExpression &first,
-        const VariableAssignmentExpression &second) const;
+    // TODO this shouldbe monoid<bool>
+    Monoid<Facts, Union> operator()(const Monoid<int> &first,
+                                    const Monoid<Facts, Union> &second) const;
 };
 
 class ConditionalEffect {
@@ -33,8 +35,7 @@ public:
         return value;
     }
 
-    Evmdd<VariableAssignmentExpression> create_evmdd(Domains const &d,
-                                                     Ordering const &o) const;
+    Evmdd<Facts, Union> create_evmdd(Domains const &d, Ordering const &o) const;
 
 private:
     Expression condition;
@@ -48,8 +49,7 @@ public:
     ConditionalEffects(std::vector<ConditionalEffect> const &effects)
         : effects(effects) {}
 
-    Evmdd<VariableAssignmentExpression> create_evmdd(Domains const &d,
-                                                     Ordering const &o) const;
+    Evmdd<Facts, Union> create_evmdd(Domains const &d, Ordering const &o) const;
 
     std::vector<ConditionalEffect> getEffects() {
         return effects;
