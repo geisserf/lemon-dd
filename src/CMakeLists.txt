@@ -40,8 +40,8 @@ set(SOURCE_FILES
      catamorph/expression.h
      polynomial.cpp polynomial.h
      parser.cpp parser.h
-     #effect_parser.h effect_parser.cpp
-    #  conditional_effects.h conditional_effects.cpp
+     effect_parser.h effect_parser.cpp
+     conditional_effects.h conditional_effects.cpp
     # catamorph/printer.h
     evmdd/evmdd.h evmdd/evmdd.cpp
     evmdd/node.h evmdd/node.cpp evmdd/node_storage.h evmdd/node_storage.cpp
