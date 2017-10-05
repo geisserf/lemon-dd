@@ -26,7 +26,8 @@ template <typename T>
 class Node {
 private:
     Node(int id, unsigned int level, std::string const &var,
-         std::vector<Edge<T>> const &children);
+         std::vector<Edge<T>> const &children)
+        : id(id), level(level), variable(var), children(children) {}
 
     int id;
     unsigned int level;
@@ -37,10 +38,26 @@ private:
     friend NodeStorage<T>;
 
 public:
-    void print(std::ostream &out, std::string indent = "") const;
+    void print(std::ostream &out, std::string indent = "") const {
+        out << indent << "ID: " << id << "(" << variable << ")" << std::endl;
+        indent += "  ";
+        for (size_t i = 0; i < children.size(); ++i) {
+            out << indent << "w[" << i << "]: " << children[i].first.to_string()
+                << std::endl;
+            children[i].second->print(out, indent + "  ");
+        }
+    }
 
     // Collect all successor nodes not yet evaluated in succ
-    void unique_successor_nodes(std::unordered_set<Node_ptr<T>> &succ) const;
+    void unique_successor_nodes(std::unordered_set<Node_ptr<T>> &succ) const {
+        for (auto const &edge : children) {
+            // Only evaluate children which were not yet evaluated
+            if (succ.find(edge.second) == succ.end()) {
+                succ.insert(edge.second);
+                edge.second->unique_successor_nodes(succ);
+            }
+        }
+    }
 
     int get_id() const {
         return id;
@@ -98,15 +115,26 @@ public:
 template <typename T>
 class NodeFactory {
 public:
-    NodeFactory();
+    NodeFactory() : storage(NodeStorage<T>()), node_counter(storage.size()) {}
 
     // Returns a pointer to the (unique) terminal node
-    Node_ptr<T> get_terminal_node() const;
+    Node_ptr<T> get_terminal_node() const {
+        return storage.get_node(0);
+    }
 
     // Returns a pointer to the given node. If the node is not yet stored, it is
     // created first.
     Node_ptr<T> make_node(unsigned int level, std::string const &variable,
-                          std::vector<Edge<T>> const &children);
+                          std::vector<Edge<T>> const &children) {
+        assert(level != 0);
+        if (auto cached = storage.exists(level, children)) {
+            return cached;
+        }
+        Node_ptr<T> node(
+            new Node<T>(node_counter++, level, variable, children));
+        storage.add_node(node);
+        return node;
+    }
 
 private:
     // Manages node memory
