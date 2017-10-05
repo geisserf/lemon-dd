@@ -36,7 +36,6 @@ set(SOURCE_FILES
      catamorph/interpreters/dependencies.cpp catamorph/interpreters/dependencies.h
      catamorph/interpreters/iverson.cpp catamorph/interpreters/iverson.h
      catamorph/interpreters/create_evmdd.h
-     catamorph/interpreters/create_evmdd.cpp
      catamorph/expression.h
      polynomial.cpp polynomial.h
      parser.cpp parser.h
@@ -44,7 +43,7 @@ set(SOURCE_FILES
      conditional_effects.h conditional_effects.cpp
      catamorph/printer.h
      evmdd/evmdd.h
-     evmdd/node.h evmdd/node.cpp evmdd/node_storage.h evmdd/node_storage.cpp
+     evmdd/node.h evmdd/node_storage.h
      evmdd/printer.h
      evmdd/monoid.h
      evmdd/monoids/product.h

@@ -15,7 +15,7 @@ set(TEST_SOURCES
         infix_parser_tests.cpp
         effect_parser_test.cpp
         iverson_evmdd_tests.cpp
-        # conditional_effect_evmdd.cpp 
+        conditional_effect_evmdd.cpp 
         #combined_evmdd_tests.cpp
         )
 
