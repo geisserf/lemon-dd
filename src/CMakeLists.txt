@@ -42,18 +42,18 @@ set(SOURCE_FILES
      parser.cpp parser.h
      effect_parser.h effect_parser.cpp
      conditional_effects.h conditional_effects.cpp
-    # catamorph/printer.h
-    evmdd/evmdd.h evmdd/evmdd.cpp
-    evmdd/node.h evmdd/node.cpp evmdd/node_storage.h evmdd/node_storage.cpp
-    # evmdd/evmdd_expression.h evmdd/evmdd_expression.cpp
-    # evmdd/printer.h
-    evmdd/monoid.h
-    evmdd/monoids/product.h
-    evmdd/monoids/numbers.cpp
-    evmdd/monoids/variable_assignment.h evmdd/monoids/variable_assignment.cpp
-    # combined.h combined.cpp
-    #utils/math_utils.h utils/math_utils.cpp
-    #utils/system_utils.h utils/system_utils.cpp cxxopts.hpp
+     catamorph/printer.h
+     evmdd/evmdd.h
+     evmdd/node.h evmdd/node.cpp evmdd/node_storage.h evmdd/node_storage.cpp
+     evmdd/printer.h
+     evmdd/monoid.h
+     evmdd/monoids/product.h
+     evmdd/monoids/numbers.cpp
+     evmdd/monoids/variable_assignment.h evmdd/monoids/variable_assignment.cpp
+     evmdd/operations/logic_not.h
+     # combined.h combined.cpp
+     #utils/math_utils.h utils/math_utils.cpp
+     #utils/system_utils.h utils/system_utils.cpp cxxopts.hpp
     )
 
 add_library(NumericCatamorph_lib ${SOURCE_FILES})

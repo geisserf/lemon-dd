@@ -34,18 +34,19 @@ auto CreateEvmdd<M, F>::create_evmdd_alg(Domains const &domains) {
         if (auto *o = Factories::get_as_div(e)) {
             return apply(o->rands(), std::divides<M>());
         }
-        // if (auto *o = Factories::get_as_and(e)) {
-        //     return apply(o->rands(), logic_and<M>());
-        // }
-        // if (auto *o = Factories::get_as_equals(e)) {
-        //     return apply(o->rands(), logic_equals<M>());
-        // }
-        // if (auto *o = Factories::get_as_or(e)) {
-        //     return apply(o->rands(), logic_or<M>());
-        // }
-        // if (auto *o = Factories::get_as_not(e)) {
-        //     return apply(o->rands(), logic_not<M>());
-        // }
+        if (auto *o = Factories::get_as_and(e)) {
+            return apply(o->rands(), std::logical_and<M>());
+        }
+        if (auto *o = Factories::get_as_equals(e)) {
+            // TODO comparison with tolerance for floats
+            return apply(o->rands(), std::equal_to<M>());
+        }
+        if (auto *o = Factories::get_as_or(e)) {
+            return apply(o->rands(), std::logical_or<M>());
+        }
+         if (auto *o = Factories::get_as_not(e)) {
+             return apply(o->rands(), logic_not<M>());
+         }
 
         throw std::logic_error("Unknown Operator in Apply");
     };
@@ -62,6 +63,6 @@ Evmdd<M, F> CreateEvmdd<M, F>::create_evmdd(Expression const &expr,
         expr);
 }
 
-template class CreateEvmdd<float, std::plus<float>>;
 template class CreateEvmdd<int, std::plus<int>>;
+template class CreateEvmdd<float, std::plus<float>>;
 template class CreateEvmdd<double, std::plus<double>>;

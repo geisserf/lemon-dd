@@ -3,6 +3,7 @@
 
 #include "monoid.h"
 #include "node.h"
+#include "operations/logic_not.h"
 
 #include <algorithm>
 #include <cassert>
