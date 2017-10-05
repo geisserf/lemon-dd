@@ -16,7 +16,7 @@ set(TEST_SOURCES
         effect_parser_test.cpp
         iverson_evmdd_tests.cpp
         conditional_effect_evmdd.cpp 
-        #combined_evmdd_tests.cpp
+        combined_evmdd_tests.cpp
         )
 
 add_executable(Test ${TEST_SOURCES})
