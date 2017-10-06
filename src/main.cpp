@@ -3,7 +3,6 @@
 #include <map>
 #include <string>
 
-#include "combined.h"
 #include "conditional_effects.h"
 #include "cxxopts.hpp"
 #include "effect_parser.h"
@@ -63,10 +62,10 @@ domain_ordering parse_domain(std::string ordering_string) {
 
     return o;
 }
-template <typename T>
-void create_dot(std::ostream &output_stream, Evmdd<T> const &evmdd,
+template <typename M, typename F>
+void create_dot(std::ostream &output_stream, Evmdd<M, F> const &evmdd,
                 Ordering const &o) {
-    DotPrinter<T> printer(o);
+    DotPrinter<M, F> printer(o);
     printer.to_dot(output_stream, evmdd);
 }
 
@@ -138,20 +137,22 @@ int main(int argc, char *argv[]) {
     if (type_ == "ce") {
         EffectParser parser;
         ConditionalEffects effects = parser.parse(expressions[0]);
-        Evmdd<VariableAssignmentExpression> evmdd =
-            effects.create_evmdd(d_o.domains, d_o.ordering);
+        auto evmdd = effects.create_evmdd(d_o.domains, d_o.ordering);
         create_dot(dot_stream, evmdd, d_o.ordering);
     } else if (type_ == "cst") {
         Polynomial p = Polynomial(expressions[0]);
-        Evmdd<NumericExpression> evmdd =
-            p.create_evmdd(d_o.domains, d_o.ordering);
+        Evmdd<double> evmdd = p.create_evmdd<double>(d_o.domains, d_o.ordering);
         create_dot(dot_stream, evmdd, d_o.ordering);
     } else if (type_ == "c") {
         EffectParser parser;
         ConditionalEffects effects = parser.parse(expressions[0]);
-        Combined combined = Combined(effects.getEffects(), expressions[1]);
-        auto evmdd = combined.create_evmdd(d_o.domains, d_o.ordering);
-        create_dot(dot_stream, evmdd, d_o.ordering);
+        auto effect_evmdd = effects.create_evmdd(d_o.domains, d_o.ordering);
+        Polynomial p = Polynomial(expressions[1]);
+        Evmdd<double> cost_evmdd =
+            p.create_evmdd<double>(d_o.domains, d_o.ordering);
+        ProductFactory<Facts, double, Union, std::plus<double>> factory;
+        auto product_evmdd = factory.product(effect_evmdd, cost_evmdd);
+        create_dot(dot_stream, product_evmdd, d_o.ordering);
     } else {
         std::cout << "unknown type" << std::endl;
     }

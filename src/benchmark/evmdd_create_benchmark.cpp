@@ -1,4 +1,5 @@
 #include "../catamorph/interpreters/dependencies.h"
+#include "../evmdd/evmdd.h"
 #include "../evmdd/printer.h"
 #include "../polynomial.h"
 #include "../utils/system_utils.h"
@@ -8,7 +9,6 @@
 #include <fstream>
 #include <gperftools/profiler.h>
 #include <iostream>
-#include <gperftools/profiler.h>
 
 using Time = std::chrono::steady_clock;
 using ms = std::chrono::milliseconds;
@@ -21,9 +21,10 @@ using std::endl;
 
 namespace fs = std::experimental::filesystem;
 
-void create_dot(std::ostream &output_stream,
-                Evmdd<NumericExpression> const &evmdd, Ordering const &o) {
-    DotPrinter<NumericExpression> printer(o);
+template <typename M, typename F>
+void create_dot(std::ostream &output_stream, Evmdd<M, F> const &evmdd,
+                Ordering const &o) {
+    DotPrinter<M, F> printer(o);
     printer.to_dot(output_stream, evmdd);
 }
 
@@ -46,7 +47,7 @@ void execute_benchmark(std::ostream &output_stream, string const &expression,
     cout << "Current RAM usage (KB): " << util::get_ram_used_by_this() << endl;
     start = Time::now();
     ProfilerStart("evmdd.profile");
-    Evmdd<NumericExpression> evmdd = p.create_evmdd(d, o);
+    auto evmdd = p.create_evmdd<double>(d, o);
     ProfilerStop();
     end = Time::now();
 
@@ -91,7 +92,7 @@ int main(int argc, char **argv) {
     string result_file = filename + ".result";
     string dot_file = filename + ".dot";
     cout << "Executing " << filepath << endl;
-    cout << "Results are saved in " << result_file << endl;
+    cout << "Saved results in " << result_file << endl;
     std::ofstream result_stream(result_file, std::ios_base::app);
     std::ofstream dot_stream(dot_file);
     execute_benchmark(result_stream, expression, dot_stream);

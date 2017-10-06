@@ -8,8 +8,7 @@
 
 using std::endl;
 
-SCENARIO("Testing combining numeric anc Conditional effect EVMDDs",
-         "[combined]") {
+SCENARIO("Combining numeric and conditional effect EVMDDs", "[combined]") {
     GIVEN("CE: x=x+1, Cost x=x+1, Domain x=0..4") {
         Expression cond_effect_1_expression =
             Factories::equals({Factories::var((ID) "x"), Factories::cst(0)});

@@ -17,12 +17,11 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fmax-errors=3 -Wall -Wextra -pedantic -Werror")
 
-set(CMAKE_CXX_FLAGS_PROFILE ${CMAKE_CXX_FLAGS_DEBUG})
 set(CMAKE_EXE_LINKER_FLAGS_PROFILE "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -pg")
 
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG -fomit-frame-pointer")
 set(CMAKE_CXX_FLAGS_DEBUG "-O1")
-#set(CMAKE_CXX_FLAGS_PROFILE "-O3 -pg")
+set(CMAKE_CXX_FLAGS_PROFILE "-O3 -pg")
 
 include_directories(boost_dependencies)
 add_subdirectory(boost_dependencies/libs)
@@ -51,15 +50,15 @@ set(SOURCE_FILES
      evmdd/monoids/variable_assignment.h evmdd/monoids/variable_assignment.cpp
      evmdd/operations/logic_not.h
      #utils/math_utils.h utils/math_utils.cpp
-     #utils/system_utils.h utils/system_utils.cpp cxxopts.hpp
+     utils/system_utils.h utils/system_utils.cpp
     )
 
 add_library(NumericCatamorph_lib ${SOURCE_FILES})
 target_link_libraries(NumericCatamorph_lib MiniBoost)
 
-#add_executable(Parser parser_main.cpp ${SOURCE_FILES})
-#add_executable(NumericCatamorph main.cpp)
-#add_executable(NumericCatamorph ${SOURCE_FILES})
-#target_link_libraries(NumericCatamorph NumericCatamorph_lib)
+add_executable(Parser parser_main.cpp ${SOURCE_FILES})
+add_executable(NumericCatamorph main.cpp ${SOURCE_FILES})
+target_link_libraries(NumericCatamorph NumericCatamorph_lib)
 
 add_subdirectory(test)
+add_subdirectory(benchmark)

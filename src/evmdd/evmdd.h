@@ -181,9 +181,13 @@ public:
     // Product of two evmdds. Only defined for ProductMonoids.
     template <typename L, typename G, typename R, typename H>
     Evmdd<M, F> product(Evmdd<L, G> const &left, Evmdd<R, H> const &right) {
-        // Static assertion throws a compile time error message if a user tries
-        // to generate the product of a factory which is not of type M=pair<L,R>
-        static_assert(std::is_same<M, std::pair<L, R>>::value,
+        // Compile time error message if a user reverses the arguments.
+        static_assert(!std::is_same<M, std::pair<R, L>>::value,
+                      "User Error: product arguments are reversed.");
+        // Compile time error message if a user calls the product for a
+        // factory which is not of type M=pair<L,R>
+        static_assert(!std::is_same<M, std::pair<R, L>>::value ||
+                          std::is_same<M, std::pair<L, R>>::value,
                       "User Error: M is not a pair of L and R. Product of two "
                       "evmdds has to be called by a ProductFactory");
         return apply(left, right, std::make_pair<L, R>);

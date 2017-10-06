@@ -10,20 +10,20 @@
 
 using Ordering = std::map<std::string, int>;
 
-template <typename T>
+template <typename M, typename F>
 class Evmdd;
 
-template <typename T>
+template <typename M, typename F>
 class DotPrinter {
 public:
     DotPrinter(Ordering const &ordering) : ordering(ordering) {}
 
     // prints the .dot representation of an evmdd
-    void to_dot(std::ostream &out, Evmdd<T> const &evmdd) {
+    void to_dot(std::ostream &out, Evmdd<M, F> const &evmdd) {
         node_count = 0;
         edge_count = 0;
-        write_header(out, evmdd.get_input_value(), evmdd.get_entry_node());
-        process_nodes(out, evmdd.get_entry_node());
+        write_header(out, evmdd.get_input(), evmdd.get_source_node());
+        process_nodes(out, evmdd.get_source_node());
         write_alignment(out);
         print_legend(out);
         write_end(out);
@@ -46,17 +46,17 @@ private:
     }
 
     // Prints start of dot file and the first edge connecting to the entry node
-    void write_header(std::ostream &out, T const &input_value,
-                      Node_ptr<T> entry_node) const {
+    void write_header(std::ostream &out, Monoid<M, F> const &input_value,
+                      Node_ptr<Monoid<M, F>> entry_node) const {
         out << "digraph G {" << std::endl;
         out << "dummy [style=invis];" << std::endl;
         out << "dummy -> \"" << entry_node->get_id() << "\"";
-        out << "[arrowhead=none, label=\"" << input_value.toString() << "\"];"
+        out << "[arrowhead=none, label=\"" << input_value.to_string() << "\"];"
             << std::endl;
     }
 
     // Prints successor nodes and edges starting from entry_node
-    void process_nodes(std::ostream &out, Node_ptr<T> entry_node) {
+    void process_nodes(std::ostream &out, Node_ptr<Monoid<M, F>> entry_node) {
         if (printed_nodes.find(entry_node) != printed_nodes.end()) {
             return;
         }
@@ -64,7 +64,7 @@ private:
         printed_nodes.insert(entry_node);
         same_level_nodes[entry_node->get_level()].push_back(entry_node);
         int i = 0;
-        for (Edge<T> const &edge : entry_node->get_children()) {
+        for (Edge<Monoid<M, F>> const &edge : entry_node->get_children()) {
             print_edge(out, entry_node, edge.first, edge.second, i);
             process_nodes(out, edge.second);
             ++i;
@@ -72,7 +72,7 @@ private:
     }
 
     // Prints the node
-    void print_node(std::ostream &out, Node_ptr<T> node) {
+    void print_node(std::ostream &out, Node_ptr<Monoid<M, F>> node) {
         out << "\"" << node->get_id() << "\"";
         out << "[style=filled, fillcolor=lightgrey, label=\"";
         out << node->get_variable() << "\"];" << std::endl;
@@ -82,12 +82,13 @@ private:
     // Prints an edge between two nodes with its weight.
     // Note: We omit domain values, because graphviz has really bad alignment
     // for multiple labels on one edge.
-    void print_edge(std::ostream &out, Node_ptr<T> parent, T weight,
-                    Node_ptr<T> child, int domain) {
+    void print_edge(std::ostream &out, Node_ptr<Monoid<M, F>> parent,
+                    Monoid<M, F> weight, Node_ptr<Monoid<M, F>> child,
+                    int domain) {
         out << "\"" << parent->get_id() << "\" -> \"" << child->get_id()
             << "\"";
         out << " [arrowhead=none,label=\"" << domain << " : "
-            << weight.toString() << "\"];" << std::endl;
+            << weight.to_string() << "\"];" << std::endl;
         edge_count++;
     }
 
@@ -95,7 +96,7 @@ private:
     void write_alignment(std::ostream &out) const {
         for (auto const &kv_pair : same_level_nodes) {
             out << "{rank=same;";
-            for (Node_ptr<T> node : kv_pair.second) {
+            for (Node_ptr<Monoid<M,F>> node : kv_pair.second) {
                 out << "\"" << node->get_id() << "\";";
             }
             out << "}" << std::endl;
@@ -113,9 +114,9 @@ private:
 
     Ordering ordering;
     // Store which nodes lie on the same level for prettier visualization
-    std::map<int, std::vector<Node_ptr<T>>> same_level_nodes;
+    std::map<int, std::vector<Node_ptr<Monoid<M,F>>>> same_level_nodes;
     // Nodes which were already printed
-    std::unordered_set<Node_ptr<T>> printed_nodes;
+    std::unordered_set<Node_ptr<Monoid<M,F>>> printed_nodes;
     int node_count;
     int edge_count;
 };
