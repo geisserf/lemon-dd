@@ -50,7 +50,6 @@ set(SOURCE_FILES
      evmdd/monoids/numbers.cpp
      evmdd/monoids/variable_assignment.h evmdd/monoids/variable_assignment.cpp
      evmdd/operations/logic_not.h
-     evmdd/product_evmdd.h
      #utils/math_utils.h utils/math_utils.cpp
      #utils/system_utils.h utils/system_utils.cpp cxxopts.hpp
     )

@@ -12,6 +12,7 @@
 #include <memory>
 #include <ostream>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 using Ordering = std::map<std::string, int>;
@@ -177,6 +178,17 @@ public:
         return create_evmdd(root_level, var, new_children);
     }
 
+    // Product of two evmdds. Only defined for ProductMonoids.
+    template <typename L, typename G, typename R, typename H>
+    Evmdd<M, F> product(Evmdd<L, G> const &left, Evmdd<R, H> const &right) {
+        // Static assertion throws a compile time error message if a user tries
+        // to generate the product of a factory which is not of type M=pair<L,R>
+        static_assert(std::is_same<M, std::pair<L, R>>::value,
+                      "User Error: M is not a pair of L and R. Product of two "
+                      "evmdds has to be called by a ProductFactory");
+        return apply(left, right, std::make_pair<L, R>);
+    }
+
 private:
     // Returns true if the operation can immmediately be computed between the
     // evmdds.
@@ -251,5 +263,12 @@ private:
     Ordering ordering;
     NodeFactory<Monoid<M, F>> node_factory;
 };
+
+// Typename declarations for user convenience
+template <typename L, typename R, typename F, typename G>
+using ProductFactory = EvmddFactory<std::pair<L, R>, std::pair<F, G>>;
+
+template <typename L, typename R, typename F, typename G>
+using ProductEvmdd = Evmdd<std::pair<L, R>, std::pair<F, G>>;
 
 #endif // NUMERIC_CATAMORPH_EVMDD_H

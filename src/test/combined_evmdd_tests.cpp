@@ -1,4 +1,4 @@
-#include "../evmdd/product_evmdd.h"
+#include "../evmdd/evmdd.h"
 #include "../catamorph/factories.h"
 #include "../conditional_effects.h"
 #include "../polynomial.h"
@@ -97,14 +97,14 @@ SCENARIO("Testing combining numeric anc Conditional effect EVMDDs",
         WHEN("We combine both EVMDDs") {
             ProductFactory<Facts, int, Union, std::plus<int>> factory;
             auto product = factory.product(effect_evmdd, cost_evmdd);
+
             THEN("Product should be: ") {
                 std::stringstream ss;
                 product.print(ss);
                 std::stringstream expected;
                 expected << "input value: {w=1},1 nodes:" << endl;
                 expected << "ID: 7(x)" << endl;
-                expected << "  w[0]: {v=0},0" << endl
-                         << "    ID: 3(y)" << endl;
+                expected << "  w[0]: {v=0},0" << endl << "    ID: 3(y)" << endl;
                 expected << "      w[0]: {},0" << endl
                          << "        ID: 1(z)" << endl;
                 expected << "          w[0]: {},0" << endl
