@@ -10,13 +10,14 @@ set(TEST_SOURCES
         simple_iverson_tests.cpp
         polynomial_class_tests.cpp
         monoid_tests.cpp
-        evmdd_build_tests.cpp
         parser_tests.cpp
         infix_parser_tests.cpp
         effect_parser_test.cpp
-        iverson_evmdd_tests.cpp
-        conditional_effect_evmdd.cpp 
-        combined_evmdd_tests.cpp
+        #evmdd/numeric/evmdd_build_tests.cpp
+        evmdd/numeric/construction_tests.cpp
+        #evmdd/iverson_evmdd_tests.cpp
+        #evmdd/conditional_effect_evmdd.cpp 
+        #evmdd/combined_evmdd_tests.cpp
         )
 
 add_executable(Test ${TEST_SOURCES})

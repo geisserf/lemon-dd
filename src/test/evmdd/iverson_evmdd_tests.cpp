@@ -1,8 +1,8 @@
-#include "../catamorph/factories.h"
-#include "../catamorph/interpreters/create_evmdd.h"
-#include "../polynomial.h"
+#include "../../catamorph/factories.h"
+#include "../../catamorph/interpreters/create_evmdd.h"
+#include "../../polynomial.h"
 
-#include "Catch/include/catch.hpp"
+#include "../Catch/include/catch.hpp"
 #include <iostream>
 
 SCENARIO("Testing iverson EVMDD construction", "[iversonevmdd]") {

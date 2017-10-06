@@ -37,9 +37,10 @@ public:
     Evmdd() = default;
 
     void print(std::ostream &out) const {
-        out << "input value: " << input.to_string();
-        out << " nodes:" << std::endl;
-        source_node->print(out);
+        out << "input: " << input.to_string() << std::endl;
+        if (!source_node->is_terminal()) {
+            source_node->print(out);
+        }
     }
 
     // Evaluates the evmdd with the given state.

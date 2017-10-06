@@ -1,6 +1,6 @@
-#include "../catamorph/interpreters/create_evmdd.h"
-#include "../polynomial.h"
-#include "Catch/include/catch.hpp"
+#include "../../../catamorph/interpreters/create_evmdd.h"
+#include "../../../polynomial.h"
+#include "../../Catch/include/catch.hpp"
 #include <iostream>
 
 using std::endl;

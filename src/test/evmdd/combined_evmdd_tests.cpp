@@ -1,9 +1,9 @@
-#include "../evmdd/evmdd.h"
-#include "../catamorph/factories.h"
-#include "../conditional_effects.h"
-#include "../polynomial.h"
+#include "../../evmdd/evmdd.h"
+#include "../../catamorph/factories.h"
+#include "../../conditional_effects.h"
+#include "../../polynomial.h"
 
-#include "Catch/include/catch.hpp"
+#include "../Catch/include/catch.hpp"
 #include <iostream>
 
 using std::endl;

@@ -1,9 +1,9 @@
-#include "../catamorph/factories.h"
-#include "../conditional_effects.h"
-#include "../effect_parser.h"
-#include "../polynomial.h"
+#include "../../catamorph/factories.h"
+#include "../../conditional_effects.h"
+#include "../../effect_parser.h"
+#include "../../polynomial.h"
 
-#include "Catch/include/catch.hpp"
+#include "../Catch/include/catch.hpp"
 #include <iostream>
 
 SCENARIO("Testing basic conditional effect EVMDD creation", "[CE_evmdd]") {

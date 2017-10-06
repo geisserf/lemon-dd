@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 #include <ostream>
+#include <queue>
 #include <unordered_set>
 #include <utility>
 #include <vector>
@@ -38,14 +39,40 @@ private:
     friend NodeStorage<T>;
 
 public:
-    void print(std::ostream &out, std::string indent = "") const {
-        out << indent << "ID: " << id << "(" << variable << ")" << std::endl;
-        indent += "  ";
-        for (size_t i = 0; i < children.size(); ++i) {
-            out << indent << "w[" << i << "]: " << children[i].first.to_string()
-                << std::endl;
-            children[i].second->print(out, indent + "  ");
+    // Prints node and all successor nodes
+    void print(std::ostream &out) const {
+        // BFS print
+        out << to_string() << std::endl;
+        std::queue<Node_ptr<T>> nodes;
+        std::unordered_set<Node_ptr<T>> processed;
+        for (auto const &edge : children) {
+            nodes.push(edge.second);
         }
+        while (!nodes.empty()) {
+            auto current = nodes.front();
+            nodes.pop();
+            if (current->is_terminal()) {
+                continue;
+            }
+            out << current->to_string() << std::endl;
+            for (auto const &edge : current->children) {
+                if (processed.find(edge.second) == processed.end()) {
+                    nodes.push(edge.second);
+                    processed.insert(edge.second);
+                }
+            }
+        }
+    }
+
+    // returns "var [w1] ... [w_n]"
+    // At some point we may want to indicate which node is connected to which
+    // node, but the current structure is not really sufficient for that.
+    std::string to_string() const {
+        std::string result = variable;
+        for (auto const &edge : children) {
+            result += " " + edge.first.to_string();
+        }
+        return result;
     }
 
     // Collect all successor nodes not yet evaluated in succ
