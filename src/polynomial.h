@@ -33,7 +33,7 @@ public:
     Expression getExpression();
 
     template <typename M, typename F = std::plus<M>>
-    Evmdd<M, F> create_evmdd(Domains const &d, Ordering const &o) {
+    Evmdd<M, F> create_evmdd(Domains const &d, Ordering const &o) const {
         CreateEvmdd<M, F> create;
         return create.create_evmdd(expression, d, o);
     }

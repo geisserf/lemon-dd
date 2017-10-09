@@ -1,7 +1,8 @@
 #ifndef VARIABLE_ASSIGNMENT_H
-#define VARIABLE_ASSIGNMENT_H 
+#define VARIABLE_ASSIGNMENT_H
 
 #include <algorithm>
+#include <set>
 
 // A fact is a variable-value pair
 using Fact = std::pair<std::string, int>;
@@ -15,6 +16,5 @@ struct Union {
         return result;
     }
 };
-
 
 #endif /* VARIABLE_ASSIGNMENT_H */

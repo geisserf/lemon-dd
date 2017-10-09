@@ -1,16 +1,13 @@
 #include "conditional_effects.h"
-#include "../catamorph/printer.h"
-#include "catamorph/interpreters/create_evmdd.h"
-#include "utils/math_utils.h"
+#include "evmdd/evmdd.h"
 
 #include <cassert>
-#include <iostream>
 #include <vector>
 
-Monoid<Facts, Union> convert_numeric_set::operator()(
-    const Monoid<int> &first, const Monoid<Facts, Union> &second) const {
-    if (first.get_value() == 1) {
-        return Monoid<Facts, Union>(second);
+Monoid<Facts, Union> keep_if_true::operator()(
+    const BoolMonoid &first, const Monoid<Facts, Union> &second) const {
+    if (first.get_value()) {
+        return second;
     }
     return Monoid<Facts, Union>::neutral_element();
 }
@@ -18,17 +15,19 @@ Monoid<Facts, Union> convert_numeric_set::operator()(
 Evmdd<Facts, Union> ConditionalEffect::create_evmdd(Domains const &d,
                                                     Ordering const &o) const {
     // TODO ISSUE #12
-    CreateEvmdd<int> create;
+    Evmdd<bool, std::logical_or<bool>> condition_evmdd =
+        condition.create_evmdd(d, o);
     EvmddFactory<Facts, Union> factory;
-    Evmdd<int> condition_evmdd = create.create_evmdd(condition, d, o);
-    // std::string condition_string = Printer::asString(condition);
-    // std::cout << "evmdd for: " << condition_string << std::endl;
-    // condition_evmdd.print(std::cout);
-
     Evmdd<Facts, Union> effect_evmdd =
         factory.make_const_evmdd(Facts{Fact{effect, value}});
+    return factory.apply(condition_evmdd, effect_evmdd, keep_if_true());
+}
 
-    return factory.apply(condition_evmdd, effect_evmdd, convert_numeric_set());
+std::string ConditionalEffect::to_string() const {
+    std::string result = condition.to_string();
+    result += " -> ";
+    result += effect + ":=" + std::to_string(value);
+    return result;
 }
 
 Evmdd<Facts, Union> ConditionalEffects::create_evmdd(Domains const &d,

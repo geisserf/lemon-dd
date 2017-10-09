@@ -94,7 +94,9 @@ std::size_t hash_value(Monoid<M,F> const &monoid) {
     return boost::hash<M>{}(monoid.get_value());
 }
 
+
 #include "monoids/product.h"
+#include "monoids/boolean.h"
 #include "monoids/variable_assignment.h"
 
 #endif /* MONOID_H */

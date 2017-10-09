@@ -37,6 +37,7 @@ set(SOURCE_FILES
      catamorph/interpreters/create_evmdd.h
      catamorph/expression.h
      polynomial.cpp polynomial.h
+     logical_formula.cpp logical_formula.h
      parser.cpp parser.h
      effect_parser.h effect_parser.cpp
      conditional_effects.h conditional_effects.cpp
@@ -48,6 +49,7 @@ set(SOURCE_FILES
      evmdd/monoids/product.h
      evmdd/monoids/numbers.cpp
      evmdd/monoids/variable_assignment.h evmdd/monoids/variable_assignment.cpp
+     evmdd/monoids/boolean.h evmdd/monoids/boolean.cpp
      evmdd/operations/logic_not.h
      #utils/math_utils.h utils/math_utils.cpp
      utils/system_utils.h utils/system_utils.cpp

@@ -16,7 +16,8 @@ set(TEST_SOURCES
         evmdd/numeric/evaluation_tests.cpp
         evmdd/numeric/construction_tests.cpp
         evmdd/numeric/iverson_tests.cpp
-        #evmdd/conditional_effect_evmdd.cpp 
+        evmdd/conditional_effect/construction_tests.cpp 
+        evmdd/conditional_effect/evaluation_tests.cpp 
         #evmdd/combined_evmdd_tests.cpp
         )
 
