@@ -2,7 +2,7 @@
 #include "Catch/include/catch.hpp"
 
 SCENARIO("Testing parsing infix to prefix", "[infixparser]") {
-    GIVEN("The expresison (a+b)") {
+    GIVEN("The expression (a+b)") {
         std::string e = "(a+b)";
         Polynomial p = Polynomial(e);
         WHEN("No evaluation") {
@@ -11,7 +11,7 @@ SCENARIO("Testing parsing infix to prefix", "[infixparser]") {
             }
         }
     }
-    GIVEN("The expresison (a-b)") {
+    GIVEN("The expression (a-b)") {
         std::string e = "(a-b)";
         Polynomial p = Polynomial(e);
         WHEN("No evaluation") {
@@ -20,7 +20,7 @@ SCENARIO("Testing parsing infix to prefix", "[infixparser]") {
             }
         }
     }
-    GIVEN("The expresison (a*b)") {
+    GIVEN("The expression (a*b)") {
         std::string e = "(a*b)";
         Polynomial p = Polynomial(e);
         WHEN("No evaluation") {
@@ -29,7 +29,7 @@ SCENARIO("Testing parsing infix to prefix", "[infixparser]") {
             }
         }
     }
-    GIVEN("The expresison (a/b)") {
+    GIVEN("The expression (a/b)") {
         std::string e = "(a/b)";
         Polynomial p = Polynomial(e);
         WHEN("No evaluation") {
@@ -39,7 +39,7 @@ SCENARIO("Testing parsing infix to prefix", "[infixparser]") {
         }
     }
 
-    GIVEN("The expresison ((a+b*c/(d+3))*[a==1])") {
+    GIVEN("The expression ((a+b*c/(d+3))*[a==1])") {
         std::string e = "((((a+b)*c)/(d-13))*[a==1])";
         Polynomial p = Polynomial(e);
         WHEN("No evaluation") {
@@ -50,7 +50,7 @@ SCENARIO("Testing parsing infix to prefix", "[infixparser]") {
         }
     }
 
-    GIVEN("The Expression [!a]") {
+    GIVEN("The expression [!a]") {
         std::string e = "[!a]";
         Polynomial p = Polynomial(e);
         WHEN("No evaluation") {
@@ -60,7 +60,7 @@ SCENARIO("Testing parsing infix to prefix", "[infixparser]") {
         }
     }
 
-    GIVEN("The Expression [a || b]") {
+    GIVEN("The expression [a || b]") {
         std::string e = "[a || b]";
         Polynomial p = Polynomial(e);
         WHEN("No evaluation") {
@@ -70,7 +70,7 @@ SCENARIO("Testing parsing infix to prefix", "[infixparser]") {
         }
     }
 
-    GIVEN("The Expression [a && b]") {
+    GIVEN("The expression [a && b]") {
         std::string e = "[a && b]";
         Polynomial p = Polynomial(e);
         WHEN("No evaluation") {
@@ -79,7 +79,7 @@ SCENARIO("Testing parsing infix to prefix", "[infixparser]") {
             }
         }
     }
-    GIVEN("The Expression [a == b]") {
+    GIVEN("The expression [a == b]") {
         std::string e = "[a == b]";
         Polynomial p = Polynomial(e);
         WHEN("No evaluation") {
@@ -89,7 +89,7 @@ SCENARIO("Testing parsing infix to prefix", "[infixparser]") {
         }
     }
 
-    GIVEN("The Expression [!a && b]") {
+    GIVEN("The expression [!a && b]") {
         std::string e = "[!a && b]";
         Polynomial p = Polynomial(e);
         WHEN("No evaluation") {
@@ -99,7 +99,7 @@ SCENARIO("Testing parsing infix to prefix", "[infixparser]") {
         }
     }
 
-    GIVEN("The Expression [(a+1) && b]") {
+    GIVEN("The expression [(a+1) && b]") {
         std::string e = "[(a+1) && b]";
         Polynomial p = Polynomial(e);
         WHEN("No evaluation") {
@@ -109,7 +109,7 @@ SCENARIO("Testing parsing infix to prefix", "[infixparser]") {
         }
     }
 
-    GIVEN("The Expression [ ![(a+1) || c] && b]") {
+    GIVEN("The expression [ ![(a+1) || c] && b]") {
         std::string e = "[ ![(a+1) || c] && b]";
         Polynomial p = Polynomial(e);
         WHEN("No evaluation") {
@@ -119,7 +119,7 @@ SCENARIO("Testing parsing infix to prefix", "[infixparser]") {
         }
     }
 
-    GIVEN("The Expression [![a]]") {
+    GIVEN("The expression [![a]]") {
         std::string e = "[![a]]";
         Polynomial p = Polynomial(e);
         WHEN("No evaluation") {
@@ -129,7 +129,7 @@ SCENARIO("Testing parsing infix to prefix", "[infixparser]") {
         }
     }
 
-    GIVEN("The Expression (a+b+c)") {
+    GIVEN("The expression (a+b+c)") {
         std::string e = "(a+b+c)";
         Polynomial p = Polynomial(e);
         WHEN("No evaluation") {
@@ -139,7 +139,7 @@ SCENARIO("Testing parsing infix to prefix", "[infixparser]") {
         }
     }
 
-    GIVEN("The Expression (a *-5)") {
+    GIVEN("The expression (a *-5)") {
         std::string e = "(a * -5)";
         Polynomial p = Polynomial(e);
         WHEN("No evaluation") {

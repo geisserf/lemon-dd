@@ -47,7 +47,6 @@ private:
                 return apply(o->rands(), std::logical_and<M>());
             }
             if (auto *o = Factories::get_as_equals(e)) {
-                // TODO comparison with tolerance for floats
                 return apply(o->rands(), std::equal_to<M>());
             }
             if (auto *o = Factories::get_as_or(e)) {

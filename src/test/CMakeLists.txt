@@ -13,9 +13,9 @@ set(TEST_SOURCES
         parser_tests.cpp
         infix_parser_tests.cpp
         effect_parser_test.cpp
-        #evmdd/numeric/evmdd_build_tests.cpp
+        evmdd/numeric/evaluation_tests.cpp
         evmdd/numeric/construction_tests.cpp
-        #evmdd/iverson_evmdd_tests.cpp
+        evmdd/numeric/iverson_tests.cpp
         #evmdd/conditional_effect_evmdd.cpp 
         #evmdd/combined_evmdd_tests.cpp
         )

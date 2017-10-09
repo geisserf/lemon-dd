@@ -13,7 +13,7 @@ SCENARIO("Testing numeric EVMDD construction", "[numeric_evmdd_construction]") {
             Domains d = {};
             Ordering o = {};
             auto evmdd = p.create_evmdd<int>(d, o);
-            THEN("EVMDD only has input value and terminal node") {
+            THEN("evmdd only has input value and terminal node") {
                 std::stringstream result;
                 evmdd.print(result);
                 std::stringstream expected;
@@ -29,7 +29,7 @@ SCENARIO("Testing numeric EVMDD construction", "[numeric_evmdd_construction]") {
             Domains d = {{"x", 3}};
             Ordering o = {{"x", 1}};
             auto evmdd = p.create_evmdd<int>(d, o);
-            THEN("EVMDD has one variable node with 5 edges") {
+            THEN("evmdd has one variable node with 5 edges") {
                 std::stringstream result;
                 evmdd.print(result);
                 std::stringstream expected;
@@ -60,7 +60,7 @@ SCENARIO("Testing numeric EVMDD construction", "[numeric_evmdd_construction]") {
     GIVEN("Term (5*x)*y with D(x)=0,1,2 and D(y)=0,1") {
         Domains d = {{"x", 3}, {"y", 2}};
         Polynomial p = Polynomial("(5*x)*y");
-        WHEN("We create the evmdd and x has higher order than y") {
+        WHEN("We create the evmdd and x is under y") {
             Ordering o = {{"x", 1}, {"y", 2}};
             auto evmdd = p.create_evmdd<int>(d, o);
             THEN("evmdd has the expected structure") {
@@ -74,7 +74,7 @@ SCENARIO("Testing numeric EVMDD construction", "[numeric_evmdd_construction]") {
                 REQUIRE(result.str() == expected.str());
             }
         }
-        WHEN("We create the evmdd and x has lower order than y") {
+        WHEN("We create the evmdd and x is over y") {
             Ordering o = {{"x", 2}, {"y", 1}};
             auto evmdd = p.create_evmdd<int>(d, o);
             THEN("evmdd has the expected structure") {
@@ -94,7 +94,7 @@ SCENARIO("Testing numeric EVMDD construction", "[numeric_evmdd_construction]") {
     GIVEN("Term (x*y)+z with D(x)=D(y)=0,1 and D(z)=0,1,2") {
         Domains d = {{"x", 2}, {"y", 2}, {"z",3}};
         Polynomial p = Polynomial("(x*y)+z");
-        WHEN("We create the evmdd in order z>x>y") {
+        WHEN("We create the evmdd in order x>y>z") {
             Ordering o = {{"x", 3}, {"y", 2}, {"z",1}};
             auto evmdd = p.create_evmdd<int>(d, o);
             THEN("evmdd has the expected structure") {
@@ -106,6 +106,22 @@ SCENARIO("Testing numeric EVMDD construction", "[numeric_evmdd_construction]") {
                 expected << "y 0 0" << endl;
                 expected << "y 0 1" << endl;
                 expected << "z 0 1 2" << endl;
+                REQUIRE(result.str() == expected.str());
+            }
+        }
+        WHEN("We create the evmdd in order x>z>y") {
+            Ordering o = {{"x", 3}, {"y", 1}, {"z",2}};
+            auto evmdd = p.create_evmdd<int>(d, o);
+            THEN("evmdd has the expected structure") {
+                std::stringstream result;
+                evmdd.print(result);
+                std::stringstream expected;
+                expected << "input: 0" << endl;
+                expected << "x 0 0" << endl;
+                expected << "z 0 1 2" << endl;
+                expected << "z 0 1 2" << endl;
+                expected << "y 0 0" << endl;
+                expected << "y 0 1" << endl;
                 REQUIRE(result.str() == expected.str());
             }
         }

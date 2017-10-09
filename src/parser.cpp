@@ -36,7 +36,7 @@ Token Lexer::getNextToken() {
     // but must not start with a number
     std::regex varRegex("((?:[[:alpha:]|_]+)(?:[[:alnum:]|_]*))(.*)");
 
-    // Iversion regex
+    // Iverson regex
     std::regex lSqrBrackRegex("\\[(.*)"); // Regex for [
     std::regex rSqrBrackRegex("\\](.*)"); // Regex for ]
     std::regex andRegex("\\&\\&(.*)");    // Regex for && (Logical and)
