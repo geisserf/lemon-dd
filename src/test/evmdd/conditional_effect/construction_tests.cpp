@@ -26,7 +26,7 @@ SCENARIO("Testing conditional effect EVMDD construction",
 
     GIVEN("Evmdd for conditional effect (x & y -> !v) & (!x -> z)") {
         EffectParser parser;
-        auto cond_effects = parser.parse("([x&&y] ->!v) & ([!x] ->z)");
+        auto cond_effects = parser.parse("([x && y] ->!v) & ([!x] ->z)");
         Domains d = {{"x", 2}, {"y", 2}};
         Ordering o = {{"x", 1}, {"y", 2}};
         Evmdd<Facts, Union> evmdd = cond_effects.create_evmdd(d, o);
