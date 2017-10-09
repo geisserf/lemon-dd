@@ -11,8 +11,10 @@
 #include <map>
 #include <memory>
 #include <ostream>
+#include <queue>
 #include <string>
 #include <type_traits>
+#include <unordered_set>
 #include <vector>
 
 using Ordering = std::map<std::string, int>;
@@ -36,10 +38,26 @@ private:
 public:
     Evmdd() = default;
 
+    // Prints nodes in a BFS-like manner beginning from the source node.
     void print(std::ostream &out) const {
         out << "input: " << input.to_string() << std::endl;
-        if (!source_node->is_terminal()) {
-            source_node->print(out);
+        std::queue<Node_ptr<Monoid<M,F>>> nodes;
+        nodes.push(source_node);
+        std::unordered_set<Node_ptr<Monoid<M,F>>> processed;
+        while (!nodes.empty()) {
+            auto current = nodes.front();
+            nodes.pop();
+            // Do not print terminal nodes
+            if (current->is_terminal()) {
+                continue;
+            }
+            out << current->to_string() << std::endl;
+            for (auto const &edge : current->get_children()) {
+                if (processed.find(edge.second) == processed.end()) {
+                    nodes.push(edge.second);
+                    processed.insert(edge.second);
+                }
+            }
         }
     }
 

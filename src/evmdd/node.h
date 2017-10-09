@@ -7,7 +7,6 @@
 #include <map>
 #include <memory>
 #include <ostream>
-#include <queue>
 #include <unordered_set>
 #include <utility>
 #include <vector>
@@ -39,30 +38,6 @@ private:
     friend NodeStorage<T>;
 
 public:
-    // Prints node and all successor nodes
-    void print(std::ostream &out) const {
-        // BFS print
-        out << to_string() << std::endl;
-        std::queue<Node_ptr<T>> nodes;
-        std::unordered_set<Node_ptr<T>> processed;
-        for (auto const &edge : children) {
-            nodes.push(edge.second);
-        }
-        while (!nodes.empty()) {
-            auto current = nodes.front();
-            nodes.pop();
-            if (current->is_terminal()) {
-                continue;
-            }
-            out << current->to_string() << std::endl;
-            for (auto const &edge : current->children) {
-                if (processed.find(edge.second) == processed.end()) {
-                    nodes.push(edge.second);
-                    processed.insert(edge.second);
-                }
-            }
-        }
-    }
 
     // returns "var [w1] ... [w_n]"
     // At some point we may want to indicate which node is connected to which
