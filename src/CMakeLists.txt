@@ -43,6 +43,7 @@ set(SOURCE_FILES
      conditional_effects.h conditional_effects.cpp
      catamorph/printer.h
      evmdd/evmdd.h
+     evmdd/evmdd.cpp
      evmdd/node.h evmdd/node_storage.h
      evmdd/printer.h
      evmdd/monoid.h
@@ -53,6 +54,7 @@ set(SOURCE_FILES
      evmdd/operations/logic_not.h
      #utils/math_utils.h utils/math_utils.cpp
      utils/system_utils.h utils/system_utils.cpp
+     utils/string_utils.h
     )
 
 add_library(NumericCatamorph_lib ${SOURCE_FILES})

@@ -24,6 +24,7 @@ private:
             }
             if (auto *var = Factories::get_as_var(e)) {
                 std::string name(*var);
+                assert(domains.find(name) != domains.end());
                 int domain_size = domains.at(*var);
                 std::vector<M> domain;
                 for (int i = 0; i < domain_size; ++i) {

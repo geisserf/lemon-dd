@@ -158,6 +158,7 @@ public:
             children.emplace_back(Monoid<M, F>(domain[i]),
                                   node_factory.get_terminal_node());
         }
+        assert(ordering.find(var) != ordering.end());
         Node_ptr<Monoid<M, F>> node =
             node_factory.make_node(ordering[var], var, children);
         return Evmdd<M, F>(Monoid<M, F>::neutral_element(), node);
@@ -296,5 +297,13 @@ using ProductFactory = EvmddFactory<std::pair<L, R>, std::pair<F, G>>;
 
 template <typename L, typename R, typename F, typename G>
 using ProductEvmdd = Evmdd<std::pair<L, R>, std::pair<F, G>>;
+
+namespace Relaxation {
+
+template <typename Cost>
+std::vector<std::pair<Fact, Cost>> evaluate(
+    ProductEvmdd<Facts, Cost, Union, std::plus<Cost>> const &evmdd,
+    PartialState const &state);
+}
 
 #endif // NUMERIC_CATAMORPH_EVMDD_H

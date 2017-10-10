@@ -18,7 +18,8 @@ set(TEST_SOURCES
         evmdd/numeric/iverson_tests.cpp
         evmdd/conditional_effect/construction_tests.cpp 
         evmdd/conditional_effect/evaluation_tests.cpp 
-        #evmdd/combined_evmdd_tests.cpp
+        evmdd/product/construction_tests.cpp 
+        evmdd/product/evaluation_tests.cpp 
         )
 
 add_executable(Test ${TEST_SOURCES})

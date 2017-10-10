@@ -38,7 +38,6 @@ private:
     friend NodeStorage<T>;
 
 public:
-
     // returns "var [w1] ... [w_n]"
     // At some point we may want to indicate which node is connected to which
     // node, but the current structure is not really sufficient for that.
@@ -96,7 +95,7 @@ public:
                 assert(static_cast<size_t>(d_val) < children.size());
                 Res child_res =
                     children[d_val].second->evaluate<Res>(state, func);
-                child_res += children[d_val].first;
+                child_res = child_res + children[d_val].first;
                 child_results.push_back(child_res);
             }
         } else {
@@ -106,7 +105,7 @@ public:
             for (size_t d_val = 0; d_val < children.size(); ++d_val) {
                 Res child_res =
                     children[d_val].second->evaluate<Res>(state, func);
-                child_res += children[d_val].first;
+                child_res = child_res + children[d_val].first;
                 child_results.push_back(child_res);
             }
         }

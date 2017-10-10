@@ -1,21 +1,10 @@
 #include "../../../conditional_effects.h"
 #include "../../../effect_parser.h"
+#include "../../../utils/string_utils.h"
 
 #include "../../Catch/include/catch.hpp"
 
 using std::endl;
-
-std::string fact_printer(Facts const &facts) {
-    std::string result = "{";
-    std::string sep = "";
-    for (auto const &fact : facts) {
-        result += sep + fact.first;
-        result += "=" + std::to_string(fact.second);
-        sep = " ";
-    }
-    result += "}";
-    return result;
-}
 
 SCENARIO("Testing concrete evaluation on conditional effect EVMDDs",
          "[effect_evmdd_evaluation]") {
@@ -32,7 +21,7 @@ SCENARIO("Testing concrete evaluation on conditional effect EVMDDs",
         }
         THEN("Evaluating state a=1 results in {b=1}") {
             ConcreteState state{1};
-            REQUIRE(fact_printer(evmdd.evaluate(state)) == "{b=1}");
+            REQUIRE(StringUtils::fact_printer(evmdd.evaluate(state)) == "{b=1}");
         }
     }
 
@@ -45,7 +34,7 @@ SCENARIO("Testing concrete evaluation on conditional effect EVMDDs",
 
         THEN("Evaluating state !x,!y results in z") {
             ConcreteState state{0,0};
-            REQUIRE(fact_printer(evmdd.evaluate(state)) == "{z=1}");
+            REQUIRE(StringUtils::fact_printer(evmdd.evaluate(state)) == "{z=1}");
         }
         THEN("Evaluating state x,!y results in empty set") {
             ConcreteState state{1,0};
@@ -53,11 +42,11 @@ SCENARIO("Testing concrete evaluation on conditional effect EVMDDs",
         }
         THEN("Evaluating state !x,y results in z") {
             ConcreteState state{0,1};
-            REQUIRE(fact_printer(evmdd.evaluate(state)) == "{z=1}");
+            REQUIRE(StringUtils::fact_printer(evmdd.evaluate(state)) == "{z=1}");
         }
         THEN("Evaluating state x,y results in !v") {
             ConcreteState state{1,1};
-            REQUIRE(fact_printer(evmdd.evaluate(state)) == "{v=0}");
+            REQUIRE(StringUtils::fact_printer(evmdd.evaluate(state)) == "{v=0}");
         }
     }
 
@@ -74,15 +63,15 @@ SCENARIO("Testing concrete evaluation on conditional effect EVMDDs",
         }
         THEN("Evaluating state x,!y results in !z") {
             ConcreteState state{1,0};
-            REQUIRE(fact_printer(evmdd.evaluate(state)) == "{z=0}");
+            REQUIRE(StringUtils::fact_printer(evmdd.evaluate(state)) == "{z=0}");
         }
         THEN("Evaluating state !x,y results in !z") {
             ConcreteState state{0,1};
-            REQUIRE(fact_printer(evmdd.evaluate(state)) == "{z=0}");
+            REQUIRE(StringUtils::fact_printer(evmdd.evaluate(state)) == "{z=0}");
         }
         THEN("Evaluating state x,y results in !z") {
             ConcreteState state{1,1};
-            REQUIRE(fact_printer(evmdd.evaluate(state)) == "{z=0}");
+            REQUIRE(StringUtils::fact_printer(evmdd.evaluate(state)) == "{z=0}");
         }
     }
 
@@ -101,11 +90,11 @@ SCENARIO("Testing concrete evaluation on conditional effect EVMDDs",
 
         THEN("Evaluating state v5=0,v6=0 results in v5=1 v6=1") {
             ConcreteState state{0,0};
-            REQUIRE(fact_printer(evmdd.evaluate(state)) == "{v5=1 v6=1}");
+            REQUIRE(StringUtils::fact_printer(evmdd.evaluate(state)) == "{v5=1 v6=1}");
         }
         THEN("Evaluating state v5=0,v6=1 results in v5=1 v6=2") {
             ConcreteState state{0,1};
-            REQUIRE(fact_printer(evmdd.evaluate(state)) == "{v5=1 v6=2}");
+            REQUIRE(StringUtils::fact_printer(evmdd.evaluate(state)) == "{v5=1 v6=2}");
         }
         THEN("Evaluating state v5=0,v6=2 results in empty set") {
             ConcreteState state{0,2};

@@ -49,7 +49,7 @@ public:
 
     Evmdd<Facts, Union> create_evmdd(Domains const &d, Ordering const &o) const;
 
-    std::vector<ConditionalEffect> getEffects() {
+    std::vector<ConditionalEffect> get_effects() {
         return effects;
     }
 

@@ -261,8 +261,9 @@ void InfixParser::expect(Type type, Lexer &lexer) {
     if (type == next.type) {
         consume(lexer);
     } else {
-        throw std::invalid_argument("Expected " + std::to_string(type) +
-                                    " was " + std::to_string(next.type));
+        throw std::invalid_argument("Parser error : expected " +
+                                    std::to_string(type) + " was " +
+                                    std::to_string(next.type));
     }
 }
 
