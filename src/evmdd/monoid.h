@@ -39,7 +39,8 @@ class Monoid {
 public:
     // Default constructor is the neutral element
     Monoid() : value(neutral_element()) {}
-    Monoid(M value) : value(value) {}
+    explicit Monoid(M value) : value(value) {}
+    // explicit Monoid(Monoid<M,F> const& other) : value(other.value) {}
 
     // Binary associative operator '+' over M calls Functor F.
     Monoid<M, F> &operator+=(Monoid<M, F> const &rhs) {

@@ -2,7 +2,7 @@
 #define NUMERIC_CATAMORPH_CONDITIONALEFFECTS_H
 
 #include "evmdd/monoids/variable_assignment.h"
-#include "logical_formula.h"
+#include "polynomial.h"
 
 #include <string>
 
@@ -14,16 +14,15 @@ class Evmdd;
 
 // TODO forward declarations
 
-// If first is true, return second. Otherwise return empty set. Required to
+// If first is 1, return second. Otherwise return empty set. Required to
 // merge the evmdd for the condition with the evmdd of the effect.
 struct keep_if_true {
-    Monoid<Facts, Union> operator()(const BoolMonoid &first,
-                                    const Monoid<Facts, Union> &second) const;
+    Facts operator()(int first, const Facts &second) const;
 };
 
 class ConditionalEffect {
 public:
-    ConditionalEffect(Formula const &condition, std::string const &effect,
+    ConditionalEffect(Polynomial const &condition, std::string const &effect,
                       int value)
         : condition(condition), effect(effect), value(value) {}
 
@@ -35,7 +34,9 @@ public:
     std::string to_string() const;
 
 private:
-    Formula condition;
+    // Hack: We consider the condition as a numeric expression. This allows us
+    // to use iverson bracket expressions to express conditional effects.
+    Polynomial condition;
     std::string effect;
     int value;
 };

@@ -12,5 +12,5 @@ void Formula::print() const {
 }
 
 std::string Formula::to_string() const {
-    return Printer::asString(expression);
+    return Printer::as_string(expression);
 }

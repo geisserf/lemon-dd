@@ -29,7 +29,10 @@ private:
     Monoid<M, F> input;
     Node_ptr<Monoid<M, F>> source_node;
 
-    Evmdd(Monoid<M, F> const &input, Node_ptr<Monoid<M, F>> source)
+    explicit Evmdd(Monoid<M, F> const &input, Node_ptr<Monoid<M, F>> source)
+        : input(input), source_node(source) {}
+
+    explicit Evmdd(M const &input, Node_ptr<Monoid<M, F>> source)
         : input(input), source_node(source) {}
 
     template <typename N, typename G>
@@ -41,9 +44,9 @@ public:
     // Prints nodes in a BFS-like manner beginning from the source node.
     void print(std::ostream &out) const {
         out << "input: " << input.to_string() << std::endl;
-        std::queue<Node_ptr<Monoid<M,F>>> nodes;
+        std::queue<Node_ptr<Monoid<M, F>>> nodes;
         nodes.push(source_node);
-        std::unordered_set<Node_ptr<Monoid<M,F>>> processed;
+        std::unordered_set<Node_ptr<Monoid<M, F>>> processed;
         while (!nodes.empty()) {
             auto current = nodes.front();
             nodes.pop();
@@ -141,14 +144,13 @@ public:
     }
 
     // Creates an evmdd for a constant term
-    Evmdd<M, F> make_const_evmdd(Monoid<M, F> const &weight) {
+    Evmdd<M, F> make_const_evmdd(M const &weight) {
         return Evmdd<M, F>(weight, node_factory.get_terminal_node());
     }
 
-    // Creates an evmdd for a variable (i.e. one node representing the variable,
-    // connected to the terminal node)
-    // TODO uniform method arguments in make_const and make_var, M vs
-    // Monoid<M,F>
+    // Creates an evmdd for a function which maps variable domain values to M.
+    // This results in one node representing the variable, connected to the
+    // terminal node, each edge annotated with the given domain value.
     Evmdd<M, F> make_var_evmdd(std::string const &var,
                                std::vector<M> const &domain) {
         std::vector<Edge<Monoid<M, F>>> children;
@@ -229,7 +231,7 @@ private:
                                     Evmdd<R, H> const &right, OP oper) {
         // oper:LxR->M implies that we can apply it on the carrier types instead
         // of the monoid itself.
-        Monoid<M, F> input =
+        M input =
             oper(left.get_input().get_value(), right.get_input().get_value());
         return make_const_evmdd(input);
     }
@@ -257,9 +259,10 @@ private:
         return result;
     }
 
-    // Returns an evmdd with root node at level, with input value as the minimal
-    // input value of all children. Weights to each child is its original
-    // input value minus the minimal input value.
+    // Returns an evmdd with root node at level, with input value as the
+    // greatest lower bound of the input value of all children.
+    // Weights to each child is its original input value minus the greatest
+    // lower bound.
     Evmdd<M, F> create_evmdd(int level, std::string var,
                              std::vector<Evmdd<M, F>> const &children) {
         // Compute greatest lower bound of all children

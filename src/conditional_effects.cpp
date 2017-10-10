@@ -4,19 +4,17 @@
 #include <cassert>
 #include <vector>
 
-Monoid<Facts, Union> keep_if_true::operator()(
-    const BoolMonoid &first, const Monoid<Facts, Union> &second) const {
-    if (first.get_value()) {
+Facts keep_if_true::operator()(int first, const Facts &second) const {
+    if (first == 1) {
         return second;
     }
-    return Monoid<Facts, Union>::neutral_element();
+    return Facts{};
 }
 
 Evmdd<Facts, Union> ConditionalEffect::create_evmdd(Domains const &d,
                                                     Ordering const &o) const {
     // TODO ISSUE #12
-    Evmdd<bool, std::logical_or<bool>> condition_evmdd =
-        condition.create_evmdd(d, o);
+    Evmdd<int> condition_evmdd = condition.create_evmdd<int>(d, o);
     EvmddFactory<Facts, Union> factory;
     Evmdd<Facts, Union> effect_evmdd =
         factory.make_const_evmdd(Facts{Fact{effect, value}});
@@ -37,7 +35,6 @@ Evmdd<Facts, Union> ConditionalEffects::create_evmdd(Domains const &d,
     for (ConditionalEffect const &effect : effects) {
         partial.push_back(effect.create_evmdd(d, o));
     }
-
     assert(!partial.empty());
 
     EvmddFactory<Facts, Union> factory;

@@ -27,7 +27,7 @@ private:
                 int domain_size = domains.at(*var);
                 std::vector<M> domain;
                 for (int i = 0; i < domain_size; ++i) {
-                    domain.emplace_back(i);
+                    domain.push_back(static_cast<M>(i));
                 }
                 return factory.make_var_evmdd(name, domain);
             }

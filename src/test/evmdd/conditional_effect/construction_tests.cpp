@@ -62,6 +62,24 @@ SCENARIO("Testing conditional effect EVMDD construction",
         }
     }
 
+    GIVEN("Evmdd for conditional effect v5=0 && v6=1 -> v5=1") {
+        EffectParser parser;
+        auto cond_effects = parser.parse("([[v5==0]&&[v6==1]]->v5==1)");
+        Domains d = {{"v5", 2}, {"v6", 3}};
+        Ordering o = {{"v5", 1}, {"v6", 2}};
+        Evmdd<Facts, Union> evmdd = cond_effects.create_evmdd(d, o);
+        THEN("Evmdd has the correct structure") {
+            std::stringstream result;
+            evmdd.print(result);
+            std::stringstream expected;
+            expected << "input: {}" << endl;
+            expected << "v6 {} {} {}" << endl;
+            expected << "v5 {} {}" << endl;
+            expected << "v5 {v5=1} {}" << endl;
+            REQUIRE(result.str() == expected.str());
+        }
+    }
+
     GIVEN("Evmdd for large conditional effect") {
         EffectParser parser;
         std::string e =
@@ -81,7 +99,7 @@ SCENARIO("Testing conditional effect EVMDD construction",
             std::stringstream expected;
             expected << "input: {}" << endl;
             expected << "var6 {} {} {}" << endl;
-            expected << "var5 {var5=1} {var6=1}" << endl;
+            expected << "var5 {var5=1 var6=1} {}" << endl;
             expected << "var5 {var5=1 var6=2} {}" << endl;
             expected << "var5 {} {}" << endl;
             REQUIRE(result.str() == expected.str());

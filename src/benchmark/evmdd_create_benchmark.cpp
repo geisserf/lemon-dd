@@ -33,7 +33,7 @@ void execute_benchmark(std::ostream &output_stream, string const &expression,
     time_point<Time> start, end;
     Polynomial p = Polynomial(expression);
 
-    std::set<ID> variables = Dependency::dependencies(p.getExpression());
+    std::set<ID> variables = Dependency::dependencies(p.get_expression());
     Domains d;
     Ordering o;
 

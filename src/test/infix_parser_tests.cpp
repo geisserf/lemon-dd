@@ -7,7 +7,7 @@ SCENARIO("Testing parsing infix to prefix", "[infixparser]") {
         Polynomial p = Polynomial(e);
         WHEN("No evaluation") {
             THEN("Result should be ") {
-                REQUIRE(p.toString() == "(+ a b)");
+                REQUIRE(p.to_string() == "(+ a b)");
             }
         }
     }
@@ -16,7 +16,7 @@ SCENARIO("Testing parsing infix to prefix", "[infixparser]") {
         Polynomial p = Polynomial(e);
         WHEN("No evaluation") {
             THEN("Result should be ") {
-                REQUIRE(p.toString() == "(- a b)");
+                REQUIRE(p.to_string() == "(- a b)");
             }
         }
     }
@@ -25,7 +25,7 @@ SCENARIO("Testing parsing infix to prefix", "[infixparser]") {
         Polynomial p = Polynomial(e);
         WHEN("No evaluation") {
             THEN("Result should be ") {
-                REQUIRE(p.toString() == "(* a b)");
+                REQUIRE(p.to_string() == "(* a b)");
             }
         }
     }
@@ -34,7 +34,7 @@ SCENARIO("Testing parsing infix to prefix", "[infixparser]") {
         Polynomial p = Polynomial(e);
         WHEN("No evaluation") {
             THEN("Result should be ") {
-                REQUIRE(p.toString() == "(/ a b)");
+                REQUIRE(p.to_string() == "(/ a b)");
             }
         }
     }
@@ -44,7 +44,7 @@ SCENARIO("Testing parsing infix to prefix", "[infixparser]") {
         Polynomial p = Polynomial(e);
         WHEN("No evaluation") {
             THEN("Result should be ") {
-                REQUIRE(p.toString() ==
+                REQUIRE(p.to_string() ==
                         "(* (/ (* (+ a b) c) (- d 13)) (== a 1))");
             }
         }
@@ -55,7 +55,7 @@ SCENARIO("Testing parsing infix to prefix", "[infixparser]") {
         Polynomial p = Polynomial(e);
         WHEN("No evaluation") {
             THEN("Result should be") {
-                REQUIRE(p.toString() == "!(a)");
+                REQUIRE(p.to_string() == "!(a)");
             }
         }
     }
@@ -65,7 +65,7 @@ SCENARIO("Testing parsing infix to prefix", "[infixparser]") {
         Polynomial p = Polynomial(e);
         WHEN("No evaluation") {
             THEN("Result should be") {
-                REQUIRE(p.toString() == "(|| a b)");
+                REQUIRE(p.to_string() == "(|| a b)");
             }
         }
     }
@@ -75,7 +75,7 @@ SCENARIO("Testing parsing infix to prefix", "[infixparser]") {
         Polynomial p = Polynomial(e);
         WHEN("No evaluation") {
             THEN("Result should be") {
-                REQUIRE(p.toString() == "(^ a b)");
+                REQUIRE(p.to_string() == "(^ a b)");
             }
         }
     }
@@ -84,7 +84,7 @@ SCENARIO("Testing parsing infix to prefix", "[infixparser]") {
         Polynomial p = Polynomial(e);
         WHEN("No evaluation") {
             THEN("Result should be") {
-                REQUIRE(p.toString() == "(== a b)");
+                REQUIRE(p.to_string() == "(== a b)");
             }
         }
     }
@@ -94,7 +94,7 @@ SCENARIO("Testing parsing infix to prefix", "[infixparser]") {
         Polynomial p = Polynomial(e);
         WHEN("No evaluation") {
             THEN("Result should be") {
-                REQUIRE(p.toString() == "(^ !(a) b)");
+                REQUIRE(p.to_string() == "(^ !(a) b)");
             }
         }
     }
@@ -104,7 +104,7 @@ SCENARIO("Testing parsing infix to prefix", "[infixparser]") {
         Polynomial p = Polynomial(e);
         WHEN("No evaluation") {
             THEN("Result should be") {
-                REQUIRE(p.toString() == "(^ (+ a 1) b)");
+                REQUIRE(p.to_string() == "(^ (+ a 1) b)");
             }
         }
     }
@@ -114,7 +114,7 @@ SCENARIO("Testing parsing infix to prefix", "[infixparser]") {
         Polynomial p = Polynomial(e);
         WHEN("No evaluation") {
             THEN("Result should be") {
-                REQUIRE(p.toString() == "(^ !((|| (+ a 1) c)) b)");
+                REQUIRE(p.to_string() == "(^ !((|| (+ a 1) c)) b)");
             }
         }
     }
@@ -124,7 +124,7 @@ SCENARIO("Testing parsing infix to prefix", "[infixparser]") {
         Polynomial p = Polynomial(e);
         WHEN("No evaluation") {
             THEN("Result should be") {
-                REQUIRE(p.toString() == "!(a)");
+                REQUIRE(p.to_string() == "!(a)");
             }
         }
     }
@@ -134,7 +134,7 @@ SCENARIO("Testing parsing infix to prefix", "[infixparser]") {
         Polynomial p = Polynomial(e);
         WHEN("No evaluation") {
             THEN("Result should be") {
-                REQUIRE(p.toString() == "(+ a (+ b c))");
+                REQUIRE(p.to_string() == "(+ a (+ b c))");
             }
         }
     }
@@ -144,7 +144,7 @@ SCENARIO("Testing parsing infix to prefix", "[infixparser]") {
         Polynomial p = Polynomial(e);
         WHEN("No evaluation") {
             THEN("Result should be") {
-                REQUIRE(p.toString() == "(* a (- 0 5))");
+                REQUIRE(p.to_string() == "(* a (- 0 5))");
             }
         }
     }

@@ -12,7 +12,8 @@ template <typename L, typename R, typename F, typename G>
 class Monoid<std::pair<L, R>, std::pair<F, G>> {
 public:
     Monoid() = default;
-    Monoid(std::pair<L, R> value) : value(value) {}
+    explicit Monoid(std::pair<L, R> value) : value(value) {}
+    explicit Monoid(L l, R r) : value(std::make_pair(l,r)) {}
     Monoid(Monoid<L, F> const &l, Monoid<R, G> const &r)
         : value({l.get_value(), r.get_value()}) {}
 

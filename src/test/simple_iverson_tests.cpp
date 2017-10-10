@@ -11,7 +11,7 @@ SCENARIO("Testing basic logic expressions and evaluations", "[iverson]") {
             Env partial_env = {};
             THEN("Result should be 5") {
                 Polynomial result(p.evaluate(partial_env));
-                REQUIRE(result.toString() == "(== x 2)");
+                REQUIRE(result.to_string() == "(== x 2)");
             }
         }
 
@@ -20,7 +20,7 @@ SCENARIO("Testing basic logic expressions and evaluations", "[iverson]") {
             Polynomial p(e);
             THEN("Result should be 1") {
                 Polynomial result(p.evaluate(partial_env));
-                REQUIRE(result.toString() == "1");
+                REQUIRE(result.to_string() == "1");
             }
         }
     }
@@ -32,7 +32,7 @@ SCENARIO("Testing basic logic expressions and evaluations", "[iverson]") {
             Env partial_env = {{"x", 1}};
             THEN("result should be 0") {
                 Polynomial result(p.evaluate(partial_env));
-                REQUIRE(result.toString() == "0");
+                REQUIRE(result.to_string() == "0");
             }
         }
     }

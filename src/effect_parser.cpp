@@ -57,7 +57,7 @@ ConditionalEffects EffectParser::parse(std::string effect_string) const {
                 // remove initial( and trailing )#
                 int b = begin + 3 + condition.size();
                 effect = effect_string.substr(b, pos - b);
-                Formula formula = Formula(condition);
+                Polynomial formula = Polynomial(condition);
                 std::string effect_var = get_effect_var(effect);
                 int effect_val = get_effect_val(effect);
                 ConditionalEffect eff =
