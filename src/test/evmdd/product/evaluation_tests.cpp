@@ -54,7 +54,6 @@ SCENARIO(
                 REQUIRE(result[1].second == 2);
                 REQUIRE(StringUtils::fact_printer(result[2].first) == "x=3");
                 REQUIRE(result[2].second == 3);
-
             }
         }
     }
@@ -74,6 +73,32 @@ SCENARIO(
             Evmdd<Facts, Union> effect_evmdd = effects.create_evmdd(d, o);
             ProductFactory<Facts, int, Union, std::plus<int>> factory;
             auto product = factory.product(effect_evmdd, cost_evmdd);
+
+            THEN("Evaluation on x=1,y=1 should be {w=1, u=1, z=0},4") {
+                ConcreteState state{1, 1};
+                auto result = product.evaluate(state);
+                Facts facts = result.first;
+                REQUIRE(facts.size() == 3);
+                REQUIRE(StringUtils::fact_printer(facts) == "{u=1 w=1 z=0}");
+                REQUIRE(result.second == 4);
+            }
+
+            THEN(
+                "Partial evaluation on x=0,1 y=1 leads to ({u=1},4),({v=0},3),"
+                "({w=1},3), ({z=0},3)") {
+                PartialState state{{"x", {0, 1}}, {"y", {1}}};
+                auto result = Relaxation::evaluate(product, state);
+                std::sort(result.begin(), result.end());
+                REQUIRE(result.size() == 4);
+                REQUIRE(StringUtils::fact_printer(result[0].first) == "u=1");
+                REQUIRE(result[0].second == 4);
+                REQUIRE(StringUtils::fact_printer(result[1].first) == "v=0");
+                REQUIRE(result[1].second == 3);
+                REQUIRE(StringUtils::fact_printer(result[2].first) == "w=1");
+                REQUIRE(result[2].second == 3);
+                REQUIRE(StringUtils::fact_printer(result[3].first) == "z=0");
+                REQUIRE(result[3].second == 3);
+            }
         }
     }
 }
