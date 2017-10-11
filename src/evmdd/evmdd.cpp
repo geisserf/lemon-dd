@@ -67,7 +67,9 @@ vector<pair<Fact, T>> Relaxation::evaluate(
 template vector<pair<Fact, int>> Relaxation::evaluate<int>(
     ProductEvmdd<Facts, int, Union, std::plus<int>> const &,
     PartialState const &);
-// template std::vector<std::pair<Facts, double>> evaluate<double>(
-//    ProductEvmdd<Facts, double, Union, std::plus<double>>);
-// template std::vector<std::pair<Facts, float>> evaluate<float>(
-//    ProductEvmdd<Facts, float, Union, std::plus<float>>);
+template vector<pair<Fact, double>> Relaxation::evaluate<double>(
+    ProductEvmdd<Facts, double, Union, std::plus<double>> const &,
+    PartialState const &);
+template vector<pair<Fact, float>> Relaxation::evaluate<float>(
+    ProductEvmdd<Facts, float, Union, std::plus<float>> const &,
+    PartialState const &);

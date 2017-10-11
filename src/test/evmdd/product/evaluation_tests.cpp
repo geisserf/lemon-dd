@@ -69,9 +69,9 @@ SCENARIO(
         ConditionalEffects effects = parser.parse(ce_string);
 
         WHEN("We combine both EVMDDs") {
-            Evmdd<int> cost_evmdd = cost.create_evmdd<int>(d, o);
+            Evmdd<float> cost_evmdd = cost.create_evmdd<float>(d, o);
             Evmdd<Facts, Union> effect_evmdd = effects.create_evmdd(d, o);
-            ProductFactory<Facts, int, Union, std::plus<int>> factory;
+            ProductFactory<Facts, float, Union, std::plus<float>> factory;
             auto product = factory.product(effect_evmdd, cost_evmdd);
 
             THEN("Evaluation on x=1,y=1 should be {w=1, u=1, z=0},4") {
