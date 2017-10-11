@@ -13,8 +13,9 @@ using std::endl;
 using std::vector;
 
 SCENARIO(
-    "Testing evaluation for product of numeric and conditional effect EVMDDs",
-    "[product_evmdd_evaluation]") {
+    "Testing construction and evaluation for product of numeric and "
+    "conditional effect EVMDD",
+    "[product_evmdd]") {
     GIVEN("CE: x=x+1, Cost x+1, Domain x=0..4") {
         Domains d = {{"x", 5}};
         Ordering o = {{"x", 1}};
@@ -29,6 +30,15 @@ SCENARIO(
             Evmdd<Facts, Union> effect_evmdd = effects.create_evmdd(d, o);
             ProductFactory<Facts, int, Union, std::plus<int>> factory;
             auto product = factory.product(effect_evmdd, cost_evmdd);
+
+            THEN("Evmdd has the correct structure") {
+                std::stringstream result;
+                product.print(result);
+                std::stringstream expected;
+                expected << "input: {},1" << endl;
+                expected << "x {x=1},0 {x=2},1 {x=3},2 {x=4},3 {},4" << endl;
+                REQUIRE(result.str() == expected.str());
+            }
 
             THEN("Evaluation on x=3 should be x=4 with cost 4") {
                 ConcreteState state{3};
@@ -73,6 +83,17 @@ SCENARIO(
             Evmdd<Facts, Union> effect_evmdd = effects.create_evmdd(d, o);
             ProductFactory<Facts, float, Union, std::plus<float>> factory;
             auto product = factory.product(effect_evmdd, cost_evmdd);
+
+            THEN("Evmdd has the correct structure") {
+                std::stringstream ss;
+                product.print(ss);
+                std::stringstream expected;
+                expected << "input: {w=1},1" << endl;
+                expected << "x {v=0},0 {u=1 z=0},1" << endl;
+                expected << "y {},0 {z=0},2" << endl;
+                expected << "y {},0 {},2" << endl;
+                REQUIRE(ss.str() == expected.str());
+            }
 
             THEN("Evaluation on x=1,y=1 should be {w=1, u=1, z=0},4") {
                 ConcreteState state{1, 1};
