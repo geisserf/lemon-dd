@@ -291,19 +291,4 @@ private:
     NodeFactory<Monoid<M, F>> node_factory;
 };
 
-// Typename declarations for user convenience
-template <typename L, typename R, typename F, typename G>
-using ProductFactory = EvmddFactory<std::pair<L, R>, std::pair<F, G>>;
-
-template <typename L, typename R, typename F, typename G>
-using ProductEvmdd = Evmdd<std::pair<L, R>, std::pair<F, G>>;
-
-namespace Relaxation {
-
-template <typename Cost>
-std::vector<std::pair<Fact, Cost>> evaluate(
-    ProductEvmdd<Facts, Cost, Union, std::plus<Cost>> const &evmdd,
-    PartialState const &state);
-}
-
 #endif // NUMERIC_CATAMORPH_EVMDD_H

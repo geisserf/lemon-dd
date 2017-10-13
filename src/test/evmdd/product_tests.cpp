@@ -1,4 +1,4 @@
-#include "../../../evmdd/evmdd.h"
+#include "../../../evmdd/product_evmdd.h"
 #include "../../../catamorph/factories.h"
 #include "../../../conditional_effects.h"
 #include "../../../effect_parser.h"

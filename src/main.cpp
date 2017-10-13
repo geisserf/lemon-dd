@@ -8,6 +8,7 @@
 #include "effect_parser.h"
 #include "evmdd/printer.h"
 #include "polynomial.h"
+#include "evmdd/product_evmdd.h"
 
 using Ordering = std::map<std::string, int>;
 using Domain = std::map<std::string, unsigned int>;
