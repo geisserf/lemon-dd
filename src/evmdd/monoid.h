@@ -12,8 +12,10 @@
  * associative operation '+' over M and a neutral element. Additionally, these
  * monoids are semi-lattice ordered, i.e. there exists a greatest lower bound
  * operator, defined such the greatest lower bound of the whole carrier set M
- * is the neutral element. Last, a monoid has to support a monus, which
- * basically is the '-' equivalent to '+'.
+ * is the neutral element. Last, a monoid has to support a monus. The monus of
+ * two elements a,b is the smallest unique element c, such that a <= b + c. For
+ * natural numbers, the monus is subtraction, i.e. a - b. For more information
+ * see https://en.wikipedia.org/wiki/Monus.
  *
  * Implementations for particular monoids can be found in monoids/. To define
  * a new monoid, we have to know the carrier set (M) and the binary associative
@@ -98,7 +100,7 @@ std::size_t hash_value(Monoid<M,F> const &monoid) {
 
 #include "monoids/product.h"
 #include "monoids/boolean.h"
-#include "monoids/variable_assignment.h"
+#include "monoids/facts.h"
 
 #endif /* MONOID_H */
 

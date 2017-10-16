@@ -1,7 +1,7 @@
 #ifndef STRING_UTILS_H
 #define STRING_UTILS_H 
 
-#include "../evmdd/monoids/variable_assignment.h"
+#include "../evmdd/monoids/facts.h"
 
 struct StringUtils {
 

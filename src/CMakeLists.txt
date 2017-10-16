@@ -49,7 +49,7 @@ set(SOURCE_FILES
      evmdd/monoid.h
      evmdd/monoids/product.h
      evmdd/monoids/numbers.cpp
-     evmdd/monoids/variable_assignment.h evmdd/monoids/variable_assignment.cpp
+     evmdd/monoids/facts.h evmdd/monoids/facts.cpp
      evmdd/monoids/boolean.h evmdd/monoids/boolean.cpp
      evmdd/operations/logic_not.h
      #utils/math_utils.h utils/math_utils.cpp

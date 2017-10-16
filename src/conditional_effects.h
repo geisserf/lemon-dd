@@ -1,7 +1,7 @@
 #ifndef NUMERIC_CATAMORPH_CONDITIONALEFFECTS_H
 #define NUMERIC_CATAMORPH_CONDITIONALEFFECTS_H
 
-#include "evmdd/monoids/variable_assignment.h"
+#include "evmdd/monoids/facts.h"
 #include "polynomial.h"
 
 #include <string>
