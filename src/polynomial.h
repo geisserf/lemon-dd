@@ -21,18 +21,22 @@ public:
     Expression evaluate(const Env &environment) const;
 
     // Returns the constant part of an expression
-    Expression getConstantPart() const;
+    Expression get_constant_part() const;
 
     // Returns an expression which is the polynomial minus a constant
-    Expression subtractConstant(Expression const &constant) const;
+    Expression subtract_constant(Expression const &constant) const;
 
     // Helper functions to print and show polynomial as a string
     void print() const;
-    std::string toString() const;
+    std::string to_string() const;
 
-    Expression getExpression();
+    Expression get_expression();
 
-    Evmdd<NumericExpression> create_evmdd(Domains const &d, Ordering const &o);
+    template <typename M, typename F = std::plus<M>>
+    Evmdd<M, F> create_evmdd(Domains const &d, Ordering const &o) const {
+        CreateEvmdd<M, F> create;
+        return create.create_evmdd(expression, d, o);
+    }
 
 private:
     Expression expression;

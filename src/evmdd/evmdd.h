@@ -1,90 +1,137 @@
 #ifndef NUMERIC_CATAMORPH_EVMDD_H
 #define NUMERIC_CATAMORPH_EVMDD_H
 
+#include "monoid.h"
 #include "node.h"
+#include "operations/logic_not.h"
 
 #include <algorithm>
 #include <cassert>
 #include <functional>
 #include <map>
-#include <memory>
 #include <ostream>
+#include <queue>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 using Ordering = std::map<std::string, int>;
+using ConcreteState = std::vector<unsigned int>;
 
-template <typename T>
-class Node;
-
-template <typename T>
+template <typename M, typename F = std::plus<M>>
 class EvmddFactory;
 
-template <typename T>
+template <typename M, typename F = std::plus<M>>
 class Evmdd {
 private:
-    T input_value;
-    std::shared_ptr<Node<T> const> entry_node;
+    Monoid<M, F> input;
+    Node_ptr<Monoid<M, F>> source_node;
 
-    Evmdd(T input, std::shared_ptr<Node<T> const> entry_node)
-        : input_value(input), entry_node(entry_node) {}
-    template <typename R>
+    explicit Evmdd(Monoid<M, F> const &input, Node_ptr<Monoid<M, F>> source)
+        : input(input), source_node(source) {}
+
+    explicit Evmdd(M const &input, Node_ptr<Monoid<M, F>> source)
+        : input(input), source_node(source) {}
+
+    template <typename N, typename G>
     friend class EvmddFactory;
 
 public:
     Evmdd() = default;
 
+    // Prints nodes in a BFS-like manner beginning from the source node.
     void print(std::ostream &out) const {
-        out << "input value: " << input_value.toString();
-        out << " nodes:" << std::endl;
-        entry_node->print(out);
-    }
-    std::vector<T> evaluate_partial(EvmddState const &state) const {
-        return evaluate(state, greatest_lower_bound<T>());
-    }
-
-    template <typename EvaluationFunction>
-    std::vector<T> evaluate(EvmddState const &state,
-                            EvaluationFunction eval_function) const {
-        std::vector<T> per_state_result =
-            entry_node->evaluate(state, eval_function);
-        std::vector<T> result;
-        for (T res : per_state_result) {
-            T current = res + input_value;
-            result = eval_function(current, result);
+        out << "input: " << input.to_string() << std::endl;
+        std::queue<Node_ptr<Monoid<M, F>>> nodes;
+        nodes.push(source_node);
+        std::unordered_set<Node_ptr<Monoid<M, F>>> processed;
+        while (!nodes.empty()) {
+            auto current = nodes.front();
+            nodes.pop();
+            // Do not print terminal nodes
+            if (current->is_terminal()) {
+                continue;
+            }
+            out << current->to_string() << std::endl;
+            for (auto const &edge : current->get_children()) {
+                if (processed.find(edge.second) == processed.end()) {
+                    nodes.push(edge.second);
+                    processed.insert(edge.second);
+                }
+            }
         }
-        return result;
     }
 
-    std::vector<T> get_min() const {
-        return evaluate(std::map<std::string, std::vector<int>>(),
-                        greatest_lower_bound<T>());
+    // Evaluates the evmdd with the given state.
+    // If the evmdd represents function E:S->M, this computes E(s).
+    // Assumes state is ordered according to evmdd ordering.
+    M evaluate(ConcreteState const &state) const {
+        Monoid<M, F> res = input;
+        auto node = source_node;
+        while (!node->is_terminal()) {
+            assert(node->get_level() <= state.size());
+            // TODO implement correct ordering
+            size_t domain_value = state[node->get_level() - 1];
+            assert(domain_value < node->get_children().size());
+            res += node->get_children()[domain_value].first;
+            node = node->get_children()[domain_value].second;
+        }
+        return res.get_value();
     }
 
-    std::vector<T> get_max() const {
-        return evaluate(std::map<std::string, std::vector<int>>(),
-                        least_upper_bound<T>());
+    // Evaluates the evmdd given a partial state, according to some evaluation
+    // strategy. When evaluating a node, the evaluation strategy decides for
+    // a node how the results of its children are 'merged' together to return
+    // type Res.
+    //
+    // An example for evmdds over numbers is to use min/max as evaluation
+    // function to return the minimal/maximal cost for a partial state.
+
+    template <typename Res, typename EvaluationFunction>
+    Res evaluate_partial(PartialState const &state,
+                         EvaluationFunction func) const {
+        Res source_result = source_node->template evaluate<Res>(state, func);
+        return source_result + input;
     }
 
-    std::shared_ptr<Node<T> const> const &get_entry_node() const {
-        assert(entry_node);
-        return entry_node;
+    // Computes min_{s \in S} E(s)
+    M get_min() const {
+        auto complete_state = std::map<std::string, std::vector<int>>();
+        auto eval = [](std::vector<Monoid<M, F>> const &vec) {
+            return *std::min_element(vec.begin(), vec.end());
+        };
+        auto min = evaluate_partial<Monoid<M, F>>(complete_state, eval);
+        return min.get_value();
     }
 
-    T get_input_value() const {
-        return input_value;
+    // Computes max_{s \in S} E(s)
+    M get_max() const {
+        auto complete_state = std::map<std::string, std::vector<int>>();
+        auto eval = [](std::vector<Monoid<M, F>> const &vec) {
+            return *std::max_element(vec.begin(), vec.end());
+        };
+        auto max = evaluate_partial<Monoid<M, F>>(complete_state, eval);
+        return max.get_value();
+    }
+
+    Node_ptr<Monoid<M, F>> const &get_source_node() const {
+        assert(source_node);
+        return source_node;
+    }
+
+    Monoid<M, F> get_input() const {
+        return input;
     }
 
     // Returns the number of nodes
     int size() const {
-        std::unordered_set<Node_ptr<T>> succ;
-        entry_node->unique_successor_nodes(succ);
-        // +1 counts entry node
-        return succ.size() + 1;
+        std::unordered_set<Node_ptr<Monoid<M, F>>> succ;
+        source_node->unique_successor_nodes(succ);
+        return succ.size() + 1; // counts entry node
     }
 };
 
-template <typename T>
+template <typename M, typename F>
 class EvmddFactory {
 public:
     // TODO we should not be able to change the ordering for the factory, as
@@ -95,32 +142,38 @@ public:
     }
 
     // Creates an evmdd for a constant term
-    Evmdd<T> make_const_evmdd(T weight) {
-        return Evmdd<T>(weight, node_factory.get_terminal_node());
-    }
-    // Creates an evmdd for a variable (i.e. one node representing the variable,
-    // connected to the terminal node)
-    Evmdd<T> make_var_evmdd(std::string const &var,
-                            std::vector<T> const &domain) {
-        std::vector<Edge<T>> children;
-        for (size_t i = 0; i < domain.size(); ++i) {
-            children.emplace_back(T(domain[i]),
-                                  node_factory.get_terminal_node());
-        }
-        std::shared_ptr<Node<T> const> node =
-            node_factory.make_node(ordering[var], var, children);
-        return Evmdd<T>(T::identity(), node);
+    Evmdd<M, F> make_const_evmdd(M const &weight) {
+        return Evmdd<M, F>(weight, node_factory.get_terminal_node());
     }
 
-    // Creates a new evmdd representing the term 'left oper right'
-    template <typename L, typename R, typename F>
-    Evmdd<T> apply(Evmdd<L> const &left, Evmdd<R> const &right, F oper) {
+    // Creates an evmdd for a function which maps variable domain values to M.
+    // This results in one node representing the variable, connected to the
+    // terminal node, each edge annotated with the given domain value.
+    Evmdd<M, F> make_var_evmdd(std::string const &var,
+                               std::vector<M> const &domain) {
+        std::vector<Edge<Monoid<M, F>>> children;
+        for (size_t i = 0; i < domain.size(); ++i) {
+            children.emplace_back(Monoid<M, F>(domain[i]),
+                                  node_factory.get_terminal_node());
+        }
+        assert(ordering.find(var) != ordering.end());
+        Node_ptr<Monoid<M, F>> node =
+            node_factory.make_node(ordering[var], var, children);
+        return Evmdd<M, F>(Monoid<M, F>::neutral_element(), node);
+    }
+
+    // Given two evmdds 'left', 'right' over monoids <L,G> and <R,H> and given
+    // operator op: LxR->M, apply returns an evmdd over monoid <M,F> which
+    // represents function 'left op right'.
+    template <typename L, typename G, typename R, typename H, typename OP>
+    Evmdd<M, F> apply(Evmdd<L, G> const &left, Evmdd<R, H> const &right,
+                      OP oper) {
         if (terminal_case(left, right, oper)) {
             return make_terminal_evmdd(left, right, oper);
         }
         // TODO implement caching for apply
-        std::vector<Evmdd<L>> left_sub_evmdds = sub_evmdds(left, right);
-        std::vector<Evmdd<R>> right_sub_evmdds = sub_evmdds(right, left);
+        std::vector<Evmdd<L, G>> left_sub_evmdds = sub_evmdds(left, right);
+        std::vector<Evmdd<R, H>> right_sub_evmdds = sub_evmdds(right, left);
         assert(left_sub_evmdds.size() > 0);
         assert(left_sub_evmdds.size() == right_sub_evmdds.size());
 
@@ -128,16 +181,16 @@ public:
         // nodes
         int root_level;
         std::string var;
-        if (left.get_entry_node()->get_level() <=
-            right.get_entry_node()->get_level()) {
-            root_level = right.entry_node->get_level();
-            var = right.entry_node->get_variable();
+        if (left.get_source_node()->get_level() <=
+            right.get_source_node()->get_level()) {
+            root_level = right.source_node->get_level();
+            var = right.source_node->get_variable();
         } else {
-            root_level = left.get_entry_node()->get_level();
-            var = left.get_entry_node()->get_variable();
+            root_level = left.get_source_node()->get_level();
+            var = left.get_source_node()->get_variable();
         }
 
-        std::vector<Evmdd<T>> new_children;
+        std::vector<Evmdd<M, F>> new_children;
         for (size_t i = 0; i < left_sub_evmdds.size(); ++i) {
             new_children.push_back(
                 apply(left_sub_evmdds[i], right_sub_evmdds[i], oper));
@@ -145,67 +198,95 @@ public:
         return create_evmdd(root_level, var, new_children);
     }
 
+    // Product of two evmdds. Only defined for ProductMonoids.
+    template <typename L, typename G, typename R, typename H>
+    Evmdd<M, F> product(Evmdd<L, G> const &left, Evmdd<R, H> const &right) {
+        // Compile time error message if a user reverses the arguments.
+        static_assert(!std::is_same<M, std::pair<R, L>>::value,
+                      "User Error: product arguments are reversed.");
+        // Compile time error message if a user calls the product for a
+        // factory which is not of type M=pair<L,R>
+        static_assert(!std::is_same<M, std::pair<R, L>>::value ||
+                          std::is_same<M, std::pair<L, R>>::value,
+                      "User Error: M is not a pair of L and R. Product of two "
+                      "evmdds has to be called by a ProductFactory");
+        return apply(left, right, std::make_pair<L, R>);
+    }
+
 private:
     // Returns true if the operation can immmediately be computed between the
     // evmdds.
-    template <typename F, typename L, typename R>
-    bool terminal_case(Evmdd<L> const &left, Evmdd<R> const &right,
-                       F /*oper*/) {
-        // TODO use oper to determine earlier terminal case
-        return (left.get_entry_node()->is_terminal() &&
-                right.get_entry_node()->is_terminal());
+    template <typename L, typename G, typename R, typename H, typename OP>
+    bool terminal_case(Evmdd<L, G> const &left, Evmdd<R, H> const &right,
+                       OP /*oper*/) {
+        // TODO use oper to determine lazy termination
+        return (left.get_source_node()->is_terminal() &&
+                right.get_source_node()->is_terminal());
     }
 
     // computation of 'left oper right' if it is a terminal operation
-    template <typename F, typename L, typename R>
-    Evmdd<T> make_terminal_evmdd(Evmdd<L> const &left, Evmdd<R> const &right,
-                                 F oper) {
-        T input_value = oper(left.get_input_value(), right.get_input_value());
-        return make_const_evmdd(input_value);
+    template <typename L, typename G, typename R, typename H, typename OP>
+    Evmdd<M, F> make_terminal_evmdd(Evmdd<L, G> const &left,
+                                    Evmdd<R, H> const &right, OP oper) {
+        // oper:LxR->M implies that we can apply it on the carrier types instead
+        // of the monoid itself.
+        M input =
+            oper(left.get_input().get_value(), right.get_input().get_value());
+        return make_const_evmdd(input);
     }
 
     // If level of f is smaller than level of g, copy f |g.children| times.
     // Otherwise create an evmdd for each child of f with (weight+input value)
     // as new input value and the child as root node.
-    template <typename L, typename R>
-    std::vector<Evmdd<L>> sub_evmdds(Evmdd<L> const &f, Evmdd<R> const &g) {
-        std::vector<Evmdd<L>> result;
-        if (f.get_entry_node()->get_level() >=
-            g.get_entry_node()->get_level()) {
-            for (Edge<L> const &edge : f.get_entry_node()->get_children()) {
-                L input = f.get_input_value() + edge.first;
-                Evmdd<L> evmdd(input, edge.second);
+    template <typename L, typename G, typename R, typename H>
+    std::vector<Evmdd<L, G>> sub_evmdds(Evmdd<L, G> const &f,
+                                        Evmdd<R, H> const &g) {
+        std::vector<Evmdd<L, G>> result;
+        if (f.get_source_node()->get_level() >=
+            g.get_source_node()->get_level()) {
+            for (auto const &edge : f.get_source_node()->get_children()) {
+                Monoid<L, G> input = f.get_input() + edge.first;
+                Evmdd<L, G> evmdd(input, edge.second);
                 result.push_back(evmdd);
             }
         } else {
-            for (size_t i = 0; i < g.get_entry_node()->get_children().size();
+            for (size_t i = 0; i < g.get_source_node()->get_children().size();
                  ++i) {
                 result.push_back(f);
             }
         }
         return result;
     }
-    // returns the greatest lower bound from the input_values
-    T greatest_lower_bound(std::vector<Evmdd<T>> const &children);
 
-    // Returns an evmdd with root node at level, with input value as the minimal
-    // input value of all children. Weights to each child is its original
-    // input value minus the minimal input value.
-    Evmdd<T> create_evmdd(int level, std::string var,
-                          std::vector<Evmdd<T>> const &children) {
-        T min_weight = greatest_lower_bound(children);
-        std::vector<Edge<T>> edges;
-        for (Evmdd<T> const &child : children) {
-            edges.emplace_back(T{child.get_input_value() - min_weight},
-                               child.get_entry_node());
+    // Returns an evmdd with root node at level, with input value as the
+    // greatest lower bound of the input value of all children.
+    // Weights to each child is its original input value minus the greatest
+    // lower bound.
+    Evmdd<M, F> create_evmdd(int level, std::string var,
+                             std::vector<Evmdd<M, F>> const &children) {
+        // Compute greatest lower bound of all children
+        auto it = std::next(children.begin());
+        M const &first_value = children[0].get_input().get_value();
+        M min_weight_value = std::accumulate(
+            it, children.end(), first_value, [](M l, Evmdd<M, F> const &r) {
+                return Monoid<M, F>::greatest_lower_bound(
+                    l, r.get_input().get_value());
+
+            });
+        Monoid<M, F> min_weight{min_weight_value};
+        std::vector<Edge<Monoid<M, F>>> edges;
+        for (Evmdd<M, F> const &child : children) {
+            edges.emplace_back(child.get_input() - min_weight,
+                               child.get_source_node());
         }
-        Node_ptr<T> root_node = node_factory.make_node(level, var, edges);
-        return Evmdd<T>(min_weight, root_node);
+        Node_ptr<Monoid<M, F>> root_node =
+            node_factory.make_node(level, var, edges);
+        return Evmdd<M, F>(min_weight, root_node);
     }
 
     // variable ordering
     Ordering ordering;
-    NodeFactory<T> node_factory;
+    NodeFactory<Monoid<M, F>> node_factory;
 };
 
 #endif // NUMERIC_CATAMORPH_EVMDD_H

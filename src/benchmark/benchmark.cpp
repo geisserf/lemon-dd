@@ -26,7 +26,7 @@ void run_benchmark_from_file_single_evaluation(int domain_size,
                 start = std::chrono::system_clock::now();
                 Polynomial p = Polynomial(line);
                 std::set<ID> variables =
-                    Dependency::dependencies(p.getExpression());
+                    Dependency::dependencies(p.get_expression());
                 Env env;
                 for (ID id : variables) {
                     env.insert(std::pair<std::string, int>(id, dist(mt)));

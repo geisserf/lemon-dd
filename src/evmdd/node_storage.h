@@ -65,7 +65,7 @@ private:
     using Sorting_key = size_t;
     std::unordered_map<Sorting_key, Node_ptr<T>> id_cache;
 
-    // Calculates the hash value for a node based on its by level and edges.
+    // Calculates the hash value for a node based on its level and edges.
     // This implies that every edge type T has to implement hash_value.
     Sorting_key hash_value(int level, std::vector<Edge<T>> const &edges) {
         size_t hash = boost::hash_range(edges.begin(), edges.end());

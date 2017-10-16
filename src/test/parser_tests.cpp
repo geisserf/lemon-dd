@@ -223,7 +223,7 @@ SCENARIO("Testing the prefixparser on arithmetic expressions", "[parser]") {
         WHEN("We parse the expression") {
             Expression expr = parser.parse("(+ 2.5 x)");
             AND_WHEN("We print the expression") {
-                string result = Printer::asString(expr);
+                string result = Printer::as_string(expr);
                 THEN("the result is (+ 2.5 x)") {
                     REQUIRE(result == "(+ 2.5 x)");
                 }
@@ -235,7 +235,7 @@ SCENARIO("Testing the prefixparser on arithmetic expressions", "[parser]") {
         WHEN("We parse the expression") {
             Expression expr = parser.parse("(* a b)");
             AND_WHEN("We print the expression") {
-                string result = Printer::asString(expr);
+                string result = Printer::as_string(expr);
                 THEN("the result is (* a b)") {
                     REQUIRE(result == "(* a b)");
                 }
@@ -260,7 +260,7 @@ SCENARIO("Testing the infixparser on valid arithmetic expressions",
         WHEN("We parse the expression") {
             Expression expr = parser.parse(s);
             AND_WHEN("We print the expression") {
-                string result = Printer::asString(expr);
+                string result = Printer::as_string(expr);
                 THEN("the result is (+ 2 x)") {
                     REQUIRE(result == "(+ 2 var1)");
                 }
@@ -274,7 +274,7 @@ SCENARIO("Testing the infixparser on valid arithmetic expressions",
         WHEN("We parse the expression") {
             Expression expr = parser.parse(s);
             AND_WHEN("We print the expression") {
-                string result = Printer::asString(expr);
+                string result = Printer::as_string(expr);
                 THEN("the result is (+ var 1)") {
                     REQUIRE(result == "(+ var 1)");
                 }
@@ -287,7 +287,7 @@ SCENARIO("Testing the infixparser on valid arithmetic expressions",
         WHEN("We parse the expression") {
             Expression expr = parser.parse(s);
             AND_WHEN("We print the expression") {
-                string result = Printer::asString(expr);
+                string result = Printer::as_string(expr);
                 THEN("the result is (* a b)") {
                     REQUIRE(result == "(* a b)");
                 }
@@ -300,7 +300,7 @@ SCENARIO("Testing the infixparser on valid arithmetic expressions",
         WHEN("We parse the expression") {
             Expression expr = parser.parse(s);
             AND_WHEN("We print the expression") {
-                string result = Printer::asString(expr);
+                string result = Printer::as_string(expr);
                 THEN("the result is (/ a b)") {
                     REQUIRE(result == "(/ a b)");
                 }
@@ -313,7 +313,7 @@ SCENARIO("Testing the infixparser on valid arithmetic expressions",
         WHEN("We parse the expression") {
             Expression expr = parser.parse(s);
             AND_WHEN("We print the expression") {
-                string result = Printer::asString(expr);
+                string result = Printer::as_string(expr);
                 THEN("the result is (+ 2 (* 5 c))") {
                     REQUIRE(result == "(+ 2 (* 5 c))");
                 }
@@ -326,7 +326,7 @@ SCENARIO("Testing the infixparser on valid arithmetic expressions",
         WHEN("We parse the expression") {
             Expression expr = parser.parse(s);
             AND_WHEN("We print the expression") {
-                string result = Printer::asString(expr);
+                string result = Printer::as_string(expr);
                 THEN("the result is (* a (+ b c))") {
                     REQUIRE(result == "(* a (+ b c))");
                 }

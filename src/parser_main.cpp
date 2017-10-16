@@ -14,6 +14,6 @@ int main() {
     InfixParser parser;
     std::cout << "Trying to parse " << input << std::endl;
     Expression expression = parser.parse(input);
-    string result = Printer::asString(expression);
+    string result = Printer::as_string(expression);
     std::cout << result << std::endl;
 }

@@ -63,7 +63,7 @@ public:
                   << '\n';
     }
 
-    static std::string asString(Expression const &e) {
+    static std::string as_string(Expression const &e) {
         return Catamorph::cata<std::string>(Printer::print_alg, e);
     }
 };
