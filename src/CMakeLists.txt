@@ -43,6 +43,7 @@ set(SOURCE_FILES
      conditional_effects.h conditional_effects.cpp
      catamorph/printer.h
      evmdd/evmdd.h
+     evmdd/abstract_factory.h
      evmdd/product_evmdd.h evmdd/product_evmdd.cpp
      evmdd/node.h evmdd/node_storage.h
      evmdd/printer.h

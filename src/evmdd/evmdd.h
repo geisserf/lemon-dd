@@ -134,6 +134,12 @@ public:
 template <typename M, typename F>
 class EvmddFactory {
 public:
+
+    // TODO delete default constructor and move private and make it friend of
+    // abstract factory
+    EvmddFactory() = default; 
+    EvmddFactory(Ordering const& o) : ordering(o) {}
+
     // TODO we should not be able to change the ordering for the factory, as
     // this messes up the correspondence between levels and variables in the
     // node storage.
