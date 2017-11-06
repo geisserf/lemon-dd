@@ -21,8 +21,8 @@ public:
     // want for logical formulae.
     Evmdd<bool, std::logical_or<bool>> create_evmdd(Domains const &d,
                                               Ordering const &o) const {
-        CreateEvmdd<bool, std::logical_or<bool>> create;
-        return create.create_evmdd(expression, d, o);
+        CreateEvmdd<bool, std::logical_or<bool>> create(o);
+        return create.create_evmdd(expression, d);
     }
 
 private:

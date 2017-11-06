@@ -37,7 +37,8 @@ std::string EffectParser::get_effect_var(std::string effect_string) const {
     }
 }
 
-ConditionalEffects EffectParser::parse(std::string effect_string) const {
+std::vector<ConditionalEffect> EffectParser::parse(
+    std::string effect_string) const {
     int paren_cout = 0;
     int begin = 0;
     int pos = 0;
@@ -72,6 +73,5 @@ ConditionalEffects EffectParser::parse(std::string effect_string) const {
         pos++;
     }
 
-    ConditionalEffects ce = ConditionalEffects(effects);
-    return ce;
+    return effects;
 }

@@ -34,8 +34,8 @@ public:
 
     template <typename M, typename F = std::plus<M>>
     Evmdd<M, F> create_evmdd(Domains const &d, Ordering const &o) const {
-        CreateEvmdd<M, F> create;
-        return create.create_evmdd(expression, d, o);
+        CreateEvmdd<M, F> create(o);
+        return create.create_evmdd(expression, d);
     }
 
 private:

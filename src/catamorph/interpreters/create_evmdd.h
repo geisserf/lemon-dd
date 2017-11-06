@@ -1,6 +1,7 @@
 #ifndef NUMERIC_CATAMORPH_CREATEEVMDD_H
 #define NUMERIC_CATAMORPH_CREATEEVMDD_H
 
+#include "../../evmdd/abstract_factory.h"
 #include "../../evmdd/evmdd.h"
 #include "../catamorph.h"
 #include "../expression.h"
@@ -13,8 +14,19 @@ using Domains = std::map<ID, unsigned int>;
 
 template <typename M, typename F = std::plus<M>>
 class CreateEvmdd {
+public:
+    CreateEvmdd(Ordering const &ordering)
+        : factory(AbstractFactory<M, F>::get_factory(ordering)) {}
+
+    Evmdd<M, F> create_evmdd(Expression const &expr, Domains const &domains) {
+        return Catamorph::cata<Evmdd<M, F>>(
+            [&domains, this](expression_r<Evmdd<M, F>> const &expr_r)
+                -> Evmdd<M, F> { return create_evmdd_alg(domains)(expr_r); },
+            expr);
+    }
+
 private:
-    EvmddFactory<M, F> factory;
+    EvmddFactory<M, F> &factory;
 
     auto create_evmdd_alg(Domains const &domains) {
         return [&domains,
@@ -73,16 +85,6 @@ private:
             result = factory.apply(result, evmdds[i], op);
         }
         return result;
-    }
-
-public:
-    Evmdd<M, F> create_evmdd(Expression const &expr, Domains const &domains,
-                             Ordering const &ordering) {
-        factory.set_ordering(ordering);
-        return Catamorph::cata<Evmdd<M, F>>(
-            [&domains, this](expression_r<Evmdd<M, F>> const &expr_r)
-                -> Evmdd<M, F> { return create_evmdd_alg(domains)(expr_r); },
-            expr);
     }
 };
 
