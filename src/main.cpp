@@ -1,14 +1,15 @@
+#include "conditional_effects.h"
+#include "cxxopts.hpp"
+#include "effect_parser.h"
+#include "evmdd/abstract_factory.h"
+#include "evmdd/printer.h"
+#include "polynomial.h"
+
 #include <fstream>
 #include <iostream>
 #include <map>
 #include <string>
-
-#include "conditional_effects.h"
-#include "cxxopts.hpp"
-#include "effect_parser.h"
-#include "evmdd/printer.h"
-#include "polynomial.h"
-#include "evmdd/product_evmdd.h"
+#include <vector>
 
 using Ordering = std::map<std::string, int>;
 using Domain = std::map<std::string, unsigned int>;
@@ -137,8 +138,9 @@ int main(int argc, char *argv[]) {
     std::ofstream dot_stream(dot_file);
     if (type_ == "ce") {
         EffectParser parser;
-        ConditionalEffects effects = parser.parse(expressions[0]);
-        auto evmdd = effects.create_evmdd(d_o.domains, d_o.ordering);
+        std::vector<ConditionalEffect> effects = parser.parse(expressions[0]);
+        auto evmdd = ConditionalEffects::create_evmdd(effects, d_o.domains,
+                                                      d_o.ordering);
         create_dot(dot_stream, evmdd, d_o.ordering);
     } else if (type_ == "cst") {
         Polynomial p = Polynomial(expressions[0]);
@@ -146,12 +148,15 @@ int main(int argc, char *argv[]) {
         create_dot(dot_stream, evmdd, d_o.ordering);
     } else if (type_ == "c") {
         EffectParser parser;
-        ConditionalEffects effects = parser.parse(expressions[0]);
-        auto effect_evmdd = effects.create_evmdd(d_o.domains, d_o.ordering);
+        std::vector<ConditionalEffect> effects = parser.parse(expressions[0]);
+        auto effect_evmdd = ConditionalEffects::create_evmdd(
+            effects, d_o.domains, d_o.ordering);
         Polynomial p = Polynomial(expressions[1]);
         Evmdd<double> cost_evmdd =
             p.create_evmdd<double>(d_o.domains, d_o.ordering);
-        ProductFactory<Facts, double, Union, std::plus<double>> factory;
+        auto &factory = AbstractProductFactory<
+            Facts, double, Union, std::plus<double>>::get_factory(d_o.ordering);
+
         auto product_evmdd = factory.product(effect_evmdd, cost_evmdd);
         create_dot(dot_stream, product_evmdd, d_o.ordering);
     } else {

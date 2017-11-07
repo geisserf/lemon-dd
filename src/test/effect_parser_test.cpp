@@ -8,32 +8,32 @@ SCENARIO("Testing  conditional effect parsing", "[CE_parser]") {
     GIVEN("The conditional effect (a -> b)") {
         std::string e = "(a -> b)";
         EffectParser parser;
-        ConditionalEffects effects = parser.parse(e);
+        std::vector<ConditionalEffect> effects = parser.parse(e);
         THEN("Result should have 1 effect") {
-            REQUIRE(effects.get_effects().size() == 1);
-            REQUIRE(effects.get_effects()[0].to_string() == "a -> b:=1");
+            REQUIRE(effects.size() == 1);
+            REQUIRE(effects[0].to_string() == "a -> b:=1");
         }
     }
 
     GIVEN("The conditional effect (x -> y) & (c -> d)") {
         std::string e = "(x ->y) & (c->d)";
         EffectParser parser;
-        ConditionalEffects effects = parser.parse(e);
+        std::vector<ConditionalEffect> effects = parser.parse(e);
         THEN("Result should have 2 effects") {
-            REQUIRE(effects.get_effects().size() == 2);
-            REQUIRE(effects.get_effects()[0].to_string() == "x -> y:=1");
-            REQUIRE(effects.get_effects()[1].to_string() == "c -> d:=1");
+            REQUIRE(effects.size() == 2);
+            REQUIRE(effects[0].to_string() == "x -> y:=1");
+            REQUIRE(effects[1].to_string() == "c -> d:=1");
         }
     }
 
     GIVEN("The conditional effect ((z||x) -> y:=5) & (c -> !d)") {
         std::string e = "([z||x]->y==5) & (c->!d)";
         EffectParser parser;
-        ConditionalEffects effects = parser.parse(e);
+        std::vector<ConditionalEffect> effects = parser.parse(e);
         THEN("Result should have 2 effects") {
-            REQUIRE(effects.get_effects().size() == 2);
-            REQUIRE(effects.get_effects()[0].to_string() == "(|| z x) -> y:=5");
-            REQUIRE(effects.get_effects()[1].to_string() == "c -> d:=0");
+            REQUIRE(effects.size() == 2);
+            REQUIRE(effects[0].to_string() == "(|| z x) -> y:=5");
+            REQUIRE(effects[1].to_string() == "c -> d:=0");
         }
     }
 
@@ -41,9 +41,9 @@ SCENARIO("Testing  conditional effect parsing", "[CE_parser]") {
         EffectParser parser;
         auto effects = parser.parse("([x && y] -> !v) & ([!x] -> z)");
         THEN("Result should have 2 effects") {
-            REQUIRE(effects.get_effects().size() == 2);
-            REQUIRE(effects.get_effects()[0].to_string() == "(^ x y) -> v:=0");
-            REQUIRE(effects.get_effects()[1].to_string() == "!x -> z:=1");
+            REQUIRE(effects.size() == 2);
+            REQUIRE(effects[0].to_string() == "(^ x y) -> v:=0");
+            REQUIRE(effects[1].to_string() == "!x -> z:=1");
         }
     }
 }

@@ -118,6 +118,10 @@ class NodeFactory {
 public:
     NodeFactory() : storage(NodeStorage<T>()), node_counter(storage.size()) {}
 
+    size_t size() const {
+        return storage.size();
+    }
+
     // Returns a pointer to the (unique) terminal node
     Node_ptr<T> get_terminal_node() const {
         return storage.get_node(0);
