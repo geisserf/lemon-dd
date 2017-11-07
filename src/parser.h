@@ -4,6 +4,7 @@
 #include <map>
 #include <stack>
 #include <string>
+#include "catamorph/expression.h"
 
 static std::map<std::string, int> op_precedence{
     {"sentinel", 0}, {"-", 1},  {"+", 2},  {"/", 3}, {"*", 4},
@@ -67,7 +68,6 @@ private:
     std::string &trim(std::string &s);
 };
 
-class Expression;
 
 class Parser {
     // EBNF of our context free grammar:

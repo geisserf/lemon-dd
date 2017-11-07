@@ -94,7 +94,7 @@ public:
             for (int d_val : state_it->second) {
                 assert(static_cast<size_t>(d_val) < children.size());
                 Res child_res =
-                    children[d_val].second->evaluate<Res>(state, func);
+                    children[d_val].second->template evaluate<Res>(state, func);
                 child_res += children[d_val].first;
                 child_results.push_back(child_res);
             }
@@ -104,7 +104,7 @@ public:
             // remove this code duplication.
             for (size_t d_val = 0; d_val < children.size(); ++d_val) {
                 Res child_res =
-                    children[d_val].second->evaluate<Res>(state, func);
+                    children[d_val].second->template evaluate<Res>(state, func);
                 child_res += children[d_val].first;
                 child_results.push_back(child_res);
             }
