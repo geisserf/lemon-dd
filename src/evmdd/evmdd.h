@@ -9,6 +9,7 @@
 #include <cassert>
 #include <functional>
 #include <map>
+#include <numeric>
 #include <ostream>
 #include <queue>
 #include <string>
