@@ -12,7 +12,8 @@ SCENARIO("Testing conditional effect EVMDDs", "[effect_evmdd]") {
         auto cond_effects = parser.parse("(a->b)");
         Domains d = {{"a", 2}};
         Ordering o = {{"a", 1}};
-        Evmdd<Facts, Union> evmdd = cond_effects.create_evmdd(d, o);
+        Evmdd<Facts, Union> evmdd =
+            ConditionalEffects::create_evmdd(cond_effects, d, o);
 
         THEN("Evmdd has one variable node with 2 edges") {
             std::stringstream result;
@@ -38,7 +39,8 @@ SCENARIO("Testing conditional effect EVMDDs", "[effect_evmdd]") {
         auto cond_effects = parser.parse("([x && y] ->!v) & ([!x] ->z)");
         Domains d = {{"x", 2}, {"y", 2}};
         Ordering o = {{"x", 1}, {"y", 2}};
-        Evmdd<Facts, Union> evmdd = cond_effects.create_evmdd(d, o);
+        Evmdd<Facts, Union> evmdd =
+            ConditionalEffects::create_evmdd(cond_effects, d, o);
 
         THEN("Evmdd has the correct structure") {
             std::stringstream result;
@@ -76,7 +78,8 @@ SCENARIO("Testing conditional effect EVMDDs", "[effect_evmdd]") {
         auto cond_effects = parser.parse("([x || y] ->!z)");
         Domains d = {{"x", 2}, {"y", 2}};
         Ordering o = {{"x", 1}, {"y", 2}};
-        Evmdd<Facts, Union> evmdd = cond_effects.create_evmdd(d, o);
+        Evmdd<Facts, Union> evmdd =
+            ConditionalEffects::create_evmdd(cond_effects, d, o);
 
         THEN("Evmdd has the correct structure") {
             std::stringstream result;
@@ -114,7 +117,8 @@ SCENARIO("Testing conditional effect EVMDDs", "[effect_evmdd]") {
         auto cond_effects = parser.parse("([[v5==0]&&[v6==1]]->v5==1)");
         Domains d = {{"v5", 2}, {"v6", 3}};
         Ordering o = {{"v5", 1}, {"v6", 2}};
-        Evmdd<Facts, Union> evmdd = cond_effects.create_evmdd(d, o);
+        Evmdd<Facts, Union> evmdd =
+            ConditionalEffects::create_evmdd(cond_effects, d, o);
         THEN("Evmdd has the correct structure") {
             std::stringstream result;
             evmdd.print(result);
@@ -138,7 +142,8 @@ SCENARIO("Testing conditional effect EVMDDs", "[effect_evmdd]") {
         auto cond_effects = parser.parse(e);
         Domains d = {{"v5", 2}, {"v6", 3}};
         Ordering o = {{"v5", 1}, {"v6", 2}};
-        Evmdd<Facts, Union> evmdd = cond_effects.create_evmdd(d, o);
+        Evmdd<Facts, Union> evmdd =
+            ConditionalEffects::create_evmdd(cond_effects, d, o);
 
         THEN("Evmdd has the correct structure") {
             std::stringstream result;

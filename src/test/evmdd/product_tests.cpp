@@ -22,13 +22,16 @@ SCENARIO(
         std::string ce_string =
             "([x==0]->x==1) & ([x==1]->x==2) & ([x==2]->x==3) & ([x==3]->x==4)";
         EffectParser parser;
-        ConditionalEffects effects = parser.parse(ce_string);
+        std::vector<ConditionalEffect> effects = parser.parse(ce_string);
         Polynomial cost = Polynomial("x+1");
 
         WHEN("We combine both EVMDDs") {
             Evmdd<int> cost_evmdd = cost.create_evmdd<int>(d, o);
-            Evmdd<Facts, Union> effect_evmdd = effects.create_evmdd(d, o);
-            ProductFactory<Facts, int, Union, std::plus<int>> factory;
+            Evmdd<Facts, Union> effect_evmdd =
+                ConditionalEffects::create_evmdd(effects, d, o);
+            auto &factory =
+                AbstractProductFactory<Facts, int, Union,
+                                       std::plus<int>>::get_factory(o);
             auto product = factory.product(effect_evmdd, cost_evmdd);
 
             THEN("Evmdd has the correct structure") {
@@ -76,12 +79,15 @@ SCENARIO(
         std::string ce_string =
             "([!x]->!v) & (x->u) & ([x || y] ->!z) & ([1]->w)";
         EffectParser parser;
-        ConditionalEffects effects = parser.parse(ce_string);
+        std::vector<ConditionalEffect> effects = parser.parse(ce_string);
 
         WHEN("We combine both EVMDDs") {
             Evmdd<float> cost_evmdd = cost.create_evmdd<float>(d, o);
-            Evmdd<Facts, Union> effect_evmdd = effects.create_evmdd(d, o);
-            ProductFactory<Facts, float, Union, std::plus<float>> factory;
+            Evmdd<Facts, Union> effect_evmdd =
+                ConditionalEffects::create_evmdd(effects, d, o);
+            auto &factory =
+                AbstractProductFactory<Facts, int, Union,
+                                       std::plus<int>>::get_factory(o);
             auto product = factory.product(effect_evmdd, cost_evmdd);
 
             THEN("Evmdd has the correct structure") {

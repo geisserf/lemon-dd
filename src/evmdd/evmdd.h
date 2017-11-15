@@ -9,6 +9,7 @@
 #include <cassert>
 #include <functional>
 #include <map>
+#include <numeric>
 #include <ostream>
 #include <queue>
 #include <string>
@@ -136,13 +137,17 @@ public:
 };
 
 template <typename M, typename F>
+class AbstractFactory;
+
+template <typename M, typename F>
 class EvmddFactory {
 public:
-    // TODO we should not be able to change the ordering for the factory, as
-    // this messes up the correspondence between levels and variables in the
-    // node storage.
-    void set_ordering(Ordering const &o) {
-        ordering = o;
+    // Interaction with factories is only accessible via AbstractFactory.
+    EvmddFactory(EvmddFactory const &other) = delete;
+
+    // Number of stored nodes
+    size_t size() const {
+        return node_factory.size();
     }
 
     // Creates an evmdd for a constant term
@@ -288,9 +293,13 @@ private:
         return Evmdd<M, F>(min_weight, root_node);
     }
 
+    EvmddFactory(Ordering const &o) : ordering(o) {}
+
     // variable ordering
     Ordering ordering;
     NodeFactory<Monoid<M, F>> node_factory;
+
+    friend AbstractFactory<M, F>;
 };
 
 #endif // NUMERIC_CATAMORPH_EVMDD_H

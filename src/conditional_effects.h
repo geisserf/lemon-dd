@@ -12,8 +12,6 @@ using Domains = std::map<std::string, unsigned int>;
 template <typename M, typename F>
 class Evmdd;
 
-// TODO forward declarations
-
 // If first is 1, return second. Otherwise return empty set. Required to
 // merge the evmdd for the condition with the evmdd of the effect.
 struct keep_if_true {
@@ -41,20 +39,12 @@ private:
     int value;
 };
 
-class ConditionalEffects {
-public:
-    ConditionalEffects() = default;
-    ConditionalEffects(std::vector<ConditionalEffect> const &effects)
-        : effects(effects) {}
+// Convenience method to create evmdd of multiple conditional effects
+namespace ConditionalEffects {
 
-    Evmdd<Facts, Union> create_evmdd(Domains const &d, Ordering const &o) const;
-
-    std::vector<ConditionalEffect> get_effects() {
-        return effects;
-    }
-
-private:
-    std::vector<ConditionalEffect> effects;
-};
+// Returns the evmdd representing the union of all conditional effects
+Evmdd<Facts, Union> create_evmdd(std::vector<ConditionalEffect> const &effects,
+                                 Domains const &d, Ordering const &o);
+}
 
 #endif // NUMERIC_CATAMORPH_CONDITIONALEFFECTS_H

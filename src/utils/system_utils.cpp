@@ -10,6 +10,8 @@
 #include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
+
+//TODO make this portable to other systems
 #include "sys/sysinfo.h"
 
 // returns the available total virtual memory
