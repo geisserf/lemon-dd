@@ -129,6 +129,10 @@ public:
         source_node->unique_successor_nodes(succ);
         return succ.size() + 1; // counts entry node
     }
+
+    int depth() const {
+        return source_node->get_depth();
+    }
 };
 
 template <typename M, typename F>
