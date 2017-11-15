@@ -76,6 +76,13 @@ public:
         return level;
     }
 
+    unsigned int get_depth() const {
+        if (is_terminal()) {
+            return 0;
+        }
+        return children[0].second->get_depth() + 1;
+    }
+
     bool is_terminal() const {
         return id == 0;
     }
