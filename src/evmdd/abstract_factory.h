@@ -9,10 +9,9 @@
 
 using Ordering = std::map<std::string, int>;
 
-template <typename L, typename F, typename R, typename G>
+template <typename L, typename R, typename F, typename G>
 using AbstractProductFactory =
-    AbstractFactory<std::pair<Facts, double>,
-                    std::pair<Union, std::plus<double>>>;
+    AbstractFactory<std::pair<L, R>, std::pair<F, G>>;
 
 template <typename M, typename F = std::plus<M>>
 class AbstractFactory {
