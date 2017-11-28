@@ -20,7 +20,7 @@ Expression Polynomial::evaluate(const Env &environment) const {
     return Evaluate::partial_eval(environment, expression);
 }
 
-Expression Polynomial::getConstantPart() const {
+Expression Polynomial::get_constant_part() const {
     std::set<ID> dependencies = Dependency::dependencies(expression);
     Env environment = Env();
     for (auto const &var : dependencies) {
@@ -29,7 +29,7 @@ Expression Polynomial::getConstantPart() const {
     return Evaluate::partial_eval(environment, expression);
 }
 
-Expression Polynomial::subtractConstant(Expression const &constant) const {
+Expression Polynomial::subtract_constant(Expression const &constant) const {
     return Factories::sub({expression, constant});
 }
 
@@ -37,16 +37,10 @@ void Polynomial::print() const {
     Printer::print(expression);
 }
 
-std::string Polynomial::toString() const {
-    return Printer::asString(expression);
+std::string Polynomial::to_string() const {
+    return Printer::as_string(expression);
 }
 
-Expression Polynomial::getExpression() {
+Expression Polynomial::get_expression() {
     return this->expression;
-}
-
-Evmdd<NumericExpression> Polynomial::create_evmdd(Domains const &d,
-                                                  Ordering const &o) {
-    CreateEvmdd<NumericExpression> create;
-    return create.create_evmdd(expression, d, o);
 }

@@ -1,14 +1,15 @@
+#include "conditional_effects.h"
+#include "cxxopts.hpp"
+#include "effect_parser.h"
+#include "evmdd/abstract_factory.h"
+#include "evmdd/printer.h"
+#include "polynomial.h"
+
 #include <fstream>
 #include <iostream>
 #include <map>
 #include <string>
-
-#include "combined.h"
-#include "conditional_effects.h"
-#include "cxxopts.hpp"
-#include "effect_parser.h"
-#include "evmdd/printer.h"
-#include "polynomial.h"
+#include <vector>
 
 using Ordering = std::map<std::string, int>;
 using Domain = std::map<std::string, unsigned int>;
@@ -63,10 +64,10 @@ domain_ordering parse_domain(std::string ordering_string) {
 
     return o;
 }
-template <typename T>
-void create_dot(std::ostream &output_stream, Evmdd<T> const &evmdd,
+template <typename M, typename F>
+void create_dot(std::ostream &output_stream, Evmdd<M, F> const &evmdd,
                 Ordering const &o) {
-    DotPrinter<T> printer(o);
+    DotPrinter<M, F> printer(o);
     printer.to_dot(output_stream, evmdd);
 }
 
@@ -137,21 +138,27 @@ int main(int argc, char *argv[]) {
     std::ofstream dot_stream(dot_file);
     if (type_ == "ce") {
         EffectParser parser;
-        ConditionalEffects effects = parser.parse(expressions[0]);
-        Evmdd<VariableAssignmentExpression> evmdd =
-            effects.create_evmdd(d_o.domains, d_o.ordering);
+        std::vector<ConditionalEffect> effects = parser.parse(expressions[0]);
+        auto evmdd = ConditionalEffects::create_evmdd(effects, d_o.domains,
+                                                      d_o.ordering);
         create_dot(dot_stream, evmdd, d_o.ordering);
     } else if (type_ == "cst") {
         Polynomial p = Polynomial(expressions[0]);
-        Evmdd<NumericExpression> evmdd =
-            p.create_evmdd(d_o.domains, d_o.ordering);
+        Evmdd<double> evmdd = p.create_evmdd<double>(d_o.domains, d_o.ordering);
         create_dot(dot_stream, evmdd, d_o.ordering);
     } else if (type_ == "c") {
         EffectParser parser;
-        ConditionalEffects effects = parser.parse(expressions[0]);
-        Combined combined = Combined(effects.getEffects(), expressions[1]);
-        auto evmdd = combined.create_evmdd(d_o.domains, d_o.ordering);
-        create_dot(dot_stream, evmdd, d_o.ordering);
+        std::vector<ConditionalEffect> effects = parser.parse(expressions[0]);
+        auto effect_evmdd = ConditionalEffects::create_evmdd(
+            effects, d_o.domains, d_o.ordering);
+        Polynomial p = Polynomial(expressions[1]);
+        Evmdd<double> cost_evmdd =
+            p.create_evmdd<double>(d_o.domains, d_o.ordering);
+        auto &factory = AbstractProductFactory<
+            Facts, double, Union, std::plus<double>>::get_factory(d_o.ordering);
+
+        auto product_evmdd = factory.product(effect_evmdd, cost_evmdd);
+        create_dot(dot_stream, product_evmdd, d_o.ordering);
     } else {
         std::cout << "unknown type" << std::endl;
     }

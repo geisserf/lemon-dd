@@ -36,7 +36,7 @@ Token Lexer::getNextToken() {
     // but must not start with a number
     std::regex varRegex("((?:[[:alpha:]|_]+)(?:[[:alnum:]|_]*))(.*)");
 
-    // Iversion regex
+    // Iverson regex
     std::regex lSqrBrackRegex("\\[(.*)"); // Regex for [
     std::regex rSqrBrackRegex("\\](.*)"); // Regex for ]
     std::regex andRegex("\\&\\&(.*)");    // Regex for && (Logical and)
@@ -261,8 +261,9 @@ void InfixParser::expect(Type type, Lexer &lexer) {
     if (type == next.type) {
         consume(lexer);
     } else {
-        throw std::invalid_argument("Expected " + std::to_string(type) +
-                                    " was " + std::to_string(next.type));
+        throw std::invalid_argument("Parser error : expected " +
+                                    std::to_string(type) + " was " +
+                                    std::to_string(next.type));
     }
 }
 

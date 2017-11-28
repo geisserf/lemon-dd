@@ -19,6 +19,8 @@ using Node_ptr = std::shared_ptr<Node<T> const>;
 template <typename T>
 using Edge = std::pair<T, Node_ptr<T>>;
 
+using Sorting_key = size_t;
+
 template <typename T>
 class NodeStorage {
 public:
@@ -53,6 +55,13 @@ public:
         return lookup.size();
     }
 
+    void print_nodes(std::ostream& out) const {
+        out << "Nodes stored: " << std::endl;
+        for (auto const& kv : lookup) {
+            out << kv.second->to_string() << std::endl;
+        }
+    }
+
     // Automatically constructs the terminal node on initialization
     NodeStorage() : lookup({{0, Node_ptr<T>(new Node<T>(0, 0, " ", {}))}}) {}
 
@@ -62,10 +71,9 @@ private:
     std::unordered_map<int, Node_ptr<T>> lookup;
 
     // For each new node there is an entry (level,weights,children)->node
-    using Sorting_key = size_t;
     std::unordered_map<Sorting_key, Node_ptr<T>> id_cache;
 
-    // Calculates the hash value for a node based on its by level and edges.
+    // Calculates the hash value for a node based on its level and edges.
     // This implies that every edge type T has to implement hash_value.
     Sorting_key hash_value(int level, std::vector<Edge<T>> const &edges) {
         size_t hash = boost::hash_range(edges.begin(), edges.end());

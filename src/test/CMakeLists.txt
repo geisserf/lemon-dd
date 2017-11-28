@@ -9,10 +9,17 @@ set(TEST_SOURCES
         simple_numeric_tests.cpp
         simple_iverson_tests.cpp
         polynomial_class_tests.cpp
+        monoid_tests.cpp
         parser_tests.cpp
-        evmdd_build_tests.cpp
-       iverson_evmdd_tests.cpp conditional_effect_evmdd.cpp 
-       combined_evmdd_tests.cpp infix_parser_tests.cpp effect_parser_test.cpp)
+        infix_parser_tests.cpp
+        effect_parser_test.cpp
+        evmdd/numeric/evaluation_tests.cpp
+        evmdd/numeric/construction_tests.cpp
+        evmdd/numeric/iverson_tests.cpp
+        evmdd/conditional_effect_tests.cpp 
+        evmdd/product_tests.cpp 
+        evmdd/abstract_factory_test.cpp 
+        )
 
 add_executable(Test ${TEST_SOURCES})
 target_link_libraries(Test NumericCatamorph_lib Catch)
