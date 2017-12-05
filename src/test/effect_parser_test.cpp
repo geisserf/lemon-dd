@@ -26,8 +26,8 @@ SCENARIO("Testing  conditional effect parsing", "[CE_parser]") {
         }
     }
 
-    GIVEN("The conditional effect ((z||x) -> y:=5) & (c -> !d)") {
-        std::string e = "([z||x]->y==5) & (c->!d)";
+    GIVEN("The conditional effect ((z | x) -> y:=5) & (c -> !d)") {
+        std::string e = "([z ||x]->y==5) & (c->!d)";
         EffectParser parser;
         std::vector<ConditionalEffect> effects = parser.parse(e);
         THEN("Result should have 2 effects") {
@@ -39,11 +39,11 @@ SCENARIO("Testing  conditional effect parsing", "[CE_parser]") {
 
     GIVEN("The conditional effect (x & y -> !v) & (!x -> z)") {
         EffectParser parser;
-        auto effects = parser.parse("([x && y] -> !v) & ([!x] -> z)");
+        auto effects = parser.parse("([x&& y] -> !v) & ([!x] -> z)");
         THEN("Result should have 2 effects") {
             REQUIRE(effects.size() == 2);
             REQUIRE(effects[0].to_string() == "(^ x y) -> v:=0");
-            REQUIRE(effects[1].to_string() == "!x -> z:=1");
+            REQUIRE(effects[1].to_string() == "!(x) -> z:=1");
         }
     }
 }

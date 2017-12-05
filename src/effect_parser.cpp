@@ -1,10 +1,11 @@
 #include "effect_parser.h"
 #include "conditional_effects.h"
 #include "polynomial.h"
+#include "utils/string_utils.h"
 
 int EffectParser::get_effect_val(std::string effect_string) const {
     // !var-> 0, var->1, var==x ->x
-
+    StringUtils::trim(effect_string);
     if (effect_string[0] == '!') {
         return 0;
     } else {
@@ -22,7 +23,7 @@ int EffectParser::get_effect_val(std::string effect_string) const {
 
 std::string EffectParser::get_effect_var(std::string effect_string) const {
     // !var-> var, var->var, var==x ->var
-
+    StringUtils::trim(effect_string);
     if (effect_string[0] == '!') {
         return effect_string.substr(1, effect_string.size() - 1);
     } else {
@@ -39,7 +40,7 @@ std::string EffectParser::get_effect_var(std::string effect_string) const {
 
 std::vector<ConditionalEffect> EffectParser::parse(
     std::string effect_string) const {
-    int paren_cout = 0;
+    int paren_count = 0;
     int begin = 0;
     int pos = 0;
     std::vector<ConditionalEffect> effects;
@@ -48,13 +49,13 @@ std::vector<ConditionalEffect> EffectParser::parse(
 
     for (char &c : effect_string) {
         if (c == '(') {
-            if (paren_cout == 0)
+            if (paren_count == 0)
                 begin = pos;
-            paren_cout++;
+            paren_count++;
         }
         if (c == ')') {
-            paren_cout--;
-            if (paren_cout == 0) {
+            paren_count--;
+            if (paren_count == 0) {
                 // remove initial( and trailing )#
                 int b = begin + 3 + condition.size();
                 effect = effect_string.substr(b, pos - b);
