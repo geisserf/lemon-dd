@@ -1,6 +1,7 @@
 #include "parser.h"
 #include "catamorph/expression.h"
 #include "catamorph/factories.h"
+#include "utils/string_utils.h"
 
 #include <assert.h>
 #include <iostream>
@@ -18,7 +19,7 @@ Token Lexer::getNextToken() {
     }
 
     // trim surrounding parantheses
-    trim(input);
+    StringUtils::trim(input);
 
     std::regex addRegex("\\+(.*)");  // Regex for arithmetic +
     std::regex subRegex("-(.*)");    // Regex for arithmetic -
@@ -34,7 +35,7 @@ Token Lexer::getNextToken() {
     std::regex rParenRegex("\\)(.*)"); // Regex for )
     // Variables contain letters, numbers or "_",
     // but must not start with a number
-    std::regex varRegex("((?:[[:alpha:]|_]+)(?:[[:alnum:]|_]*))(.*)");
+    std::regex varRegex("((?:[[:alpha:]_]+)(?:[[:alnum:]_]*))(.*)");
 
     // Iverson regex
     std::regex lSqrBrackRegex("\\[(.*)"); // Regex for [
@@ -108,28 +109,6 @@ Token Lexer::getNextToken() {
     }
     previousToken = token;
     return token;
-}
-
-// Trim spaces from start
-std::string &Lexer::ltrim(std::string &s) {
-    s.erase(s.begin(),
-            std::find_if(s.begin(), s.end(),
-                         std::not1(std::ptr_fun<int, int>(std::isspace))));
-    return s;
-}
-
-// Trim spaces from end
-std::string &Lexer::rtrim(std::string &s) {
-    s.erase(std::find_if(s.rbegin(), s.rend(),
-                         std::not1(std::ptr_fun<int, int>(std::isspace)))
-                .base(),
-            s.end());
-    return s;
-}
-
-// Trim spaces from both ends
-std::string &Lexer::trim(std::string &s) {
-    return ltrim(rtrim(s));
 }
 
 Expression Parser::parse(string const &input) const {

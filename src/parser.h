@@ -1,10 +1,10 @@
 #ifndef PARSER_H
 #define PARSER_H
 
+#include "catamorph/expression.h"
 #include <map>
 #include <stack>
 #include <string>
-#include "catamorph/expression.h"
 
 static std::map<std::string, int> op_precedence{
     {"sentinel", 0}, {"-", 1},  {"+", 2},  {"/", 3}, {"*", 4},
@@ -57,17 +57,7 @@ private:
     // because we went too far
     Token previousToken;
     bool returnPrevToken;
-
-    // Trim spaces from start
-    std::string &ltrim(std::string &s);
-
-    // Trim spaces from end
-    std::string &rtrim(std::string &s);
-
-    // Trim spaces from both ends
-    std::string &trim(std::string &s);
 };
-
 
 class Parser {
     // EBNF of our context free grammar:
