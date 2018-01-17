@@ -3,76 +3,56 @@
 #include "polynomial.h"
 #include "utils/string_utils.h"
 
-int EffectParser::get_effect_val(std::string effect_string) const {
+using std::string;
+using std::vector;
+
+std::pair<string, int> EffectParser::get_effect_pair(string &effect) const {
     // !var-> 0, var->1, var==x ->x
-    StringUtils::trim(effect_string);
-    if (effect_string[0] == '!') {
-        return 0;
-    } else {
-        int pos = 0;
-        for (char &c : effect_string) {
-            if (c == '=') {
-                return std::stoi(effect_string.substr(
-                    pos + 2, effect_string.size() - (pos + 2)));
-            }
-            pos++;
-        }
-        return 1; // no == in string effect is var ->1
+    StringUtils::trim(effect);
+    if (effect[0] == '!') {
+        string var = effect.substr(1);
+        int val = 0;
+        return {var, val};
     }
+    auto pos = effect.find("==");
+    if (pos == string::npos) {
+        // No '==' in effect, variable is set to 1
+        return {effect, 1};
+    }
+    string var = effect.substr(0, pos);
+    StringUtils::trim(var);
+    int val = std::stoi(effect.substr(pos + 2));
+    return {var, val};
 }
 
-std::string EffectParser::get_effect_var(std::string effect_string) const {
-    // !var-> var, var->var, var==x ->var
-    StringUtils::trim(effect_string);
-    if (effect_string[0] == '!') {
-        return effect_string.substr(1, effect_string.size() - 1);
-    } else {
-        int pos = 0;
-        for (char &c : effect_string) {
-            if (c == '=') {
-                return effect_string.substr(0, pos);
-            }
-            pos++;
-        }
-        return effect_string;
-    }
+ConditionalEffect EffectParser::parse_single_effect(
+    string const &effect_string) const {
+    auto split_index = effect_string.find("->");
+    string conditions = effect_string.substr(0, split_index);
+    string effect = effect_string.substr(split_index + 2);
+    StringUtils::trim(conditions);
+    StringUtils::trim(effect);
+    Polynomial formula = Polynomial(conditions);
+    std::pair<string, int> effect_pair = get_effect_pair(effect);
+    ConditionalEffect result =
+        ConditionalEffect(formula, effect_pair.first, effect_pair.second);
+    return result;
 }
 
-std::vector<ConditionalEffect> EffectParser::parse(
-    std::string effect_string) const {
-    int paren_count = 0;
-    int begin = 0;
-    int pos = 0;
-    std::vector<ConditionalEffect> effects;
-    std::string condition;
-    std::string effect;
-
-    for (char &c : effect_string) {
-        if (c == '(') {
-            if (paren_count == 0)
-                begin = pos;
-            paren_count++;
+vector<ConditionalEffect> EffectParser::parse(
+    string const &effect_string) const {
+    vector<ConditionalEffect> result;
+    string::size_type pos = 0;
+    while (true) {
+        string::size_type next_pos = effect_string.find(" & ", pos);
+        string effect = effect_string.substr(pos, next_pos - pos);
+        // Remove outer parantheses
+        result.push_back(
+            parse_single_effect(effect.substr(1, effect.size() - 2)));
+        if (next_pos == string::npos) {
+            break;
         }
-        if (c == ')') {
-            paren_count--;
-            if (paren_count == 0) {
-                // remove initial( and trailing )#
-                int b = begin + 3 + condition.size();
-                effect = effect_string.substr(b, pos - b);
-                Polynomial formula = Polynomial(condition);
-                std::string effect_var = get_effect_var(effect);
-                int effect_val = get_effect_val(effect);
-                ConditionalEffect eff =
-                    ConditionalEffect(formula, effect_var, effect_val);
-                effects.push_back(eff);
-            }
-        }
-        if (c == '-' && effect_string[pos + 1] == '>') {
-            condition = effect_string.substr(begin + 1, pos - begin - 1);
-        }
-
-        pos++;
+        pos = next_pos + 3;
     }
-
-    return effects;
+    return result;
 }

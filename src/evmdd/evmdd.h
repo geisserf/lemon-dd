@@ -134,6 +134,12 @@ public:
     int depth() const {
         return source_node->get_depth();
     }
+    
+    // Check if the EVMDD does exist (e.g. default constructor EVMDD is invalid)
+    bool exists() const {
+        return static_cast<bool>(source_node);
+    }
+
 };
 
 template <typename M, typename F>
