@@ -51,14 +51,15 @@ void create_dot(std::ostream &output_stream, Evmdd<M, F> const &evmdd) {
     printer.to_dot(output_stream, evmdd);
 }
 
-Evmdd<Facts, Union> generate_effect_evmdd(vector<string> const & /*effects*/,
-                                          Domain const & /*domain*/,
-                                          Ordering const & /*ordering*/) {
-    return Evmdd<Facts, Union>();
-    // EffectParser parser;
-    // std::vector<ConditionalEffect> effects = parser.parse(expressions[0]);
-    // return ConditionalEffects::create_evmdd(effects, d_o.domains,
-    // d_o.ordering);
+Evmdd<Facts, Union> generate_effect_evmdd(vector<string> const &effects,
+                                          Domain const &domain,
+                                          Ordering const &ordering) {
+    EffectParser parser;
+    vector<ConditionalEffect> ce;
+    for (string const &effect : effects) {
+        ce.push_back(parser.parse_single_effect(effect));
+    }
+    return ConditionalEffects::create_evmdd(ce, domain, ordering);
 }
 
 int main() {
