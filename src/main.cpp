@@ -38,7 +38,7 @@ Domain parse_domains(string const &domains) {
 Ordering parse_ordering(string const &ordering) {
     Ordering result;
     vector<string> variables = StringUtils::split(ordering, ' ');
-    int position = variables.size() - 1; // position 0 corresponds to bottom var
+    int position = variables.size(); // position 0 reserved for terminal
     for (string const &var : variables) {
         result[var] = position--;
     }
