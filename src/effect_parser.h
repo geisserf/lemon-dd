@@ -8,11 +8,15 @@ class ConditionalEffect;
 
 class EffectParser {
 public:
-    std::vector<ConditionalEffect> parse(std::string effect_string) const;
+    ConditionalEffect parse_single_effect(
+        std::string const &effect_string) const;
+
+    std::vector<ConditionalEffect> parse(
+        std::string const &effect_string) const;
 
 private:
-    int get_effect_val(std::string effect_string) const;
-    std::string get_effect_var(std::string effect_string) const;
+    // Reads variable/effect pair from effect string
+    std::pair<std::string, int> get_effect_pair(std::string &effect) const;
 };
 
 #endif /* EFFECT_PARSER_H */

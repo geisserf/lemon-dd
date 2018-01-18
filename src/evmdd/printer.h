@@ -8,16 +8,13 @@
 #include <unordered_set>
 #include <vector>
 
-using Ordering = std::map<std::string, int>;
-
 template <typename M, typename F>
 class Evmdd;
 
 template <typename M, typename F>
 class DotPrinter {
 public:
-    DotPrinter(Ordering const &ordering) : ordering(ordering) {}
-
+    DotPrinter() = default;
     // prints the .dot representation of an evmdd
     void to_dot(std::ostream &out, Evmdd<M, F> const &evmdd) {
         node_count = 0;
@@ -112,7 +109,6 @@ private:
         printed_nodes.clear();
     }
 
-    Ordering ordering;
     // Store which nodes lie on the same level for prettier visualization
     std::map<int, std::vector<Node_ptr<Monoid<M,F>>>> same_level_nodes;
     // Nodes which were already printed
