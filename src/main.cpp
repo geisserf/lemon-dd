@@ -5,6 +5,7 @@
 #include "polynomial.h"
 #include "utils/string_utils.h"
 
+#include <chrono>
 #include <fstream>
 #include <iostream>
 #include <iterator>
@@ -90,10 +91,19 @@ int main() {
     string arithmetic_expression;
     getline(cin, arithmetic_expression);
 
+    std::chrono::time_point<std::chrono::system_clock> start, end;
     Evmdd<double> cost_evmdd;
     if (!arithmetic_expression.empty()) {
+        cout << "Generating EVMDD for arithmetic function "
+             << arithmetic_expression << endl;
+        start = std::chrono::system_clock::now();
         Polynomial p = Polynomial(arithmetic_expression);
         cost_evmdd = p.create_evmdd<double>(domain, ordering);
+        end = std::chrono::system_clock::now();
+        int elapsed_seconds =
+            std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
+                .count();
+        cout << "Finished after " << elapsed_seconds << "ms." << endl;
     }
 
     cout << "Enter conditional effects. Press return once finished. For more "
@@ -108,8 +118,12 @@ int main() {
         }
         conditional_effects.push_back(conditional_effect);
     }
-    Evmdd<Facts, Union> effect_evmdd =
-        generate_effect_evmdd(conditional_effects, domain, ordering);
+
+    Evmdd<Facts, Union> effect_evmdd;
+    if (!conditional_effects.empty()) {
+        effect_evmdd =
+            generate_effect_evmdd(conditional_effects, domain, ordering);
+    }
 
     if (arithmetic_expression.empty() && conditional_effects.empty()) {
         std::cerr << "User error: Both types of expressions are empty." << endl;
