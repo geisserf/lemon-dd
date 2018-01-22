@@ -7,6 +7,23 @@
 #include <iostream>
 #include <string>
 
+SCENARIO("Testing Polynomial Input as prefix and infix string", "[poly]") {
+    GIVEN("An Infix Expression") {
+        std::string input = "(a+b)";
+        Polynomial p(input);
+        THEN("Polynomial is a+b") {
+            REQUIRE("(+ a b)" == p.to_string());
+        }
+    }
+    GIVEN("A Prefix Expression") {
+        std::string input = "+ a b";
+        Polynomial p(input);
+        THEN("Polynomial is a+b") {
+            REQUIRE("(+ a b)" == p.to_string());
+        }
+    }
+}
+
 SCENARIO("Testing Polynomial Interface Class", "[poly]") {
     GIVEN("The Expression (+ 1 2 (* 0 x y) (* 1 y 2) (+ 0 x))") {
         std::string input = "(+ 1 2 (* 0 x y) (* 1 y 2) (+ 0 x))";

@@ -7,9 +7,23 @@
 
 #include <string>
 
+using std::cout;
+using std::endl;
+
 Polynomial::Polynomial(std::string const &input) {
-    InfixParser parser;
-    expression = parser.parse(input);
+    try {
+        InfixParser parser;
+        expression = parser.parse(input);
+    } catch (std::exception const &infix_exception) {
+        Parser prefix_parser;
+        try {
+            expression = prefix_parser.parse(input);
+        } catch (std::exception const &prefix_exception) {
+            cout << "Parser error: " << endl;
+            cout << "Infix parser error: " << infix_exception.what() << endl;
+            cout << "Prefix parser error: " << prefix_exception.what() << endl;
+        }
+    }
 }
 
 Polynomial::Polynomial(Expression const &e) {
