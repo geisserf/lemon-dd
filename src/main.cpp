@@ -5,6 +5,7 @@
 #include "polynomial.h"
 #include "utils/string_utils.h"
 
+#include <chrono>
 #include <fstream>
 #include <iostream>
 #include <iterator>
@@ -90,10 +91,19 @@ int main() {
     string arithmetic_expression;
     getline(cin, arithmetic_expression);
 
+    std::chrono::time_point<std::chrono::system_clock> start, end;
     Evmdd<double> cost_evmdd;
     if (!arithmetic_expression.empty()) {
+        cout << "Generating EVMDD for arithmetic function "
+             << arithmetic_expression << endl;
+        start = std::chrono::system_clock::now();
         Polynomial p = Polynomial(arithmetic_expression);
         cost_evmdd = p.create_evmdd<double>(domain, ordering);
+        end = std::chrono::system_clock::now();
+        int elapsed_seconds =
+            std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
+                .count();
+        cout << "Finished after " << elapsed_seconds << "ms." << endl;
     }
 
     cout << "Enter conditional effects. Press return once finished. For more "
@@ -108,8 +118,12 @@ int main() {
         }
         conditional_effects.push_back(conditional_effect);
     }
-    Evmdd<Facts, Union> effect_evmdd =
-        generate_effect_evmdd(conditional_effects, domain, ordering);
+
+    Evmdd<Facts, Union> effect_evmdd;
+    if (!conditional_effects.empty()) {
+        effect_evmdd =
+            generate_effect_evmdd(conditional_effects, domain, ordering);
+    }
 
     if (arithmetic_expression.empty() && conditional_effects.empty()) {
         std::cerr << "User error: Both types of expressions are empty." << endl;
@@ -122,12 +136,12 @@ int main() {
     std::ofstream dot_stream(filename);
 
     if (!cost_evmdd.exists()) {
-        cout << "Writing conditional effect EVMDD." << endl;
+        cout << "Writing conditional effect EVMDD to " << filename << endl;
         create_dot(dot_stream, effect_evmdd);
         return 0;
     }
     if (!effect_evmdd.exists()) {
-        cout << "Writing arithmetic expression EVMDD." << endl;
+        cout << "Writing arithmetic expression EVMDD to " << filename << endl;
         create_dot(dot_stream, cost_evmdd);
         return 0;
     }
@@ -140,101 +154,3 @@ int main() {
     cout << "Both EVMDD types requested: Writing product EVMDD." << endl;
     create_dot(dot_stream, product_evmdd);
 }
-
-// int main(int argc, char *argv[]) {
-//    cxxopts::Options options("Numeric Catamorph",
-//                             "Creates evmdds from numeric expressions, "
-//                             "conditional effects, and combinations therof");
-//
-//    options.add_options()("t,type",
-//                          "Type of Evmdd (cst: costfunction, ce: conditional "
-//                          "effects in ENF, c:combined)",
-//                          cxxopts::value<std::string>())(
-//        "e,expression",
-//        "The expression[s] of the evmdd add -e twice for 2 expressions. "
-//        "conditional effects require the form (a->v)&(c->d)...",
-//        cxxopts::value<std::vector<std::string>>())(
-//        "d,domain",
-//        "Domains and Ordering of the variables Ordering is reverse of domain "
-//        "ordering",
-//        cxxopts::value<std::string>())("f,filename", "dot output filename",
-//                                       cxxopts::value<std::string>());
-//
-//    options.parse(argc, argv);
-//
-//    std::string type_;
-//    std::vector<std::string> expressions;
-//    std::string domain_str;
-//    std::string filename;
-//
-//    if (options.count("f")) {
-//        filename = options["f"].as<std::string>();
-//    } else {
-//        std::cout << options.help() << std::endl;
-//        return -1;
-//    }
-//
-//    if (options.count("e")) {
-//        expressions = options["e"].as<std::vector<std::string>>();
-//    } else {
-//        std::cout << options.help() << std::endl;
-//        return -1;
-//    }
-//
-//    if (options.count("t")) {
-//        type_ = options["t"].as<std::string>();
-//    } else {
-//        std::cout << options.help() << std::endl;
-//        return -1;
-//    }
-//
-//    if (type_ == "c" && expressions.size() != 2) {
-//        std::cout << options.help() << std::endl;
-//        std::cout << "combined evmdd requires 2 expressions: first conditional
-//        "
-//                     "effects,second cost function"
-//                  << std::endl;
-//        return -1;
-//    }
-//
-//    if (options.count("d")) {
-//        domain_str = options["d"].as<std::string>();
-//    } else {
-//        std::cout << options.help() << std::endl;
-//        return -1;
-//    }
-//
-//    domain_ordering d_o = parse_domain(domain_str);
-//    std::string dot_file = filename + ".dot";
-//    std::ofstream dot_stream(dot_file);
-//    if (type_ == "ce") {
-//        EffectParser parser;
-//        std::vector<ConditionalEffect> effects = parser.parse(expressions[0]);
-//        auto evmdd = ConditionalEffects::create_evmdd(effects, d_o.domains,
-//                                                      d_o.ordering);
-//        create_dot(dot_stream, evmdd, d_o.ordering);
-//    } else if (type_ == "cst") {
-//        Polynomial p = Polynomial(expressions[0]);
-//        Evmdd<double> evmdd = p.create_evmdd<double>(d_o.domains,
-//        d_o.ordering);
-//        create_dot(dot_stream, evmdd, d_o.ordering);
-//    } else if (type_ == "c") {
-//        EffectParser parser;
-//        std::vector<ConditionalEffect> effects = parser.parse(expressions[0]);
-//        auto effect_evmdd = ConditionalEffects::create_evmdd(
-//            effects, d_o.domains, d_o.ordering);
-//        Polynomial p = Polynomial(expressions[1]);
-//        Evmdd<double> cost_evmdd =
-//            p.create_evmdd<double>(d_o.domains, d_o.ordering);
-//        auto &factory = AbstractProductFactory<
-//            Facts, double, Union,
-//            std::plus<double>>::get_factory(d_o.ordering);
-//
-//        auto product_evmdd = factory.product(effect_evmdd, cost_evmdd);
-//        create_dot(dot_stream, product_evmdd, d_o.ordering);
-//    } else {
-//        std::cout << "unknown type" << std::endl;
-//    }
-//
-//    return 0;
-//}

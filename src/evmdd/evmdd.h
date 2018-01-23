@@ -206,6 +206,7 @@ public:
         }
 
         std::vector<Evmdd<M, F>> new_children;
+        new_children.reserve(left_sub_evmdds.size());
         for (size_t i = 0; i < left_sub_evmdds.size(); ++i) {
             new_children.push_back(
                 apply(left_sub_evmdds[i], right_sub_evmdds[i], oper));
@@ -257,6 +258,7 @@ private:
     std::vector<Evmdd<L, G>> sub_evmdds(Evmdd<L, G> const &f,
                                         Evmdd<R, H> const &g) {
         std::vector<Evmdd<L, G>> result;
+        result.reserve(g.get_source_node()->get_children().size());
         if (f.get_source_node()->get_level() >=
             g.get_source_node()->get_level()) {
             for (auto const &edge : f.get_source_node()->get_children()) {
@@ -290,6 +292,7 @@ private:
             });
         Monoid<M, F> min_weight{min_weight_value};
         std::vector<Edge<Monoid<M, F>>> edges;
+        edges.reserve(children.size());
         for (Evmdd<M, F> const &child : children) {
             edges.emplace_back(child.get_input() - min_weight,
                                child.get_source_node());
