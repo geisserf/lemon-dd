@@ -133,6 +133,7 @@ int main() {
     cout << "Enter name of result file." << endl;
     string filename;
     getline(cin, filename);
+    filename += ".dot";
     std::ofstream dot_stream(filename);
 
     if (!cost_evmdd.exists()) {
