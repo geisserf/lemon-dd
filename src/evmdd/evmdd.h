@@ -200,7 +200,6 @@ public:
             EvmddCache<Evmdd<M, F>, Evmdd<L, G>, Evmdd<R, H>, OP>::end()) {
             return it->second;
         }
-        // TODO implement caching for apply
         std::vector<Evmdd<L, G>> left_sub_evmdds = sub_evmdds(left, right);
         std::vector<Evmdd<R, H>> right_sub_evmdds = sub_evmdds(right, left);
         assert(left_sub_evmdds.size() > 0);
