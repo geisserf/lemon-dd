@@ -1,6 +1,7 @@
 #ifndef NUMERIC_CATAMORPH_EVMDD_H
 #define NUMERIC_CATAMORPH_EVMDD_H
 
+#include "evmdd_cache.h"
 #include "monoid.h"
 #include "node.h"
 #include "operations/logic_not.h"
@@ -134,12 +135,18 @@ public:
     int depth() const {
         return source_node->get_depth();
     }
-    
+
     // Check if the EVMDD does exist (e.g. default constructor EVMDD is invalid)
     bool exists() const {
         return static_cast<bool>(source_node);
     }
 
+    friend bool operator<(const Evmdd<M, F> &l, const Evmdd<M, F> &r) {
+        if (l.source_node == r.source_node) {
+            return l.input < r.input;
+        }
+        return l.source_node < r.source_node;
+    }
 };
 
 template <typename M, typename F>
@@ -186,6 +193,13 @@ public:
         if (terminal_case(left, right, oper)) {
             return make_terminal_evmdd(left, right, oper);
         }
+        // Check if computation is cached
+        auto it = EvmddCache<Evmdd<M, F>, Evmdd<L, G>, Evmdd<R, H>, OP>::find(
+            left, right);
+        if (it !=
+            EvmddCache<Evmdd<M, F>, Evmdd<L, G>, Evmdd<R, H>, OP>::end()) {
+            return it->second;
+        }
         // TODO implement caching for apply
         std::vector<Evmdd<L, G>> left_sub_evmdds = sub_evmdds(left, right);
         std::vector<Evmdd<R, H>> right_sub_evmdds = sub_evmdds(right, left);
@@ -210,7 +224,11 @@ public:
             new_children.push_back(
                 apply(left_sub_evmdds[i], right_sub_evmdds[i], oper));
         }
-        return create_evmdd(root_level, var, new_children);
+        Evmdd<M, F> result = create_evmdd(root_level, var, new_children);
+        // Cache result
+        EvmddCache<Evmdd<M, F>, Evmdd<L, G>, Evmdd<R, H>, OP>::add(left, right,
+                                                                   result);
+        return result;
     }
 
     // Product of two evmdds. Only defined for ProductMonoids.
