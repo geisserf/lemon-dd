@@ -3,9 +3,15 @@
 
 #include <map>
 
+// Currently we use a standard map for caching. If caching becomes a major
+// bottleneck we may want to switch to a unordered_map and implement our own
+// hash function for EVMDDs.
 template <typename E, typename L, typename R>
 using CacheMap = std::map<std::pair<L, R>, E>;
 
+// Cache used for apply-operations of type L OP R -> E, where L,R,E are EVMDDs
+// and OP is a function mapping from carrier types of L and R to the carrier
+// type of E.
 template <typename E, typename L, typename R, typename OP>
 class EvmddCache {
 public:
