@@ -7,7 +7,6 @@
 #include <map>
 #include <memory>
 #include <ostream>
-#include <tuple>
 #include <unordered_set>
 #include <utility>
 #include <vector>
@@ -34,6 +33,9 @@ public:
 
     static typename EvalCacheMap<EvaluationFunction, Res, T>::iterator end() {
         return cache.end();
+    }
+    static void clear() {
+        cache.clear();
     }
 
 private:
