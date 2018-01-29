@@ -93,7 +93,7 @@ public:
     Res evaluate_partial(PartialState const &state,
                          EvaluationFunction func) const {
         Res source_result = source_node->template evaluate<Res>(state, func);
-        EvalCache<EvaluationFunction, Res, M>::clear();
+        EvalCache<EvaluationFunction, Res, Monoid<M, F>>::clear();
         return source_result + input;
     }
 
