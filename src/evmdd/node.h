@@ -7,17 +7,52 @@
 #include <map>
 #include <memory>
 #include <ostream>
+#include <tuple>
 #include <unordered_set>
 #include <utility>
 #include <vector>
 
+using PartialState = std::map<std::string, std::vector<int>>;
 template <typename T>
 class Node;
 
 template <typename T>
-using Edge = std::pair<T, Node_ptr<T>>;
+struct NodeCompare {
+    bool operator()(const Node<T> &lhs, const Node<T> &rhs) const {
+        return lhs.get_id() < rhs.get_id();
+    }
+};
 
-using PartialState = std::map<std::string, std::vector<int>>;
+template <typename EvaluationFunction, typename Res, typename T>
+using EvalCacheMap = std::map<Node<T>, Res, NodeCompare<T>>;
+
+template <typename EvaluationFunction, typename Res, typename T>
+class EvalCache {
+public:
+    static typename EvalCacheMap<EvaluationFunction, Res, T>::iterator find(
+        Node<T> const &node) {
+        return cache.find(node);
+    }
+
+    static void add(Node<T> const &node, Res const &res) {
+        cache[node] = res;
+    }
+
+    static typename EvalCacheMap<EvaluationFunction, Res, T>::iterator end() {
+        return cache.end();
+    }
+
+private:
+    static EvalCacheMap<EvaluationFunction, Res, T> cache;
+};
+
+template <typename EvaluationFunction, typename Res, typename T>
+EvalCacheMap<EvaluationFunction, Res, T>
+    EvalCache<EvaluationFunction, Res, T>::cache =
+        EvalCacheMap<EvaluationFunction, Res, T>();
+
+template <typename T>
+using Edge = std::pair<T, Node_ptr<T>>;
 
 template <typename T>
 class NodeFactory;
@@ -93,6 +128,10 @@ public:
         if (is_terminal()) {
             return Res();
         }
+        auto found = EvalCache<EvaluationFunction, Res, T>::find(*this);
+        if (found != EvalCache<EvaluationFunction, Res, T>::end()) {
+            return found->second;
+        }
 
         std::vector<Res> child_results;
         auto state_it = state.find(variable);
@@ -116,7 +155,9 @@ public:
                 child_results.push_back(child_res);
             }
         }
-        return func(child_results);
+        auto res = func(child_results);
+        EvalCache<EvaluationFunction, Res, T>::add(*this, res);
+        return res;
     }
 };
 
