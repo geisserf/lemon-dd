@@ -16,14 +16,6 @@ using PartialState = std::map<std::string, std::vector<int>>;
 template <typename T>
 class Node;
 
-// template <typename T>
-// struct NodeCompare {
-//    bool operator()(const std::pair<Node<T>, PartialState> &lhs,
-//                    const std::pair<Node<T>, PartialState> &rhs) const {
-//        return lhs.first.get_id() < rhs.first.get_id();
-//    }
-//};
-
 template <typename EvaluationFunction, typename Res, typename T>
 using EvalCacheMap = std::map<std::pair<Node<T>, PartialState>, Res>;
 
