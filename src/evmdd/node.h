@@ -16,26 +16,28 @@ using PartialState = std::map<std::string, std::vector<int>>;
 template <typename T>
 class Node;
 
-template <typename T>
-struct NodeCompare {
-    bool operator()(const Node<T> &lhs, const Node<T> &rhs) const {
-        return lhs.get_id() < rhs.get_id();
-    }
-};
+// template <typename T>
+// struct NodeCompare {
+//    bool operator()(const std::pair<Node<T>, PartialState> &lhs,
+//                    const std::pair<Node<T>, PartialState> &rhs) const {
+//        return lhs.first.get_id() < rhs.first.get_id();
+//    }
+//};
 
 template <typename EvaluationFunction, typename Res, typename T>
-using EvalCacheMap = std::map<Node<T>, Res, NodeCompare<T>>;
+using EvalCacheMap = std::map<std::pair<Node<T>, PartialState>, Res>;
 
 template <typename EvaluationFunction, typename Res, typename T>
 class EvalCache {
 public:
     static typename EvalCacheMap<EvaluationFunction, Res, T>::iterator find(
-        Node<T> const &node) {
-        return cache.find(node);
+        PartialState const &state, Node<T> const &node) {
+        return cache.find(std::pair<Node<T>, PartialState>(node, state));
     }
 
-    static void add(Node<T> const &node, Res const &res) {
-        cache[node] = res;
+    static void add(Node<T> const &node, Res const &res,
+                    PartialState const &state) {
+        cache[std::pair<Node<T>, PartialState>(node, state)] = res;
     }
 
     static typename EvalCacheMap<EvaluationFunction, Res, T>::iterator end() {
@@ -128,7 +130,7 @@ public:
         if (is_terminal()) {
             return Res();
         }
-        auto found = EvalCache<EvaluationFunction, Res, T>::find(*this);
+        auto found = EvalCache<EvaluationFunction, Res, T>::find(state, *this);
         if (found != EvalCache<EvaluationFunction, Res, T>::end()) {
             return found->second;
         }
@@ -156,8 +158,12 @@ public:
             }
         }
         auto res = func(child_results);
-        EvalCache<EvaluationFunction, Res, T>::add(*this, res);
+        EvalCache<EvaluationFunction, Res, T>::add(*this, res, state);
         return res;
+    }
+
+    friend bool operator<(const Node<T> &l, const Node<T> &r) {
+        return l.get_id() < r.get_id();
     }
 };
 

@@ -170,6 +170,7 @@ SCENARIO("Testing concrete evaluation for numeric EVMDDs over float",
         auto evmdd = p.create_evmdd<double>(d, o);
         THEN("get_min should be 0 and get_max should be 5") {
             REQUIRE(evmdd.get_min() == 0);
+            REQUIRE(evmdd.get_max() == 169);
         }
     }
 }
