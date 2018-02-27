@@ -93,6 +93,9 @@ public:
     Res evaluate_partial(PartialState const &state,
                          EvaluationFunction func) const {
         Res source_result = source_node->template evaluate<Res>(state, func);
+        // TODO: Instead of clearing the whole cache, we could think about
+        // storing the source node result, since this may more likely be used
+        // for future requests.
         EvalCache<EvaluationFunction, Res, Monoid<M, F>>::clear();
         return source_result + input;
     }
