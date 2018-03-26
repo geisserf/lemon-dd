@@ -15,7 +15,7 @@ using std::vector;
 SCENARIO(
     "Testing construction and evaluation for product of numeric and "
     "conditional effect EVMDD",
-    "[product_evmdd]") {
+    "[evmdd][construction][evaluation][numeric][conditional_effect]") {
     GIVEN("CE: x=x+1, Cost x+1, Domain x=0..4") {
         Domains d = {{"x", 5}};
         Ordering o = {{"x", 1}};

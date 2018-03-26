@@ -6,7 +6,8 @@
 
 using std::endl;
 
-SCENARIO("Testing conditional effect EVMDDs", "[effect_evmdd]") {
+SCENARIO("Testing EVMDDs for conditional effect",
+         "[evmdd][conditional_effect]") {
     GIVEN("Evmdd for conditional effect (a -> b)") {
         EffectParser parser;
         auto cond_effects = parser.parse("(a->b)");
