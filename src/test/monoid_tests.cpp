@@ -7,22 +7,22 @@ using std::vector;
 using FactMonoid = Monoid<Facts, Union>;
 using IntFactMonoid = ProductMonoid<int, Facts, std::plus<int>, Union>;
 
-TEST_CASE("Operator+ of monoids", "[monoids]") {
-    SECTION("Operator+ for number monoids") {
+SCENARIO("Testing Monoids on operator +", "[monoid][add]") {
+    GIVEN("Operator+ for number monoids") {
         Monoid<int> one(1);
         Monoid<int> two(2);
         auto three = one + two;
         REQUIRE(three.get_value() == 3);
     }
 
-    SECTION("Operator+ for fact monoids") {
+    GIVEN("Operator+ for fact monoids") {
         FactMonoid monoid_a(Facts{{"a", 1}});
         FactMonoid monoid_b(Facts{{"b", 2}});
         FactMonoid addition = monoid_a + monoid_b + monoid_a;
         REQUIRE(addition.to_string() == "{a=1 b=2}");
     }
 
-    SECTION("Operator+ for product monoids") {
+    GIVEN("Operator+ for product monoids") {
         IntFactMonoid first{1, Facts{{"a", 1}}};
         IntFactMonoid second{2, Facts{{"b", 2}}};
         auto addition = first + second;
@@ -30,22 +30,22 @@ TEST_CASE("Operator+ of monoids", "[monoids]") {
     }
 }
 
-TEST_CASE("Operator- of monoids", "[monoids]") {
-    SECTION("Operator- for number monoids") {
+SCENARIO("Testing Monoids on operator -", "[monoid][subtract]") {
+    GIVEN("Operator- for number monoids") {
         Monoid<int> one(1);
         Monoid<int> two(2);
         auto diff = two - one;
         REQUIRE(diff.get_value() == 1);
     }
 
-    SECTION("Operator- for fact monoids") {
-        FactMonoid monoid_ab(Facts{{"a", 1},{"b",2}});
+    GIVEN("Operator- for fact monoids") {
+        FactMonoid monoid_ab(Facts{{"a", 1}, {"b", 2}});
         FactMonoid monoid_b(Facts{{"b", 2}});
         FactMonoid diff = monoid_ab - monoid_b;
         REQUIRE(diff.to_string() == "{a=1}");
     }
 
-    SECTION("Operator- for product monoids") {
+    GIVEN("Operator- for product monoids") {
         IntFactMonoid first{1, Facts{{"a", 1}}};
         IntFactMonoid second{2, Facts{{"b", 2}}};
         auto diff = second - first;
@@ -53,27 +53,27 @@ TEST_CASE("Operator- of monoids", "[monoids]") {
     }
 }
 
-TEST_CASE("Neutral elements for monoids", "[monoids]") {
-    SECTION("Neutral element for numbers is zero") {
+SCENARIO("Testing Monoids on neutral elements", "[monoid][neutral]") {
+    GIVEN("Neutral element for numbers is zero") {
         REQUIRE(Monoid<int>::neutral_element() == 0);
         REQUIRE(Monoid<double>::neutral_element() == 0);
         REQUIRE(Monoid<float>::neutral_element() == 0);
     }
 
-    SECTION("Neutral element for variable assignments is the empty set") {
+    GIVEN("Neutral element for variable assignments is the empty set") {
         auto neutral = FactMonoid::neutral_element();
         REQUIRE(neutral.empty());
     }
 
-    SECTION("Neutral element for product of numbers and variable assignments") {
+    GIVEN("Neutral element for product of numbers and variable assignments") {
         auto neutral = IntFactMonoid::neutral_element();
         REQUIRE(neutral.first == 0);
         REQUIRE(neutral.second.empty());
     }
 }
 
-TEST_CASE("String printing of monoids", "[monoids]") {
-    SECTION("String printing for number monoids") {
+SCENARIO("Testing Monoids for string printing", "[monoid][string_print]") {
+    GIVEN("String printing for number monoids") {
         Monoid<int> i(1);
         REQUIRE(i.to_string() == "1");
 
@@ -84,27 +84,28 @@ TEST_CASE("String printing of monoids", "[monoids]") {
         REQUIRE(f.to_string() == "2.5");
     }
 
-    SECTION("String printing for variable assignment monoids") {
+    GIVEN("String printing for variable assignment monoids") {
         Facts facts{{"a", 1}, {"b", 2}, {"c", 3}};
         FactMonoid fact_monoid(facts);
         REQUIRE(fact_monoid.to_string() == "{a=1 b=2 c=3}");
     }
 
-    SECTION("String printing for product monoid") {
+    GIVEN("String printing for product monoid") {
         Facts facts{{"a", 5}};
         IntFactMonoid product{1, facts};
         REQUIRE(product.to_string() == "1,{a=5}");
     }
 }
 
-TEST_CASE("Greatest lower bound of monoids", "[monoids]") {
-    SECTION("Greatest lower bound for number monoids") {
+SCENARIO("Testing Monoids on Greatest Lower Bound",
+         "[monoid][greatest_lower_bound]") {
+    GIVEN("Greatest lower bound for number monoids") {
         REQUIRE(Monoid<int>::greatest_lower_bound(1, 3) == 1);
         REQUIRE(Monoid<float>::greatest_lower_bound(1.5, 5) == 1.5);
         REQUIRE(Monoid<double>::greatest_lower_bound(1.5, 2.2) == 1.5);
     }
 
-    SECTION("Greatest lower bound for variable assignment monoids") {
+    GIVEN("Greatest lower bound for variable assignment monoids") {
         Facts abc{{"a", 1}, {"b", 2}, {"c", 3}};
         Facts ab{{"a", 1}, {"b", 2}};
         Facts ac{{"a", 1}, {"c", 3}};
@@ -120,7 +121,7 @@ TEST_CASE("Greatest lower bound of monoids", "[monoids]") {
                 FactMonoid::neutral_element());
     }
 
-    SECTION("Greatest lower bound for product monoid") {
+    GIVEN("Greatest lower bound for product monoid") {
         Fact a{"a", 1};
         Fact b{"b", 1};
         Fact c{"c", 1};

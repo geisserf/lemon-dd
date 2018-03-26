@@ -24,34 +24,6 @@ SCENARIO("Testing the lexer on empty expression", "[lexer]") {
             REQUIRE(token.type == Type::END);
         }
     }
-    /***************************************************
-     *  TODO : Implement errors for cases below @etavas
-     * *************************************************/
-    WHEN("We parse NaN") {
-        std::ostringstream nan_value;
-        nan_value << NAN;
-        std::string nan_as_string = nan_value.str();
-        Lexer lexer(nan_as_string);
-        // We should get an error, but we don't.
-        // Instead, we get token.value = "nan"
-        THEN("We should get an error") {
-            Token token = lexer.getNextToken();
-            REQUIRE(token.type == Type::VAR); // works
-        }
-    }
-    WHEN("We parse INFINITY") {
-        std::ostringstream inf_value;
-        inf_value << INFINITY;
-        std::string inf_as_string = inf_value.str();
-        Lexer lexer(inf_as_string);
-        // We should get an error, but we don't.
-        // Instead, we get token.value = "inf"
-        THEN("We should get an error") {
-            Token token = lexer.getNextToken();
-            REQUIRE(token.value == "inf");
-            REQUIRE(token.type == Type::VAR); // works
-        }
-    }
 }
 
 SCENARIO("Testing the lexer on single expressions", "[lexer]") {
