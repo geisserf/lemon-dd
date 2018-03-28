@@ -141,7 +141,36 @@ SCENARIO("Testing concrete evaluation for numeric EVMDDs over float",
         }
         THEN("get_min should be 0 and get_max should be 5") {
             REQUIRE(evmdd.get_min() == 2);
-            REQUIRE(evmdd.get_max() == 4*9*9+3*4+2);
+            REQUIRE(evmdd.get_max() == 4 * 9 * 9 + 3 * 4 + 2);
+        }
+    }
+
+    GIVEN("A large expression") {
+        Polynomial p = Polynomial(
+            "[var32==3]*9+[var32==0]*9+([var33==3]*4+[var33==0]*4)+([var34==3]*"
+            "5+[var34==0]*5)+([var35==2]*8+[var35==0]*8)+([var36==2]*16+[var36="
+            "=0]*16)+([var37==1]*10+[var37==0]*10)+([var38==1]*12+[var38==0]*"
+            "12)+([var39==1]*10+[var39==0]*10)+([var40==1]*8+[var40==0]*8)+(["
+            "var41==3]*14+[var41==0]*14)+([var42==3]*7+[var42==0]*7)+([var43=="
+            "3]*9+[var43==0]*9)+([var44==3]*10+[var44==0]*10)+([var45==3]*7+["
+            "var45==0]*7)+([var46==3]*11+[var46==0]*11)+([var47==1]*9+[var47=="
+            "0]*9)+([var48==3]*6+[var48==0]*6)+([var49==1]*5+[var49==0]*5)+(["
+            "var50==1]*9+[var50==0]*9)");
+        Domains d = {{"var32", 4}, {"var33", 4}, {"var34", 4}, {"var35", 3},
+                     {"var36", 3}, {"var37", 3}, {"var38", 3}, {"var39", 3},
+                     {"var40", 3}, {"var41", 4}, {"var42", 4}, {"var43", 4},
+                     {"var44", 4}, {"var45", 4}, {"var46", 4}, {"var47", 3},
+                     {"var48", 4}, {"var49", 3}, {"var50", 3}};
+        Ordering o = {
+            {"var32", 1},  {"var33", 2},  {"var34", 3},  {"var35", 4},
+            {"var36", 5},  {"var37", 6},  {"var38", 7},  {"var39", 8},
+            {"var40", 9},  {"var41", 10}, {"var42", 11}, {"var43", 12},
+            {"var44", 13}, {"var45", 14}, {"var46", 15}, {"var47", 16},
+            {"var48", 17}, {"var49", 18}, {"var50", 19}};
+        auto evmdd = p.create_evmdd<double>(d, o);
+        THEN("get_min should be 0 and get_max should be 5") {
+            REQUIRE(evmdd.get_min() == 0);
+            REQUIRE(evmdd.get_max() == 169);
         }
     }
 }
