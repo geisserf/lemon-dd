@@ -23,6 +23,7 @@ public:
         process_nodes(out, evmdd.get_source_node());
         write_alignment(out);
         print_legend(out);
+        // print_evmdd_formula(out, evmdd);
         write_end(out);
         reset_internals();
     }
@@ -42,14 +43,39 @@ private:
         out << "}";
     }
 
+    // TODO: For more informative output, implement the proper function
+    //       (?) How to get the evmdd formula (from evmdd object?) ?
+    //       (@etavas)
+    //
+    // Prints evmdd formula
+    /*
+    void print_evmdd_formula(std::ostream &out, Evmdd<M, F> const &evmdd) {
+        out << "subgraph cluster_02 {";
+        out << "label = \"EVMDD formula\";";
+        out << "key [label=<<table border=\"0\" cellpadding=\"2\" "
+               "cellspacing=\"0\" cellborder=\"0\">";
+        out << "  <tr><td align=\"right\" port=\"i1\">Arithmetic "
+               "formula:</td><td>"
+            << evmdd.get_input().to_string() << "</td></tr>";
+        out << "  <tr><td align=\"right\" port=\"i2\">Conditional "
+               "effects:</td><td>"
+            << evmdd.get_input().to_string() << "</td></tr>";
+        out << "  </table>>]";
+        out << "}";
+    }*/
+
     // Prints start of dot file and the first edge connecting to the entry node
     void write_header(std::ostream &out, Monoid<M, F> const &input_value,
                       Node_ptr<Monoid<M, F>> entry_node) const {
         out << "digraph G {" << std::endl;
         out << "dummy [style=invis];" << std::endl;
-        out << "dummy -> \"" << entry_node->get_id() << "\"";
-        out << "[arrowhead=none, label=\"" << input_value.to_string() << "\"];"
-            << std::endl;
+        out << "dummy -> \"dummy_weighted\" [arrowhead=none];";
+        // Generating weighted node
+        out << "\"dummy_weighted\" [shape=box, label=\""
+            << input_value.to_string() << "\"];";
+        // Weighted node generated
+        out << "\"dummy_weighted\" -> \"" << entry_node->get_id()
+            << "\" [dir=forward];" << std::endl;
     }
 
     // Prints successor nodes and edges starting from entry_node
@@ -82,10 +108,16 @@ private:
     void print_edge(std::ostream &out, Node_ptr<Monoid<M, F>> parent,
                     Monoid<M, F> weight, Node_ptr<Monoid<M, F>> child,
                     int domain) {
-        out << "\"" << parent->get_id() << "\" -> \"" << child->get_id()
-            << "\"";
-        out << " [arrowhead=none,label=\"" << domain << " : "
-            << weight.to_string() << "\"];" << std::endl;
+        out << "\"" << parent->get_id() << "\" -> \"" << parent->get_id()
+            << domain << child->get_id() << "\""
+            << " [arrowhead=none, label=\"" << domain << "\"];";
+        // Generating weighted node
+        out << "\"" << parent->get_id() << domain << child->get_id() << "\""
+            << "[shape=box, label=\"" << weight.to_string() << "\"];";
+        // Weighted node generated
+        out << "\"" << parent->get_id() << domain << child->get_id()
+            << "\" -> \"" << child->get_id() << "\" [dir=forward];"
+            << std::endl;
         edge_count++;
     }
 
@@ -93,7 +125,7 @@ private:
     void write_alignment(std::ostream &out) const {
         for (auto const &kv_pair : same_level_nodes) {
             out << "{rank=same;";
-            for (Node_ptr<Monoid<M,F>> node : kv_pair.second) {
+            for (Node_ptr<Monoid<M, F>> node : kv_pair.second) {
                 out << "\"" << node->get_id() << "\";";
             }
             out << "}" << std::endl;
@@ -110,9 +142,9 @@ private:
     }
 
     // Store which nodes lie on the same level for prettier visualization
-    std::map<int, std::vector<Node_ptr<Monoid<M,F>>>> same_level_nodes;
+    std::map<int, std::vector<Node_ptr<Monoid<M, F>>>> same_level_nodes;
     // Nodes which were already printed
-    std::unordered_set<Node_ptr<Monoid<M,F>>> printed_nodes;
+    std::unordered_set<Node_ptr<Monoid<M, F>>> printed_nodes;
     int node_count;
     int edge_count;
 };
