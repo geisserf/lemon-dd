@@ -14,10 +14,10 @@
 #include <string>
 #include <vector>
 
+using std::cin;
 using std::cout;
 using std::endl;
 using std::string;
-using std::cin;
 using std::vector;
 
 using Ordering = std::map<std::string, int>;
@@ -47,9 +47,10 @@ Ordering parse_ordering(string const &ordering) {
 }
 
 template <typename M, typename F>
-void create_dot(std::ostream &output_stream, Evmdd<M, F> const &evmdd) {
+void create_dot(std::ostream &output_stream, Evmdd<M, F> const &evmdd,
+                string arithmetic) {
     DotPrinter<M, F> printer;
-    printer.to_dot(output_stream, evmdd);
+    printer.to_dot(output_stream, evmdd, arithmetic);
 }
 
 Evmdd<Facts, Union> generate_effect_evmdd(vector<string> const &effects,
@@ -138,12 +139,12 @@ int main() {
 
     if (!cost_evmdd.exists()) {
         cout << "Writing conditional effect EVMDD to " << filename << endl;
-        create_dot(dot_stream, effect_evmdd);
+        create_dot(dot_stream, effect_evmdd, arithmetic_expression);
         return 0;
     }
     if (!effect_evmdd.exists()) {
         cout << "Writing arithmetic expression EVMDD to " << filename << endl;
-        create_dot(dot_stream, cost_evmdd);
+        create_dot(dot_stream, cost_evmdd, arithmetic_expression);
         return 0;
     }
     // Both EVMDDs were requested -> generate product EVMDD
@@ -153,5 +154,5 @@ int main() {
 
     auto product_evmdd = factory.product(effect_evmdd, cost_evmdd);
     cout << "Both EVMDD types requested: Writing product EVMDD." << endl;
-    create_dot(dot_stream, product_evmdd);
+    create_dot(dot_stream, product_evmdd, arithmetic_expression);
 }

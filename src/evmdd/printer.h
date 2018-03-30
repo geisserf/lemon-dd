@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <map>
+#include <string>
 #include <unordered_set>
 #include <vector>
 
@@ -16,14 +17,15 @@ class DotPrinter {
 public:
     DotPrinter() = default;
     // prints the .dot representation of an evmdd
-    void to_dot(std::ostream &out, Evmdd<M, F> const &evmdd) {
+    void to_dot(std::ostream &out, Evmdd<M, F> const &evmdd,
+                std::string arithmetic) {
         node_count = 0;
         edge_count = 0;
-        write_header(out, evmdd.get_input(), evmdd.get_source_node());
+        write_header(out, evmdd.get_input(), evmdd.get_source_node(),
+                     arithmetic);
         process_nodes(out, evmdd.get_source_node());
         write_alignment(out);
         print_legend(out);
-        // print_evmdd_formula(out, evmdd);
         write_end(out);
         reset_internals();
     }
@@ -35,40 +37,24 @@ private:
         out << "label = \"Legend\";";
         out << "key [label=<<table border=\"0\" cellpadding=\"2\" "
                "cellspacing=\"0\" cellborder=\"0\">";
-        out << "  <tr><td align=\"right\" port=\"i1\">#Nodes:</td><td>"
+        out << "  <tr><td align=\"left\" port=\"i1\">#Nodes:</td><td>"
             << node_count << "</td></tr>";
-        out << "  <tr><td align=\"right\" port=\"i2\">#Edges:</td><td>"
+        out << "  <tr><td align=\"left\" port=\"i2\">#Edges:</td><td>"
             << edge_count << "</td></tr>";
         out << "  </table>>]";
         out << "}";
     }
 
-    // TODO: For more informative output, implement the proper function
-    //       (?) How to get the evmdd formula (from evmdd object?) ?
-    //       (@etavas)
-    //
-    // Prints evmdd formula
-    /*
-    void print_evmdd_formula(std::ostream &out, Evmdd<M, F> const &evmdd) {
-        out << "subgraph cluster_02 {";
-        out << "label = \"EVMDD formula\";";
-        out << "key [label=<<table border=\"0\" cellpadding=\"2\" "
-               "cellspacing=\"0\" cellborder=\"0\">";
-        out << "  <tr><td align=\"right\" port=\"i1\">Arithmetic "
-               "formula:</td><td>"
-            << evmdd.get_input().to_string() << "</td></tr>";
-        out << "  <tr><td align=\"right\" port=\"i2\">Conditional "
-               "effects:</td><td>"
-            << evmdd.get_input().to_string() << "</td></tr>";
-        out << "  </table>>]";
-        out << "}";
-    }*/
-
     // Prints start of dot file and the first edge connecting to the entry node
     void write_header(std::ostream &out, Monoid<M, F> const &input_value,
-                      Node_ptr<Monoid<M, F>> entry_node) const {
+                      Node_ptr<Monoid<M, F>> entry_node,
+                      std::string arithmetic) const {
         out << "digraph G {" << std::endl;
         out << "dummy [style=invis];" << std::endl;
+        out << "labelloc=\"t\";" << std::endl;
+        out << "label=<<table border=\"0\" cellborder=\"0\"><tr><td>"
+               "EVMDD fSor expression</td></tr><tr><td>"
+            << arithmetic << "</td></tr></table>>;" << std::endl;
         out << "dummy -> \"dummy_weighted\" [arrowhead=none];";
         // Generating weighted node
         out << "\"dummy_weighted\" [shape=box, label=\""
