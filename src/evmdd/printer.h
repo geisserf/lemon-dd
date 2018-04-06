@@ -18,11 +18,12 @@ public:
     DotPrinter() = default;
     // prints the .dot representation of an evmdd
     void to_dot(std::ostream &out, Evmdd<M, F> const &evmdd,
-                std::string arithmetic) {
+                std::string arithmetic,
+                std::vector<std::string> const &conditional) {
         node_count = 0;
         edge_count = 0;
         write_header(out, evmdd.get_input(), evmdd.get_source_node(),
-                     arithmetic);
+                     arithmetic, conditional);
         process_nodes(out, evmdd.get_source_node());
         write_alignment(out);
         print_legend(out);
@@ -47,14 +48,17 @@ private:
 
     // Prints start of dot file and the first edge connecting to the entry node
     void write_header(std::ostream &out, Monoid<M, F> const &input_value,
-                      Node_ptr<Monoid<M, F>> entry_node,
-                      std::string arithmetic) const {
+                      Node_ptr<Monoid<M, F>> entry_node, std::string arithmetic,
+                      std::vector<std::string> const &conditional) const {
         out << "digraph G {" << std::endl;
         out << "dummy [style=invis];" << std::endl;
         out << "labelloc=\"t\";" << std::endl;
-        out << "label=<<table border=\"0\" cellborder=\"0\"><tr><td>"
-               "EVMDD for expression</td></tr><tr><td>"
-            << arithmetic << "</td></tr></table>>;" << std::endl;
+        out << "label=<<table cellborder=\"0\"><tr><td><u>"
+               "EVMDD for expression</u></td></tr><tr><td>"
+            << arithmetic << "</td></tr>"
+            << "<tr><td><u>Conditional Effects:</u></td></tr>";
+        out << get_cond_effects(conditional) << "</table>>;"
+            << std::endl;
         out << "dummy -> \"dummy_weighted\" [arrowhead=none];";
         // Generating weighted node
         out << "\"dummy_weighted\" [shape=box, label=\""
@@ -62,6 +66,20 @@ private:
         // Weighted node generated
         out << "\"dummy_weighted\" -> \"" << entry_node->get_id()
             << "\" [dir=forward];" << std::endl;
+    }
+    // Returns conditional effects as string
+    std::string get_cond_effects(std::vector<std::string> const &conditional) const {
+        std::stringstream ss;
+        for (auto effect : conditional) {
+            ss << "<tr><td>" << effect << "</td></tr>";
+        }
+        std::string effects = ss.str();
+        // Replace > in string to prevent syntax error in html
+        for (std::string::size_type pos = 0; (pos = effects.find("->")) != std::string::npos;
+             pos += 4) {
+            effects.replace(pos, 2, "&rArr;");
+        }
+        return effects;
     }
 
     // Prints successor nodes and edges starting from entry_node
