@@ -219,6 +219,9 @@ SCENARIO("Testing numeric EVMDDs for construction on iverson based input",
         }
     }
 
+    // From this point, tests do not run correctly, because the source code
+    // is not edited accordingly yet. @etavas
+
     GIVEN("Term [!a] with domain 0,1,2") {
         Polynomial p = Polynomial("[!a]");
         Domains d = {{"a", 3}};
@@ -249,7 +252,7 @@ SCENARIO("Testing numeric EVMDDs for construction on iverson based input",
             }
         }
     }
-    // If shannon reduction is implemented, update below accordingly.
+    // TODO : If shannon reduction is implemented, update below accordingly.
     // (will have less nodes)
     // (@etavas)
     GIVEN("Term [[!a]&&b] with domain 0,1,2") {
