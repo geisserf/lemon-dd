@@ -42,15 +42,6 @@ private:
                 for (int i = 0; i < domain_size; ++i) {
                     domain.push_back(static_cast<M>(i));
                 }
-                // Domain size check for bool. operations
-                /*if (Factories::get_as_and(e) || Factories::get_as_or(e) ||
-                    Factories::get_as_not(e)) {
-                    if (domain.size() > 2) {
-                        cout << "-DOMAIN SIZE FOR BOOL LARGER THAN 2-" << endl;
-                        throw std::logic_error(
-                            "Domain size for bool. operations is > 2");
-                    }
-                }*/
                 return factory.make_var_evmdd(name, domain);
             }
             if (auto *o = Factories::get_as_add(e)) {
