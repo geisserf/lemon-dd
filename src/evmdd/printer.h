@@ -53,7 +53,7 @@ private:
         out << "dummy [style=invis];" << std::endl;
         out << "labelloc=\"t\";" << std::endl;
         out << "label=<<table border=\"0\" cellborder=\"0\"><tr><td>"
-               "EVMDD fSor expression</td></tr><tr><td>"
+               "EVMDD for expression</td></tr><tr><td>"
             << arithmetic << "</td></tr></table>>;" << std::endl;
         out << "dummy -> \"dummy_weighted\" [arrowhead=none];";
         // Generating weighted node
