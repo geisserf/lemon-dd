@@ -35,6 +35,7 @@ private:
     void print_legend(std::ostream &out) {
         out << "node [shape=plaintext]";
         out << "subgraph cluster_01 {";
+        out << "labelloc=\"t\";" << std::endl;
         out << "label = \"Legend\";";
         out << "key [label=<<table border=\"0\" cellpadding=\"2\" "
                "cellspacing=\"0\" cellborder=\"0\">";
@@ -50,15 +51,23 @@ private:
     void write_header(std::ostream &out, Monoid<M, F> const &input_value,
                       Node_ptr<Monoid<M, F>> entry_node, std::string arithmetic,
                       std::vector<std::string> const &conditional) const {
+        int con_count = conditional.size() + 2;
+        std::string copy_arithmetic = arithmetic;
         out << "digraph G {" << std::endl;
         out << "dummy [style=invis];" << std::endl;
         out << "labelloc=\"t\";" << std::endl;
-        out << "label=<<table cellborder=\"0\"><tr><td>"
-               "EVMDD for expression</td></tr><tr><td>"
-            << arithmetic << "</td></tr>"
-            << "<tr><td>Conditional Effects:</td></tr>";
-        out << get_cond_effects(conditional) << "</table>>;"
-            << std::endl;
+        out << "label=<<table rules=\"cols\" cellborder=\"0\"><tr>";
+        out << "<td align=\"center\">Arithmetic Expression: </td>";
+        out << "<td align=\"center\">Conditional Effects:</td></tr>";
+        out << "<tr><td rowspan=\"" << con_count << "\" align=\"center\">";
+        // Adjust arithmetic expression length if too long
+        if (arithmetic.size() > 15) {
+            copy_arithmetic = arithmetic.substr(0, 12);
+            copy_arithmetic += "...";
+        }
+        out << copy_arithmetic << "</td></tr>";
+        out << get_cond_effects(conditional);
+        out << "</table>>;" << std::endl;
         out << "dummy -> \"dummy_weighted\" [arrowhead=none];";
         // Generating weighted node
         out << "\"dummy_weighted\" [shape=box, label=\""
@@ -68,15 +77,19 @@ private:
             << "\" [dir=forward];" << std::endl;
     }
     // Returns conditional effects as string
-    std::string get_cond_effects(std::vector<std::string> const &conditional) const {
+    std::string get_cond_effects(
+        std::vector<std::string> const &conditional) const {
+        if (conditional.size() == 0) {
+            return "<tr><td>none</td></tr>";
+        }
         std::stringstream ss;
         for (auto effect : conditional) {
-            ss << "<tr><td>" << effect << "</td></tr>";
+            ss << "<tr><td align=\"center\">" << effect << "</td></tr>";
         }
         std::string effects = ss.str();
         // Replace > in string to prevent syntax error in html
-        for (std::string::size_type pos = 0; (pos = effects.find("->")) != std::string::npos;
-             pos += 4) {
+        for (std::string::size_type pos = 0;
+             (pos = effects.find("->")) != std::string::npos; pos += 4) {
             effects.replace(pos, 2, "&rArr;");
         }
         return effects;
