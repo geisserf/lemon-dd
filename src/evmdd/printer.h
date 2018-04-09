@@ -53,10 +53,10 @@ private:
         out << "digraph G {" << std::endl;
         out << "dummy [style=invis];" << std::endl;
         out << "labelloc=\"t\";" << std::endl;
-        out << "label=<<table cellborder=\"0\"><tr><td><u>"
-               "EVMDD for expression</u></td></tr><tr><td>"
+        out << "label=<<table cellborder=\"0\"><tr><td>"
+               "EVMDD for expression</td></tr><tr><td>"
             << arithmetic << "</td></tr>"
-            << "<tr><td><u>Conditional Effects:</u></td></tr>";
+            << "<tr><td>Conditional Effects:</td></tr>";
         out << get_cond_effects(conditional) << "</table>>;"
             << std::endl;
         out << "dummy -> \"dummy_weighted\" [arrowhead=none];";
