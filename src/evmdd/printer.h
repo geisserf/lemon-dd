@@ -18,7 +18,7 @@ public:
     DotPrinter() = default;
     // prints the .dot representation of an evmdd
     void to_dot(std::ostream &out, Evmdd<M, F> const &evmdd,
-                std::string arithmetic,
+                std::string const &arithmetic,
                 std::vector<std::string> const &conditional) {
         node_count = 0;
         edge_count = 0;
@@ -70,8 +70,6 @@ private:
     }
 
     // Prints an edge between two nodes with its weight.
-    // Note: We omit domain values, because graphviz has really bad alignment
-    // for multiple labels on one edge.
     void print_edge(std::ostream &out, Node_ptr<Monoid<M, F>> parent,
                     Monoid<M, F> weight, Node_ptr<Monoid<M, F>> child,
                     int domain) {
@@ -102,11 +100,11 @@ private:
     // Returns conditional effects as string
     std::string get_cond_effects(
         std::vector<std::string> const &conditional) const {
-        if (conditional.size() == 0) {
+        if (conditional.empty()) {
             return "<tr><td>none</td></tr>";
         }
         std::stringstream ss;
-        for (auto effect : conditional) {
+        for (auto const &effect : conditional) {
             ss << "<tr><td align=\"center\">" << effect << "</td></tr>";
         }
         ss << "<tr><td></td></tr>";
@@ -120,10 +118,8 @@ private:
     }
 
     // Prints an informative header about EVMDD to the top
-    void write_header(std::ostream &out, std::string arithmetic,
+    void write_header(std::ostream &out, std::string const &arithmetic,
                       std::vector<std::string> const &conditional) const {
-        int con_count = conditional.size() + 2;
-        std::string copy_arithmetic = arithmetic;
         out << "labelloc=\"t\";" << std::endl;
         out << "label=<<table cellborder=\"0\">";
         // Expressions
@@ -133,13 +129,14 @@ private:
         out << "Arithmetic Expression:</td>";
         out << "<td border=\"1\" align=\"center\">";
         out << "Conditional Effects:</td></tr>";
-        out << "<tr><td rowspan=\"" << con_count << "\" align=\"center\">";
+        out << "<tr><td rowspan=\"" << conditional.size() + 2;
+        out << "\" align=\"center\">";
         // Adjust arithmetic expression length if too long
         if (arithmetic.size() > 15) {
-            copy_arithmetic = arithmetic.substr(0, 12);
-            copy_arithmetic += "...";
+            out << arithmetic.substr(0, 12) << "...</td></tr>";
+        } else {
+            out << arithmetic << "</td></tr>";
         }
-        out << copy_arithmetic << "</td></tr>";
         out << get_cond_effects(conditional);
         // Legend
         out << "<tr><td border=\"1\" colspan=\"2\">Legend:</td></tr>";

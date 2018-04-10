@@ -20,8 +20,8 @@ using std::endl;
 using std::string;
 using std::vector;
 
-using Ordering = std::map<std::string, int>;
-using Domain = std::map<std::string, unsigned int>;
+using Ordering = std::map<string, int>;
+using Domain = std::map<string, unsigned int>;
 
 Domain parse_domains(string const &domains) {
     Domain result;
@@ -48,7 +48,7 @@ Ordering parse_ordering(string const &ordering) {
 
 template <typename M, typename F>
 void create_dot(std::ostream &output_stream, Evmdd<M, F> const &evmdd,
-                string arithmetic, vector<string> const &conditional) {
+                string const &arithmetic, vector<string> const &conditional) {
     DotPrinter<M, F> printer;
     printer.to_dot(output_stream, evmdd, arithmetic, conditional);
 }
@@ -139,12 +139,14 @@ int main() {
 
     if (!cost_evmdd.exists()) {
         cout << "Writing conditional effect EVMDD to " << filename << endl;
-        create_dot(dot_stream, effect_evmdd, arithmetic_expression, conditional_effects);
+        create_dot(dot_stream, effect_evmdd, arithmetic_expression,
+                   conditional_effects);
         return 0;
     }
     if (!effect_evmdd.exists()) {
         cout << "Writing arithmetic expression EVMDD to " << filename << endl;
-        create_dot(dot_stream, cost_evmdd, arithmetic_expression, conditional_effects);
+        create_dot(dot_stream, cost_evmdd, arithmetic_expression,
+                   conditional_effects);
         return 0;
     }
     // Both EVMDDs were requested -> generate product EVMDD
@@ -154,5 +156,6 @@ int main() {
 
     auto product_evmdd = factory.product(effect_evmdd, cost_evmdd);
     cout << "Both EVMDD types requested: Writing product EVMDD." << endl;
-    create_dot(dot_stream, product_evmdd, arithmetic_expression, conditional_effects);
+    create_dot(dot_stream, product_evmdd, arithmetic_expression,
+               conditional_effects);
 }
