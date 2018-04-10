@@ -44,24 +44,6 @@ private:
         out << "\"dummy_weighted\" -> \"" << entry_node->get_id()
             << "\" [dir=forward];" << std::endl;
     }
-    // Returns conditional effects as string
-    std::string get_cond_effects(
-        std::vector<std::string> const &conditional) const {
-        if (conditional.size() == 0) {
-            return "<tr><td>none</td></tr>";
-        }
-        std::stringstream ss;
-        for (auto effect : conditional) {
-            ss << "<tr><td align=\"center\">" << effect << "</td></tr>";
-        }
-        std::string effects = ss.str();
-        // Replace > in string to prevent syntax error in html
-        for (std::string::size_type pos = 0;
-             (pos = effects.find("->")) != std::string::npos; pos += 4) {
-            effects.replace(pos, 2, "&rArr;");
-        }
-        return effects;
-    }
 
     // Prints successor nodes and edges starting from entry_node
     void process_nodes(std::ostream &out, Node_ptr<Monoid<M, F>> entry_node) {
@@ -116,10 +98,31 @@ private:
             out << "}" << std::endl;
         }
     }
+
+    // Returns conditional effects as string
+    std::string get_cond_effects(
+        std::vector<std::string> const &conditional) const {
+        if (conditional.size() == 0) {
+            return "<tr><td>none</td></tr>";
+        }
+        std::stringstream ss;
+        for (auto effect : conditional) {
+            ss << "<tr><td align=\"center\">" << effect << "</td></tr>";
+        }
+        ss << "<tr><td></td></tr>";
+        std::string effects = ss.str();
+        // Replace > in string to prevent syntax error in html
+        for (std::string::size_type pos = 0;
+             (pos = effects.find("->")) != std::string::npos; pos += 4) {
+            effects.replace(pos, 2, "&rArr;");
+        }
+        return effects;
+    }
+
     // Prints an informative header about EVMDD to the top
     void write_header(std::ostream &out, std::string arithmetic,
                       std::vector<std::string> const &conditional) const {
-        int con_count = conditional.size() + 1;
+        int con_count = conditional.size() + 2;
         std::string copy_arithmetic = arithmetic;
         out << "labelloc=\"t\";" << std::endl;
         out << "label=<<table cellborder=\"0\">";
