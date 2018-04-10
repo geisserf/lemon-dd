@@ -119,7 +119,7 @@ private:
     // Prints an informative header about EVMDD to the top
     void write_header(std::ostream &out, std::string arithmetic,
                       std::vector<std::string> const &conditional) const {
-        int con_count = conditional.size() + 2;
+        int con_count = conditional.size() + 1;
         std::string copy_arithmetic = arithmetic;
         out << "labelloc=\"t\";" << std::endl;
         out << "label=<<table cellborder=\"0\">";
