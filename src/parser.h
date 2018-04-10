@@ -8,7 +8,7 @@
 
 static std::map<std::string, int> op_precedence{
     {"sentinel", 0}, {"-", 1},  {"+", 2},  {"/", 3}, {"*", 4},
-    {"==", 5},       {"||", 6}, {"&&", 7}, {"!", 8}};
+    {"==", 5}, {"||", 6}, {"&&", 7}, {"!", 8}, {"abs", 9}};
 
 enum Type {
     OP,
@@ -82,7 +82,7 @@ class InfixParser {
     // Expression --> (P | LogicEXP) (BinaryOP P)*
     // P --> variable| number | "(" Expression ")" | UnaryOP P | LogixEXP
     // BinaryOP --> "+" | "-" | "*" | "/"
-    // UnaryOP --> "-"
+    // UnaryOP --> "-" | "abs"
     //
     // LogicEXP --> ("[" LP (LogicBinaryOP LP)* "]")*
     // LP --> variable | number | LogicUnaryOP LP | LogicEXP | "(" Expression

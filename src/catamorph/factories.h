@@ -14,7 +14,9 @@ public:
     static Expression land(std::vector<Expression> const &rands);
     static Expression equals(std::vector<Expression> const &rands);
     static Expression lor(std::vector<Expression> const &rands);
+    // TODO can we implement not and abs as unary operators?
     static Expression lnot(std::vector<Expression> const &rands);
+    static Expression abs(std::vector<Expression> const &rands);
 
     template <typename T>
     static float const *get_as_cst(expression_r<T> const &e) {
@@ -64,6 +66,11 @@ public:
     template <typename T>
     static not_op<T> const *get_as_not(expression_r<T> const &e) {
         return boost::get<not_op<T>>(&e);
+    }
+
+    template <typename T>
+    static abs_op<T> const *get_as_abs(expression_r<T> const &e) {
+        return boost::get<abs_op<T>>(&e);
     }
 };
 

@@ -5,6 +5,7 @@
 #include "monoid.h"
 #include "node.h"
 #include "operations/logic_not.h"
+#include "operations/absolute.h"
 
 #include <algorithm>
 #include <cassert>

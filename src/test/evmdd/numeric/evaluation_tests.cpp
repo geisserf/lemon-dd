@@ -1,5 +1,7 @@
 #include "../../../polynomial.h"
 #include "../../Catch/include/catch.hpp"
+
+#include <cmath>
 #include <iostream>
 
 using std::endl;
@@ -120,6 +122,22 @@ SCENARIO("Testing concrete evaluation for numeric EVMDDs over float",
                 for (unsigned int y = 0; y < d["y"]; ++y) {
                     ConcreteState state{x, y};
                     REQUIRE(evmdd.evaluate(state) == x * 0.3 + 0.7);
+                }
+            }
+        }
+    }
+
+    GIVEN("Evmdd for term abs(x-y) with domain x=0..3, y=0..3") {
+        Polynomial p = Polynomial("abs(x-y)");
+        Domains d = {{"x", 4}, {"y", 4}};
+        Ordering o = {{"x", 1}, {"y", 2}};
+        auto evmdd = p.create_evmdd<int>(d, o);
+        THEN("Evaluation should be correct") {
+            for (unsigned int x = 0; x < d["x"]; ++x) {
+                for (unsigned int y = 0; y < d["y"]; ++y) {
+                    ConcreteState state{x, y};
+                    int sub = static_cast<int>(x) - y;
+                    REQUIRE(evmdd.evaluate(state) == std::abs(sub));
                 }
             }
         }

@@ -45,6 +45,9 @@ public:
         if (auto *o = Factories::get_as_not(e))
             return Out(not_op<B>(o->rands() | transformed(map)));
 
+        if (auto *o = Factories::get_as_abs(e))
+            return Out(abs_op<B>(o->rands() | transformed(map)));
+
         if (auto *o = Factories::get_as_equals(e))
             return Out(equals_op<B>(o->rands() | transformed(map)));
 
@@ -53,7 +56,7 @@ public:
         if (auto *v = Factories::get_as_var(e))
             return Out(*v);
 
-        throw std::logic_error("Missing case in pattern matching");
+        throw std::logic_error("Missing case in pattern matching in catamorph");
     }
 };
 
