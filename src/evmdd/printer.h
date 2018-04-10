@@ -22,52 +22,20 @@ public:
                 std::vector<std::string> const &conditional) {
         node_count = 0;
         edge_count = 0;
-        write_header(out, evmdd.get_input(), evmdd.get_source_node(),
-                     arithmetic, conditional);
+        write_beginning(out, evmdd.get_input(), evmdd.get_source_node());
         process_nodes(out, evmdd.get_source_node());
         write_alignment(out);
-        print_legend(out);
+        write_header(out, arithmetic, conditional);
         write_end(out);
         reset_internals();
     }
 
 private:
-    void print_legend(std::ostream &out) {
-        out << "node [shape=plaintext]";
-        out << "subgraph cluster_01 {";
-        out << "labelloc=\"t\";" << std::endl;
-        out << "label = \"Legend\";";
-        out << "key [label=<<table border=\"0\" cellpadding=\"2\" "
-               "cellspacing=\"0\" cellborder=\"0\">";
-        out << "  <tr><td align=\"left\" port=\"i1\">#Nodes:</td><td>"
-            << node_count << "</td></tr>";
-        out << "  <tr><td align=\"left\" port=\"i2\">#Edges:</td><td>"
-            << edge_count << "</td></tr>";
-        out << "  </table>>]";
-        out << "}";
-    }
-
     // Prints start of dot file and the first edge connecting to the entry node
-    void write_header(std::ostream &out, Monoid<M, F> const &input_value,
-                      Node_ptr<Monoid<M, F>> entry_node, std::string arithmetic,
-                      std::vector<std::string> const &conditional) const {
-        int con_count = conditional.size() + 2;
-        std::string copy_arithmetic = arithmetic;
+    void write_beginning(std::ostream &out, Monoid<M, F> const &input_value,
+                         Node_ptr<Monoid<M, F>> entry_node) const {
         out << "digraph G {" << std::endl;
         out << "dummy [style=invis];" << std::endl;
-        out << "labelloc=\"t\";" << std::endl;
-        out << "label=<<table rules=\"cols\" cellborder=\"0\"><tr>";
-        out << "<td align=\"center\">Arithmetic Expression: </td>";
-        out << "<td align=\"center\">Conditional Effects:</td></tr>";
-        out << "<tr><td rowspan=\"" << con_count << "\" align=\"center\">";
-        // Adjust arithmetic expression length if too long
-        if (arithmetic.size() > 15) {
-            copy_arithmetic = arithmetic.substr(0, 12);
-            copy_arithmetic += "...";
-        }
-        out << copy_arithmetic << "</td></tr>";
-        out << get_cond_effects(conditional);
-        out << "</table>>;" << std::endl;
         out << "dummy -> \"dummy_weighted\" [arrowhead=none];";
         // Generating weighted node
         out << "\"dummy_weighted\" [shape=box, label=\""
@@ -147,6 +115,34 @@ private:
             }
             out << "}" << std::endl;
         }
+    }
+    // Prints an informative header about EVMDD to the top
+    void write_header(std::ostream &out, std::string arithmetic,
+                      std::vector<std::string> const &conditional) const {
+        int con_count = conditional.size() + 2;
+        std::string copy_arithmetic = arithmetic;
+        out << "labelloc=\"t\";" << std::endl;
+        out << "label=<<table cellborder=\"0\">";
+        // Expressions
+        out << "<tr><td border=\"0\" align=\"center\" colspan=\"2\">";
+        out << "EVMDD with</td></tr>";
+        out << "<tr><td border=\"1\" align=\"center\">";
+        out << "Arithmetic Expression:</td>";
+        out << "<td border=\"1\" align=\"center\">";
+        out << "Conditional Effects:</td></tr>";
+        out << "<tr><td rowspan=\"" << con_count << "\" align=\"center\">";
+        // Adjust arithmetic expression length if too long
+        if (arithmetic.size() > 15) {
+            copy_arithmetic = arithmetic.substr(0, 12);
+            copy_arithmetic += "...";
+        }
+        out << copy_arithmetic << "</td></tr>";
+        out << get_cond_effects(conditional);
+        // Legend
+        out << "<tr><td border=\"1\" colspan=\"2\">Legend:</td></tr>";
+        out << "<tr><td colspan=\"2\">#Nodes: " << node_count << "</td></tr>";
+        out << "<tr><td colspan=\"2\">#Edges: " << edge_count << "</td></tr>";
+        out << "</table>>;" << std::endl;
     }
 
     void write_end(std::ostream &out) const {
