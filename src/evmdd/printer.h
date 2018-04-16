@@ -3,6 +3,7 @@
 
 #include "node.h"
 
+#include <fstream>
 #include <iostream>
 #include <map>
 #include <string>
@@ -17,15 +18,22 @@ class DotPrinter {
 public:
     DotPrinter() = default;
     // prints the .dot representation of an evmdd
-    void to_dot(std::ostream &out, Evmdd<M, F> const &evmdd,
-                std::string const &arithmetic,
+    void to_dot(std::ostream &out, std::string const &filename,
+                Evmdd<M, F> const &evmdd, std::string const &arithmetic,
                 std::vector<std::string> const &conditional) {
         node_count = 0;
         edge_count = 0;
         write_beginning(out, evmdd.get_input(), evmdd.get_source_node());
         process_nodes(out, evmdd.get_source_node());
         write_alignment(out);
-        write_header(out, arithmetic, conditional);
+        if (arithmetic.size() > 30) {
+            std::ofstream information("info_" + filename);
+            information << "graph info {";
+            write_header(information, arithmetic, conditional);
+            information << "}";
+        } else {
+            write_header(out, arithmetic, conditional);
+        }
         write_end(out);
         reset_internals();
     }
@@ -97,8 +105,8 @@ private:
         }
     }
 
-    // Returns conditional effects as string
-    std::string get_cond_effects(
+    // Returns conditional effects as html-encoded string
+    std::string encode_cond_effects(
         std::vector<std::string> const &conditional) const {
         if (conditional.empty()) {
             return "<tr><td>none</td></tr>";
@@ -109,12 +117,47 @@ private:
         }
         ss << "<tr><td></td></tr>";
         std::string effects = ss.str();
-        // Replace > in string to prevent syntax error in html
+        // Html-encode string to prevent syntax errors
+        // Replace -> in string to prevent error caused by ">"
         for (std::string::size_type pos = 0;
              (pos = effects.find("->")) != std::string::npos; pos += 4) {
             effects.replace(pos, 2, "&rArr;");
         }
+        // Replace & sign with &amp if exists
+        if (effects.find("&&") != std::string::npos) {
+            effects = html_encode(effects);
+        }
         return effects;
+    }
+
+    // Checks if string contains & sign which causes error in html
+    // Returns string replacing & sign with &amp if there are any.
+    std::string html_encode(std::string const &expression) const {
+        if (expression.find("&&") != std::string::npos) {
+            std::string copy_expression = expression;
+            for (std::string::size_type pos = 0;
+                 (pos = copy_expression.find("&&")) != std::string::npos;
+                 pos += 4) {
+                copy_expression.replace(pos, 2, "&amp;&amp;");
+            }
+            return copy_expression;
+        }
+        return expression;
+    }
+
+    // Splits long expression into separate rows by <tr><td> html-tags
+    std::string format_long_expression(std::string const &text) const {
+        std::string copy_text = text;
+        copy_text.insert(0, "<tr><td>");
+        // Insert line breaks to text.
+        // 30 chars per line. (Skip 18 chars to omit html tags)
+        std::string::size_type pos = 38;
+        while (pos < copy_text.size()) {
+            copy_text.insert(pos, "</td></tr><tr><td>");
+            pos += 48;
+        }
+        copy_text.append("</td></tr>");
+        return html_encode(copy_text);
     }
 
     // Prints an informative header about EVMDD to the top
@@ -123,21 +166,14 @@ private:
         out << "labelloc=\"t\";" << std::endl;
         out << "label=<<table cellborder=\"0\">";
         // Expressions
-        out << "<tr><td border=\"0\" align=\"center\" colspan=\"2\">";
-        out << "EVMDD with</td></tr>";
         out << "<tr><td border=\"1\" align=\"center\">";
-        out << "Arithmetic Expression:</td>";
-        out << "<td border=\"1\" align=\"center\">";
+        out << "Arithmetic Expression:</td></tr>";
+        out << format_long_expression(arithmetic);
+        out << "<tr><td border=\"1\" align=\"center\">";
         out << "Conditional Effects:</td></tr>";
-        out << "<tr><td rowspan=\"" << conditional.size() + 2;
-        out << "\" align=\"center\">";
-        // Adjust arithmetic expression length if too long
-        if (arithmetic.size() > 15) {
-            out << arithmetic.substr(0, 12) << "...</td></tr>";
-        } else {
-            out << arithmetic << "</td></tr>";
-        }
-        out << get_cond_effects(conditional);
+        // format_long_expression(arithmetic);
+        // Html-encode expression if it contains && operator
+        out << encode_cond_effects(conditional);
         // Legend
         out << "<tr><td border=\"1\" colspan=\"2\">Legend:</td></tr>";
         out << "<tr><td colspan=\"2\">#Nodes: " << node_count << "</td></tr>";
