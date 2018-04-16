@@ -51,7 +51,7 @@ void create_dot(std::ostream &output_stream, std::string const &filename,
                 Evmdd<M, F> const &evmdd, string const &arithmetic,
                 vector<string> const &conditional) {
     DotPrinter<M, F> printer;
-    printer.to_dot(output_stream, filename, evmdd, arithmetic, conditional);
+    printer.to_dot(output_stream, filename, evmdd, arithmetic, conditional, 80);
 }
 
 Evmdd<Facts, Union> generate_effect_evmdd(vector<string> const &effects,
