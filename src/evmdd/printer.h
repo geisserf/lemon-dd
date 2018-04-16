@@ -20,20 +20,23 @@ public:
     // prints the .dot representation of an evmdd
     void to_dot(std::ostream &out, std::string const &filename,
                 Evmdd<M, F> const &evmdd, std::string const &arithmetic,
-                std::vector<std::string> const &conditional) {
+                std::vector<std::string> const &conditional,
+                std::string::size_type max_width) {
         node_count = 0;
         edge_count = 0;
         write_beginning(out, evmdd.get_input(), evmdd.get_source_node());
         process_nodes(out, evmdd.get_source_node());
         write_alignment(out);
-        if (arithmetic.size() > 30) {
+        // Write header to separate file if expression length > max_width
+        if (arithmetic.size() > max_width) {
             std::ofstream information("info_" + filename);
             information << "graph info {";
-            write_header(information, arithmetic, conditional);
-            information << "}";
+            write_header(information, arithmetic, conditional, max_width);
+            write_end(information);
         } else {
-            write_header(out, arithmetic, conditional);
+            write_header(out, arithmetic, conditional, max_width);
         }
+
         write_end(out);
         reset_internals();
     }
@@ -133,12 +136,12 @@ private:
     // Checks if string contains & sign which causes error in html
     // Returns string replacing & sign with &amp if there are any.
     std::string html_encode(std::string const &expression) const {
-        if (expression.find("&&") != std::string::npos) {
+        if (expression.find("&") != std::string::npos) {
             std::string copy_expression = expression;
             for (std::string::size_type pos = 0;
-                 (pos = copy_expression.find("&&")) != std::string::npos;
-                 pos += 4) {
-                copy_expression.replace(pos, 2, "&amp;&amp;");
+                 (pos = copy_expression.find("&", pos)) != std::string::npos;
+                 pos += 2) {
+                copy_expression.replace(pos, 1, "&amp;");
             }
             return copy_expression;
         }
@@ -146,15 +149,16 @@ private:
     }
 
     // Splits long expression into separate rows by <tr><td> html-tags
-    std::string format_long_expression(std::string const &text) const {
+    std::string format_long_expression(std::string const &text,
+                                       int &width) const {
         std::string copy_text = text;
         copy_text.insert(0, "<tr><td>");
         // Insert line breaks to text.
         // 30 chars per line. (Skip 18 chars to omit html tags)
-        std::string::size_type pos = 38;
+        std::string::size_type pos = (width + 8);
         while (pos < copy_text.size()) {
             copy_text.insert(pos, "</td></tr><tr><td>");
-            pos += 48;
+            pos += (width + 18);
         }
         copy_text.append("</td></tr>");
         return html_encode(copy_text);
@@ -162,16 +166,16 @@ private:
 
     // Prints an informative header about EVMDD to the top
     void write_header(std::ostream &out, std::string const &arithmetic,
-                      std::vector<std::string> const &conditional) const {
+                      std::vector<std::string> const &conditional,
+                      int max_width) const {
         out << "labelloc=\"t\";" << std::endl;
         out << "label=<<table cellborder=\"0\">";
         // Expressions
         out << "<tr><td border=\"1\" align=\"center\">";
         out << "Arithmetic Expression:</td></tr>";
-        out << format_long_expression(arithmetic);
+        out << format_long_expression(arithmetic, max_width);
         out << "<tr><td border=\"1\" align=\"center\">";
         out << "Conditional Effects:</td></tr>";
-        // format_long_expression(arithmetic);
         // Html-encode expression if it contains && operator
         out << encode_cond_effects(conditional);
         // Legend
