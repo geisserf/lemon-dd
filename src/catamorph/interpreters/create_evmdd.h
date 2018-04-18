@@ -56,11 +56,11 @@ private:
             if (auto *o = Factories::get_as_div(e)) {
                 return apply(o->rands(), std::divides<M>());
             }
-            if (auto *o = Factories::get_as_and(e)) {
-                return apply(o->rands(), std::logical_and<M>());
-            }
             if (auto *o = Factories::get_as_equals(e)) {
                 return apply(o->rands(), std::equal_to<M>());
+            }
+            if (auto *o = Factories::get_as_and(e)) {
+                return apply(o->rands(), std::logical_and<M>());
             }
             if (auto *o = Factories::get_as_or(e)) {
                 return apply(o->rands(), std::logical_or<M>());
@@ -68,7 +68,6 @@ private:
             if (auto *o = Factories::get_as_not(e)) {
                 return apply(o->rands(), logic_not<M>());
             }
-
             throw std::logic_error("Unknown Operator in Apply");
         };
     }

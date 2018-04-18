@@ -1,7 +1,8 @@
+#include "../../Catch/include/catch.hpp"
 #include "../polynomial.h"
-#include "Catch/include/catch.hpp"
 
-SCENARIO("Testing parsing infix to prefix", "[infixparser]") {
+SCENARIO("Testing parsing infix to prefix",
+         "[parser][infixparser][infix_to_prefix]") {
     GIVEN("The expression (a+b)") {
         std::string e = "(a+b)";
         Polynomial p = Polynomial(e);

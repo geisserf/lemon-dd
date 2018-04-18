@@ -4,8 +4,9 @@
 
 using std::endl;
 
-SCENARIO("Testing concrete evaluation for numeric EVMDDs over float",
-         "[numeric_evmdd_evaluation]") {
+// Testing evmdd::evaluate() for expressions without logical propositions
+SCENARIO("Testing numeric EVMDDs for concrete evaluation over float",
+         "[evmdd][evaluation][float]") {
     GIVEN("Evmdd for term 13 ") {
         Polynomial p = Polynomial("13");
         auto evmdd = p.create_evmdd<double>({}, {});
@@ -175,8 +176,8 @@ SCENARIO("Testing concrete evaluation for numeric EVMDDs over float",
     }
 }
 
-SCENARIO("Testing partial evaluation for numeric EVMDDs over float",
-         "[numeric_evmdd_evaluation]") {
+SCENARIO("Testing numeric EVMDDs for partial evaluation over float",
+         "[numeric_evaluation]") {
     GIVEN("Evmdd for term x*y with domain x=0..4, y=0,1,2") {
         Polynomial p = Polynomial("x*y");
         Domains d = {{"x", 5}, {"y", 3}};

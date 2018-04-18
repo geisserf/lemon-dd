@@ -1,10 +1,11 @@
 #include "../../../polynomial.h"
 #include "../../Catch/include/catch.hpp"
-
 #include <iostream>
 
-SCENARIO("Testing concrete evaluation for iverson based EVMDDs ",
-         "[iverson_evmdd_evaluation]") {
+// Testing evmdd::evaluate() for expressions with logical propositions
+SCENARIO(
+    "Testing numeric EVMDDs for concrete evaluation on iverson based input",
+    "[evmdd][evaluation][iverson]") {
     GIVEN("Evmdd for expression [a && b])") {
         Polynomial p = Polynomial("[a&&b]");
         Domains d = {{"a", 2}, {"b", 2}};

@@ -1,10 +1,11 @@
-#include "Catch/include/catch.hpp"
+#include "../../Catch/include/catch.hpp"
 
 #include "../catamorph/printer.h"
 #include "../conditional_effects.h"
 #include "../effect_parser.h"
 
-SCENARIO("Testing  conditional effect parsing", "[CE_parser]") {
+SCENARIO("Testing Effect Parser on conditional effect parsing",
+         "[parser][conditional_effect][effect]") {
     GIVEN("The conditional effect (a -> b)") {
         std::string e = "(a -> b)";
         EffectParser parser;
