@@ -4,6 +4,7 @@
 #include "evmdd_cache.h"
 #include "monoid.h"
 #include "node.h"
+#include "operations/logic_and.h"
 #include "operations/logic_not.h"
 
 #include <algorithm>
