@@ -17,5 +17,4 @@ struct logic_not {
     }
 };
 
-
 #endif /* LOGIC_NOT_H */

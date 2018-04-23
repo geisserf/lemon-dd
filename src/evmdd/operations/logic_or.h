@@ -1,19 +1,19 @@
-#ifndef LOGIC_AND_H
-#define LOGIC_AND_H
+#ifndef LOGIC_OR_H
+#define LOGIC_OR_H
 
 #include <functional>
 
 template <class T>
-struct logic_and {
+struct logic_or {
     T operator()(const T& lhs, const T& rhs) const {
         if(!((lhs==0 || lhs==1) && (rhs==0 || rhs==1))){
-            throw std::logic_error("Non-boolean operands for logic_and");
+            throw std::logic_error("Non-boolean operand for logical_or");
         }
         assert((lhs==0 || lhs==1));
         assert((rhs==0 || rhs==1));
-        auto result = std::logical_and<T>()(lhs, rhs);
+        auto result = std::logical_or<T>()(lhs, rhs);
         return result;
     }
 };
 
-#endif /* LOGIC_AND_H */
+#endif /* LOGIC_NOT_H */

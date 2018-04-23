@@ -63,7 +63,7 @@ private:
                 return apply(o->rands(), logic_and<M>());
             }
             if (auto *o = Factories::get_as_or(e)) {
-                return apply(o->rands(), std::logical_or<M>());
+                return apply(o->rands(), logic_or<M>());
             }
             if (auto *o = Factories::get_as_not(e)) {
                 return apply(o->rands(), logic_not<M>());
