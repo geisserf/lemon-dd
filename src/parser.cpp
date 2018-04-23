@@ -21,10 +21,14 @@ Token Lexer::getNextToken() {
     // trim surrounding parantheses
     StringUtils::trim(input);
 
-    std::regex addRegex("\\+(.*)");  // Regex for arithmetic +
-    std::regex subRegex("-(.*)");    // Regex for arithmetic -
-    std::regex multRegex("\\*(.*)"); // Regex for arithmetic *
-    std::regex divRegex("\\/(.*)");  // Regex for arithmetic /
+    std::regex addRegex("\\+(.*)");     // Regex for arithmetic +
+    std::regex subRegex("-(.*)");       // Regex for arithmetic -
+    std::regex multRegex("\\*(.*)");    // Regex for arithmetic *
+    std::regex divRegex("\\/(.*)");     // Regex for arithmetic /
+    std::regex greaterRegex("\\>(.*)"); // Regex for > comparison
+    std::regex lesserRegex("\\<(.*)"); // Regex for < comparison
+    std::regex greater_equals_Regex("\\>\\=(.*)"); // Regex for >= comparison
+    std::regex lesser_equals_Regex("\\<\\=(.*)"); // Regex for <= comparison
     // Regex for constant numbers.
     // Note that we use the passive group (?:subpattern) here, so that we only
     // have one backreference for the whole constant and not multiple
@@ -62,6 +66,22 @@ Token Lexer::getNextToken() {
         token.type = Type::OP;
         token.value = "/";
         input = std::regex_replace(input, divRegex, "$1");
+    } else if (std::regex_match(input, greater_equals_Regex)) {
+        token.type = Type::OP;
+        token.value = ">=";
+        input = std::regex_replace(input, greater_equals_Regex, "$1");
+    } else if (std::regex_match(input, lesser_equals_Regex)) {
+        token.type = Type::OP;
+        token.value = "<=";
+        input = std::regex_replace(input, lesser_equals_Regex, "$1");
+    } else if (std::regex_match(input, greaterRegex)) {
+        token.type = Type::OP;
+        token.value = ">";
+        input = std::regex_replace(input, greaterRegex, "$1");
+    } else if (std::regex_match(input, lesserRegex)) {
+        token.type = Type::OP;
+        token.value = "<";
+        input = std::regex_replace(input, lesserRegex, "$1");
     } else if (std::regex_match(input, andRegex)) {
         token.type = Type::OP;
         token.value = "&&";
@@ -195,6 +215,14 @@ Expression Parser::parseOpExpression(Lexer &lexer) const {
         return Factories::sub(exprs);
     } else if (opType == "*") {
         return Factories::mul(exprs);
+    } else if (opType == ">") {
+        return Factories::greater(exprs);
+    } else if (opType == "<") {
+        return Factories::lesser(exprs);
+    } else if (opType == ">=") {
+        return Factories::greater_equals(exprs);
+    } else if (opType == "<=") {
+        return Factories::lesser_equals(exprs);
     } else if (opType == "&&") {
         return Factories::land(exprs);
     } else if (opType == "||") {
@@ -210,7 +238,8 @@ Expression Parser::parseOpExpression(Lexer &lexer) const {
 
 bool InfixParser::isBinaryOperator(Token const &token) {
     return (token.value == "+" || token.value == "-" || token.value == "*" ||
-            token.value == "/");
+            token.value == "/" || token.value == ">" || token.value == ">=" ||
+            token.value == "<" || token.value == "<=");
 }
 
 bool InfixParser::isUnaryOperator(Token const &token) {
@@ -247,7 +276,6 @@ void InfixParser::expect(Type type, Lexer &lexer) {
 }
 
 void InfixParser::popOperator() {
-    // TODO FG: double check expression?
     if ((isBinaryOperator(operators.top()) ||
          isLogicalBinaryOperator(operators.top())) &&
         operators.top().binary) {
@@ -396,6 +424,14 @@ Expression InfixParser::createExpression(Expression const &lhs, Token op,
         return Factories::mul(exprs);
     } else if (op.value == "/") {
         return Factories::div(exprs);
+    } else if (op.value == ">") {
+        return Factories::greater(exprs);
+    } else if (op.value == "<") {
+        return Factories::lesser(exprs);
+    } else if (op.value == ">=") {
+        return Factories::greater_equals(exprs);
+    } else if (op.value == "<=") {
+        return Factories::lesser_equals(exprs);
     } else if (op.value == "&&") {
         return Factories::land(exprs);
     } else if (op.value == "||") {

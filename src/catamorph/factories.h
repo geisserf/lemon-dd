@@ -11,6 +11,10 @@ public:
     static Expression sub(std::vector<Expression> const &rands);
     static Expression mul(std::vector<Expression> const &rands);
     static Expression div(std::vector<Expression> const &rands);
+    static Expression greater(std::vector<Expression> const &rands);
+    static Expression lesser(std::vector<Expression> const &rands);
+    static Expression greater_equals(std::vector<Expression> const &rands);
+    static Expression lesser_equals(std::vector<Expression> const &rands);
     static Expression land(std::vector<Expression> const &rands);
     static Expression equals(std::vector<Expression> const &rands);
     static Expression lor(std::vector<Expression> const &rands);
@@ -44,6 +48,28 @@ public:
     template <typename T>
     static div_op<T> const *get_as_div(expression_r<T> const &e) {
         return boost::get<div_op<T>>(&e);
+    }
+
+    template <typename T>
+    static greater_op<T> const *get_as_greater(expression_r<T> const &e) {
+        return boost::get<greater_op<T>>(&e);
+    }
+
+    template <typename T>
+    static lesser_op<T> const *get_as_lesser(expression_r<T> const &e) {
+        return boost::get<lesser_op<T>>(&e);
+    }
+
+    template <typename T>
+    static greater_equals_op<T> const *get_as_greater_equals(
+        expression_r<T> const &e) {
+        return boost::get<greater_equals_op<T>>(&e);
+    }
+
+    template <typename T>
+    static lesser_equals_op<T> const *get_as_lesser_equals(
+        expression_r<T> const &e) {
+        return boost::get<lesser_equals_op<T>>(&e);
     }
 
     template <typename T>

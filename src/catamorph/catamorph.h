@@ -36,6 +36,18 @@ public:
         if (auto *o = Factories::get_as_div(e))
             return Out(div_op<B>(o->rands() | transformed(map)));
 
+        if (auto *o = Factories::get_as_greater(e))
+            return Out(greater_op<B>(o->rands() | transformed(map)));
+
+        if (auto *o = Factories::get_as_lesser(e))
+            return Out(lesser_op<B>(o->rands() | transformed(map)));
+
+        if (auto *o = Factories::get_as_greater_equals(e))
+            return Out(greater_equals_op<B>(o->rands() | transformed(map)));
+
+        if (auto *o = Factories::get_as_lesser_equals(e))
+            return Out(lesser_equals_op<B>(o->rands() | transformed(map)));
+
         if (auto *o = Factories::get_as_and(e))
             return Out(and_op<B>(o->rands() | transformed(map)));
 

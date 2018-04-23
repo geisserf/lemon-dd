@@ -28,6 +28,21 @@ Expression Factories::div(std::vector<Expression> const &rands) {
     return Expression(div_op<Expression>{rands});
 }
 
+Expression Factories::greater(std::vector<Expression> const &rands) {
+    return Expression(greater_op<Expression>{rands});
+}
+
+Expression Factories::lesser(std::vector<Expression> const &rands) {
+    return Expression(lesser_op<Expression>{rands});
+}
+
+Expression Factories::greater_equals(std::vector<Expression> const &rands) {
+    return Expression(greater_equals_op<Expression>{rands});
+}
+
+Expression Factories::lesser_equals(std::vector<Expression> const &rands) {
+    return Expression(lesser_equals_op<Expression>{rands});
+}
 Expression Factories::land(std::vector<Expression> const &rands) {
     return Expression(and_op<Expression>{rands});
 }
