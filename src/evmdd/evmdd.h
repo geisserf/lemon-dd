@@ -17,7 +17,7 @@
 #include <unordered_set>
 #include <vector>
 
-using Ordering = std::map<std::string, int>;
+using Ordering = std::vector<std::string>;
 using ConcreteState = std::vector<unsigned int>;
 
 template <typename M, typename F = std::plus<M>>
@@ -182,9 +182,10 @@ public:
             children.emplace_back(Monoid<M, F>(domain[i]),
                                   node_factory.get_terminal_node());
         }
-        assert(ordering.find(var) != ordering.end());
+        assert(std::find(ordering.begin(), ordering.end(), var) != ordering.end());
+        auto var_pos = std::distance(ordering.begin(), find(ordering.begin(), ordering.end(), var));
         Node_ptr<Monoid<M, F>> node =
-            node_factory.make_node(ordering[var], var, children);
+            node_factory.make_node(var_pos, var, children);
         return Evmdd<M, F>(Monoid<M, F>::neutral_element(), node);
     }
 

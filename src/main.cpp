@@ -20,8 +20,8 @@ using std::endl;
 using std::string;
 using std::vector;
 
-using Ordering = std::map<string, int>;
-using Domain = std::map<string, unsigned int>;
+using Ordering = std::vector<std::string>;
+using Domain = std::map<std::string, unsigned int>;
 
 Domain parse_domains(string const &domains) {
     Domain result;
@@ -39,9 +39,9 @@ Domain parse_domains(string const &domains) {
 Ordering parse_ordering(string const &ordering) {
     Ordering result;
     vector<string> variables = StringUtils::split(ordering, ' ');
-    int position = variables.size(); // position 0 reserved for terminal
+   // int position = variables.size(); // position 0 reserved for terminal
     for (string const &var : variables) {
-        result[var] = position--;
+        result.insert(result.begin(), var);
     }
     return result;
 }
