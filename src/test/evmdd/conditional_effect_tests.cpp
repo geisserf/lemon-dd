@@ -12,7 +12,7 @@ SCENARIO("Testing EVMDDs for conditional effect",
         EffectParser parser;
         auto cond_effects = parser.parse("(a->b)");
         Domains d = {{"a", 2}};
-        Ordering o = {{"a", 1}};
+        Ordering o = {"a"}; //{{"a", 1}};
         Evmdd<Facts, Union> evmdd =
             ConditionalEffects::create_evmdd(cond_effects, d, o);
 
@@ -39,7 +39,7 @@ SCENARIO("Testing EVMDDs for conditional effect",
         EffectParser parser;
         auto cond_effects = parser.parse("([x && y] ->!v) & ([!x] ->z)");
         Domains d = {{"x", 2}, {"y", 2}};
-        Ordering o = {{"x", 1}, {"y", 2}};
+        Ordering o = {"x", "y"}; //{{"x", 1}, {"y", 2}};
         Evmdd<Facts, Union> evmdd =
             ConditionalEffects::create_evmdd(cond_effects, d, o);
 
@@ -78,7 +78,7 @@ SCENARIO("Testing EVMDDs for conditional effect",
         EffectParser parser;
         auto cond_effects = parser.parse("([x || y] ->!z)");
         Domains d = {{"x", 2}, {"y", 2}};
-        Ordering o = {{"x", 1}, {"y", 2}};
+        Ordering o = {"x", "y"}; //{{"x", 1}, {"y", 2}};
         Evmdd<Facts, Union> evmdd =
             ConditionalEffects::create_evmdd(cond_effects, d, o);
 
@@ -117,7 +117,7 @@ SCENARIO("Testing EVMDDs for conditional effect",
         EffectParser parser;
         auto cond_effects = parser.parse("([[v5==0]&&[v6==1]]->v5==1)");
         Domains d = {{"v5", 2}, {"v6", 3}};
-        Ordering o = {{"v5", 1}, {"v6", 2}};
+        Ordering o = {"v5", "v6"}; //{{"v5", 1}, {"v6", 2}};
         Evmdd<Facts, Union> evmdd =
             ConditionalEffects::create_evmdd(cond_effects, d, o);
         THEN("Evmdd has the correct structure") {
@@ -142,7 +142,7 @@ SCENARIO("Testing EVMDDs for conditional effect",
 
         auto cond_effects = parser.parse(e);
         Domains d = {{"v5", 2}, {"v6", 3}};
-        Ordering o = {{"v5", 1}, {"v6", 2}};
+        Ordering o = {"v5", "v6"}; //{{"v5", 1}, {"v6", 2}};
         Evmdd<Facts, Union> evmdd =
             ConditionalEffects::create_evmdd(cond_effects, d, o);
 

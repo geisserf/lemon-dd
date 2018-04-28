@@ -29,7 +29,7 @@ SCENARIO("Testing numeric EVMDD for construction on arithmetic input",
         Polynomial p = Polynomial("x");
         WHEN("We create the evmdd") {
             Domains d = {{"x", 3}};
-            Ordering o = {{"x", 1}};
+            Ordering o = {"x"}; //{{"x", 1}};
             auto evmdd = p.create_evmdd<int>(d, o);
             THEN("evmdd has one variable node with 3 edges") {
                 std::stringstream result;
@@ -46,7 +46,7 @@ SCENARIO("Testing numeric EVMDD for construction on arithmetic input",
         Polynomial p = Polynomial("5*x");
         WHEN("We create the evmdd") {
             Domains d = {{"x", 3}};
-            Ordering o = {{"x", 1}};
+            Ordering o = {"x"}; // {{"x", 1}};
             auto evmdd = p.create_evmdd<int>(d, o);
             THEN("evmdd has one variable node with 3 edges") {
                 std::stringstream result;
@@ -63,7 +63,7 @@ SCENARIO("Testing numeric EVMDD for construction on arithmetic input",
         Domains d = {{"x", 3}, {"y", 2}};
         Polynomial p = Polynomial("(5*x)*y");
         WHEN("We create the evmdd and x is under y") {
-            Ordering o = {{"x", 1}, {"y", 2}};
+            Ordering o = {"x", "y"}; // {{"x", 1}, {"y", 2}};
             auto evmdd = p.create_evmdd<int>(d, o);
             THEN("evmdd has the expected structure") {
                 std::stringstream result;
@@ -77,7 +77,7 @@ SCENARIO("Testing numeric EVMDD for construction on arithmetic input",
             }
         }
         WHEN("We create the evmdd and x is over y") {
-            Ordering o = {{"x", 2}, {"y", 1}};
+            Ordering o = {"y", "x"}; // {{"x", 2}, {"y", 1}};
             auto evmdd = p.create_evmdd<int>(d, o);
             THEN("evmdd has the expected structure") {
                 std::stringstream result;
@@ -97,7 +97,7 @@ SCENARIO("Testing numeric EVMDD for construction on arithmetic input",
         Domains d = {{"x", 2}, {"y", 2}, {"z", 3}};
         Polynomial p = Polynomial("(x*y)+z");
         WHEN("We create the evmdd in order x>y>z") {
-            Ordering o = {{"x", 3}, {"y", 2}, {"z", 1}};
+            Ordering o = {"z", "y", "x"}; // {{"x", 3}, {"y", 2}, {"z", 1}};
             auto evmdd = p.create_evmdd<int>(d, o);
             THEN("evmdd has the expected structure") {
                 std::stringstream result;
@@ -112,7 +112,7 @@ SCENARIO("Testing numeric EVMDD for construction on arithmetic input",
             }
         }
         WHEN("We create the evmdd in order x>z>y") {
-            Ordering o = {{"x", 3}, {"y", 1}, {"z", 2}};
+            Ordering o = {"y", "z", "x"}; // {{"x", 3}, {"y", 1}, {"z", 2}};
             auto evmdd = p.create_evmdd<int>(d, o);
             THEN("evmdd has the expected structure") {
                 std::stringstream result;
