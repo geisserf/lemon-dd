@@ -135,6 +135,10 @@ int main() {
     cout << "Enter name of result file." << endl;
     string filename;
     getline(cin, filename);
+    if(filename.empty()) {
+        cout << "File name not entered. Setting to \"noname\"" << endl;
+        filename = "noname";
+    }
     filename += ".dot";
     std::ofstream dot_stream(filename);
 
