@@ -56,6 +56,18 @@ private:
             if (auto *o = Factories::get_as_div(e)) {
                 return apply(o->rands(), std::divides<M>());
             }
+            if (auto *o = Factories::get_as_greater(e)) {
+                return apply(o->rands(), std::greater<M>());
+            }
+            if (auto *o = Factories::get_as_lesser(e)) {
+                return apply(o->rands(), std::less<M>());
+            }
+            if (auto *o = Factories::get_as_greater_equals(e)) {
+                return apply(o->rands(), std::greater_equal<M>());
+            }
+            if (auto *o = Factories::get_as_lesser_equals(e)) {
+                return apply(o->rands(), std::less_equal<M>());
+            }
             if (auto *o = Factories::get_as_equals(e)) {
                 return apply(o->rands(), std::equal_to<M>());
             }
