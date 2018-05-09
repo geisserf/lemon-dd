@@ -80,6 +80,10 @@ private:
             if (auto *o = Factories::get_as_not(e)) {
                 return apply(o->rands(), logic_not<M>());
             }
+            if (auto *o = Factories::get_as_abs(e)) {
+                return apply(o->rands(), absolute<M>());
+            }
+
             throw std::logic_error("Unknown Operator in Apply");
         };
     }

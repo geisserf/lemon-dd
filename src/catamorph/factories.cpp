@@ -1,7 +1,3 @@
-//
-// Created by bwright on 22.06.17.
-//
-
 #include "factories.h"
 
 Expression Factories::mul(std::vector<Expression> const &rands) {
@@ -57,4 +53,8 @@ Expression Factories::lor(std::vector<Expression> const &rands) {
 
 Expression Factories::lnot(std::vector<Expression> const &rands) {
     return Expression(not_op<Expression>{rands});
+}
+
+Expression Factories::abs(std::vector<Expression> const &rands) {
+    return Expression(abs_op<Expression>{rands});
 }

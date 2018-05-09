@@ -49,6 +49,11 @@ Token Lexer::getNextToken() {
     std::regex equalsRegex("\\=\\=(.*)"); // Regex for == (Logical equals)
     std::regex notRegex("\\!(.*)");       // Regex for ! (Logical not)
 
+    // Absolute amount function regex: abs(x)
+    // TODO variables with the word abs may be seen as absolute amount.
+    // A possible fix is to check for the paranthese after abs.
+    std::regex absRegex("abs(.*)");
+
     Token token;
     if (std::regex_match(input, addRegex)) {
         token.type = Type::OP;
@@ -82,6 +87,10 @@ Token Lexer::getNextToken() {
         token.type = Type::OP;
         token.value = "<";
         input = std::regex_replace(input, lesserRegex, "$1");
+    } else if (std::regex_match(input, absRegex)) {
+        token.type = Type::OP;
+        token.value = "abs";
+        input = std::regex_replace(input, absRegex, "$1");
     } else if (std::regex_match(input, andRegex)) {
         token.type = Type::OP;
         token.value = "&&";
@@ -130,6 +139,10 @@ Token Lexer::getNextToken() {
     previousToken = token;
     return token;
 }
+
+/*
+ * PREFIX PARSER
+ */
 
 Expression Parser::parse(string const &input) const {
     // For user convenience we surround the input string with parantheses
@@ -236,6 +249,10 @@ Expression Parser::parseOpExpression(Lexer &lexer) const {
     }
 }
 
+/*
+ * INFIX PARSER
+ */
+
 bool InfixParser::isBinaryOperator(Token const &token) {
     return (token.value == "+" || token.value == "-" || token.value == "*" ||
             token.value == "/" || token.value == ">" || token.value == ">=" ||
@@ -243,7 +260,7 @@ bool InfixParser::isBinaryOperator(Token const &token) {
 }
 
 bool InfixParser::isUnaryOperator(Token const &token) {
-    return token.value == "-";
+    return (token.value == "-" || token.value == "abs");
 }
 
 bool InfixParser::hasHigherPrecedence(Token const &first, Token const &second) {
@@ -446,11 +463,12 @@ Expression InfixParser::createExpression(Expression const &lhs, Token op,
 Expression InfixParser::createUnaryExpression(Expression const &exp,
                                               Token op) const {
     if (op.value == "!") {
-        vector<Expression> exprs{exp};
-        return Factories::lnot(exprs);
+        return Factories::lnot({exp});
     } else if (op.value == "-") {
         vector<Expression> exprs{Factories::cst(0), exp};
         return Factories::sub(exprs);
+    } else if (op.value == "abs") {
+        return Factories::abs({exp});
     } else {
         throw std::invalid_argument("Unknown unary operator:" + op.value);
     }
