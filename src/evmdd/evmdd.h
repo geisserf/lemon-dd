@@ -183,7 +183,7 @@ public:
                                   node_factory.get_terminal_node());
         }
         assert(std::find(ordering.begin(), ordering.end(), var) != ordering.end());
-        auto var_pos = std::distance(ordering.begin(), find(ordering.begin(), ordering.end(), var));
+        auto var_pos = std::distance(ordering.begin(), find(ordering.begin(), ordering.end(), var)) + 1;
         Node_ptr<Monoid<M, F>> node =
             node_factory.make_node(var_pos, var, children);
         return Evmdd<M, F>(Monoid<M, F>::neutral_element(), node);
