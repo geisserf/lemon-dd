@@ -16,7 +16,7 @@ SCENARIO("Testing numeric EVMDDs for construction on iverson based input",
         Polynomial p = Polynomial("[a == b]");
         WHEN("We create the evmdd") {
             Domains d = {{"a", 3}, {"b", 3}};
-            Ordering o = {"b", "a"}; // {{"a", 2}, {"b", 1}};
+            Ordering o = {"b", "a"};
             auto evmdd = p.create_evmdd<int>(d, o);
             THEN("evmdd has the expected structure") {
                 std::stringstream result;
@@ -36,7 +36,7 @@ SCENARIO("Testing numeric EVMDDs for construction on iverson based input",
         Polynomial p = Polynomial("[![a&&b]]");
         WHEN("We create the evmdd") {
             Domains d = {{"a", 2}, {"b", 2}};
-            Ordering o = {"b", "a"}; // {{"a", 2}, {"b", 1}};
+            Ordering o = {"b", "a"};
             auto evmdd = p.create_evmdd<int>(d, o);
             THEN("evmdd has the expected structure") {
                 std::stringstream result;
@@ -55,7 +55,7 @@ SCENARIO("Testing numeric EVMDDs for construction on iverson based input",
         Polynomial p = Polynomial("[!a]");
         WHEN("We create the evmdd") {
             Domains d = {{"a", 2}};
-            Ordering o = {"a"}; // {{"a", 1}};
+            Ordering o = {"a"};
             auto evmdd = p.create_evmdd<int>(d, o);
             THEN("evmdd has the expected structure") {
                 std::stringstream result;
@@ -72,7 +72,7 @@ SCENARIO("Testing numeric EVMDDs for construction on iverson based input",
         Polynomial p = Polynomial("[!!a]");
         WHEN("We create the evmdd") {
             Domains d = {{"a", 2}};
-            Ordering o = {"a"}; // {{"a", 1}};
+            Ordering o = {"a"};
             auto evmdd = p.create_evmdd<int>(d, o);
             THEN("evmdd has the expected structure") {
                 std::stringstream result;
@@ -92,7 +92,7 @@ SCENARIO("Testing numeric EVMDDs for construction on iverson based input",
         Polynomial p = Polynomial("[a&&b]");
         WHEN("We create the evmdd") {
             Domains d = {{"a", 2}, {"b", 2}};
-            Ordering o = {"b", "a"}; // {{"a", 2}, {"b", 1}};
+            Ordering o = {"b", "a"};
             auto evmdd = p.create_evmdd<int>(d, o);
             THEN("evmdd has the expected structure") {
                 std::stringstream result;
@@ -111,7 +111,7 @@ SCENARIO("Testing numeric EVMDDs for construction on iverson based input",
         Polynomial p = Polynomial("[a || b]");
         WHEN("We create the evmdd") {
             Domains d = {{"a", 2}, {"b", 2}};
-            Ordering o = {"b", "a"}; // {{"a", 2}, {"b", 1}};
+            Ordering o = {"b", "a"};
             auto evmdd = p.create_evmdd<int>(d, o);
             THEN("evmdd has the expected structure") {
                 std::stringstream result;
@@ -133,7 +133,7 @@ SCENARIO("Testing numeric EVMDDs for construction on iverson based input",
         Polynomial p = Polynomial("[[!a]&&b]");
         WHEN("We create the evmdd") {
             Domains d = {{"a", 2}, {"b", 2}};
-            Ordering o = {"b", "a"}; // {{"a", 2}, {"b", 1}};
+            Ordering o = {"b", "a"};
             auto evmdd = p.create_evmdd<int>(d, o);
             THEN("evmdd has the expected structure") {
                 std::stringstream result;
@@ -156,7 +156,7 @@ SCENARIO("Testing numeric EVMDDs for construction on iverson based input",
         Polynomial p = Polynomial("[!a]+b");
         WHEN("We create the evmdd") {
             Domains d = {{"a", 2}, {"b", 2}};
-            Ordering o = {"b", "a"}; // {{"a", 2}, {"b", 1}};
+            Ordering o = {"b", "a"};
             auto evmdd = p.create_evmdd<int>(d, o);
             THEN("evmdd has the expected structure") {
                 std::stringstream result;
@@ -174,7 +174,7 @@ SCENARIO("Testing numeric EVMDDs for construction on iverson based input",
         Polynomial p = Polynomial("[a&&[!b]]*c+5");
         WHEN("We create the evmdd") {
             Domains d = {{"a", 2}, {"b", 2}, {"c", 2}};
-            Ordering o = {"c","b","a"}; //{{"a", 3}, {"b", 2}, {"c", 1}};
+            Ordering o = {"c","b","a"};
             auto evmdd = p.create_evmdd<int>(d, o);
             THEN("evmdd has the expected structure") {
                 std::stringstream result;
@@ -203,7 +203,7 @@ SCENARIO("Testing numeric EVMDDs for construction on iverson based input",
         Polynomial p = Polynomial("[a==b]");
         WHEN("We create the evmdd") {
             Domains d = {{"a", 3}, {"b", 3}};
-            Ordering o = {"b","a"};// {{"a", 2}, {"b", 1}};
+            Ordering o = {"b","a"};
             auto evmdd = p.create_evmdd<int>(d, o);
             THEN("evmdd has the expected structure") {
                 std::stringstream result;
@@ -225,7 +225,7 @@ SCENARIO("Testing numeric EVMDDs for construction on iverson based input",
     GIVEN("Term [!a] with domain 0,1,2") {
         Polynomial p = Polynomial("[!a]");
         Domains d = {{"a", 3}};
-        Ordering o = {"a"}; // {{"a", 1}};
+        Ordering o = {"a"};
         WHEN("We create the evmdd") {
             THEN("We get an error") {
                 REQUIRE_THROWS_AS(p.create_evmdd<int>(d, o), std::logic_error);
@@ -235,7 +235,7 @@ SCENARIO("Testing numeric EVMDDs for construction on iverson based input",
     GIVEN("Term [a && b] with domains Da ={0,1} Db = {0,1,2}") {
         Polynomial p = Polynomial("[a&&b]");
         Domains d = {{"a", 2}, {"b", 3}};
-        Ordering o = {"b","a"}; // {{"a", 2}, {"b", 1}};
+        Ordering o = {"b","a"};
         WHEN("We create the evmdd") {
             THEN("We get an error") {
                 REQUIRE_THROWS_AS(p.create_evmdd<int>(d, o), std::logic_error);
@@ -245,7 +245,7 @@ SCENARIO("Testing numeric EVMDDs for construction on iverson based input",
     GIVEN("Term [a || b] with domains Da = Db = {0,1,2}") {
         Polynomial p = Polynomial("[a || b]");
         Domains d = {{"a", 3}, {"b", 3}};
-        Ordering o = {"b","a"}; //{{"a", 2}, {"b", 1}};
+        Ordering o = {"b","a"};
         WHEN("We create the evmdd") {
             THEN("We get an error") {
                 REQUIRE_THROWS_AS(p.create_evmdd<int>(d, o), std::logic_error);
@@ -258,7 +258,7 @@ SCENARIO("Testing numeric EVMDDs for construction on iverson based input",
     GIVEN("Term [[!a]&&b] with domain 0,1,2") {
         Polynomial p = Polynomial("[[!a]&&b]");
         Domains d = {{"a", 3}, {"b", 3}};
-        Ordering o = {"b", "a"}; //{{"a", 2}, {"b", 1}};
+        Ordering o = {"b", "a"};
         WHEN("We create the evmdd") {
             THEN("We get an error") {
                 REQUIRE_THROWS_AS(p.create_evmdd<int>(d, o), std::logic_error);
@@ -268,7 +268,7 @@ SCENARIO("Testing numeric EVMDDs for construction on iverson based input",
     GIVEN("Term [!a]+b with domain Da=Db={0,1,2}") {
         Polynomial p = Polynomial("[!a]+b");
         Domains d = {{"a", 3}, {"b", 3}};
-        Ordering o = {"b","a"}; //{{"a", 2}, {"b", 1}};
+        Ordering o = {"b","a"};
         WHEN("We create the evmdd") {
             THEN("We get an error") {
                 REQUIRE_THROWS_AS(p.create_evmdd<int>(d, o), std::logic_error);
@@ -280,7 +280,7 @@ SCENARIO("Testing numeric EVMDDs for construction on iverson based input",
         Polynomial p = Polynomial("[!a]+b");
         WHEN("We create the evmdd") {
             Domains d = {{"a", 2}, {"b", 3}};
-            Ordering o = {"b","a"};// {{"a", 2}, {"b", 1}};
+            Ordering o = {"b","a"};
             auto evmdd = p.create_evmdd<int>(d, o);
             THEN("evmdd has the expected structure") {
                 std::stringstream result;
