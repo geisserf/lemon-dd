@@ -53,6 +53,7 @@ set(SOURCE_FILES
      evmdd/monoids/numbers.cpp
      evmdd/monoids/facts.h evmdd/monoids/facts.cpp
      evmdd/monoids/boolean.h evmdd/monoids/boolean.cpp
+     evmdd/operations/logic_and.h
      evmdd/operations/logic_not.h
      #utils/math_utils.h utils/math_utils.cpp
      #utils/system_utils.h utils/system_utils.cpp
