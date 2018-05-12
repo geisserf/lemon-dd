@@ -22,48 +22,41 @@ using Edge = std::pair<T, Node_ptr<T>>;
 using Sorting_key = size_t;
 
 template <typename T>
-class NodeStorage {
+class NodeFactory {
 public:
-    // ~NodeStorage() {
-    //     int collisions = 0;
-    //     for (size_t i = 0; i < id_cache.size(); ++i) {
-    //         if (id_cache.bucket_size(i) > 1) {
-    //             ++collisions;
-    //         }
-    //     }
-    //     std::cout << "Nodes: " << lookup.size() << std::endl;
-    //     std::cout << "Collisions: " << collisions << std::endl;
-    // }
-
-    Node_ptr<T> get_node(int id) const {
-        return lookup.at(id);
+    // Returns a pointer to the (unique) terminal node
+    Node_ptr<T> get_terminal_node() const {
+        return lookup.at(0);
     }
 
-    Node_ptr<T> exists(int level, std::vector<Edge<T>> const &edges) {
-        Sorting_key key = hash_value(level, edges);
-        return id_cache[key];
-    }
-
-    void add_node(Node_ptr<T> node) {
-        lookup.insert(std::make_pair<>(node->get_id(), node));
-        Sorting_key key = hash_value(node->get_level(), node->get_children());
-        assert(id_cache[key] == nullptr);
+    // Returns a pointer to the given node. If the node is not yet stored, it is
+    // created first.
+    Node_ptr<T> make_node(unsigned int level, std::string const &variable,
+                          std::vector<Edge<T>> const &children) {
+        assert(level != 0);
+        Sorting_key key = hash_value(level, children);
+        if (id_cache[key]) {
+            return id_cache[key];
+        }
+        Node_ptr<T> node(new Node<T>(lookup.size(), level, variable, children));
+        lookup.insert(std::make_pair<>(lookup.size(), node));
         id_cache[key] = node;
+        return node;
     }
 
     size_t size() const {
         return lookup.size();
     }
 
-    void print_nodes(std::ostream& out) const {
+    void print_nodes(std::ostream &out) const {
         out << "Nodes stored: " << std::endl;
-        for (auto const& kv : lookup) {
+        for (auto const &kv : lookup) {
             out << kv.second->to_string() << std::endl;
         }
     }
 
     // Automatically constructs the terminal node on initialization
-    NodeStorage() : lookup({{0, Node_ptr<T>(new Node<T>(0, 0, " ", {}))}}) {}
+    NodeFactory() : lookup({{0, Node_ptr<T>(new Node<T>(0, 0, " ", {}))}}) {}
 
 private:
     // Storage for nodes, in case no evmdd uses a node, but we may want to use
