@@ -48,7 +48,7 @@ public:
     }
 
     void print_nodes(std::ostream &out) const {
-        out << size() " nodes stored: " << std::endl;
+        out << size() << " nodes stored: " << std::endl;
         for (auto const &kv : id_cache) {
             out << kv.second->to_string() << std::endl;
         }
