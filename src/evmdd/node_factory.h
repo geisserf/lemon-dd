@@ -26,43 +26,38 @@ class NodeFactory {
 public:
     // Returns a pointer to the (unique) terminal node
     Node_ptr<T> get_terminal_node() const {
-        return lookup.at(0);
+        return id_cache.at(0);
     }
 
     // Returns a pointer to the given node. If the node is not yet stored, it is
     // created first.
     Node_ptr<T> make_node(unsigned int level, std::string const &variable,
                           std::vector<Edge<T>> const &children) {
-        assert(level != 0);
         Sorting_key key = hash_value(level, children);
+        assert(key != 0); // hash key 0 should only belong to the terminal node
         if (id_cache[key]) {
             return id_cache[key];
         }
-        Node_ptr<T> node(new Node<T>(lookup.size(), level, variable, children));
-        lookup.insert(std::make_pair<>(lookup.size(), node));
+        Node_ptr<T> node(new Node<T>(size(), level, variable, children));
         id_cache[key] = node;
         return node;
     }
 
     size_t size() const {
-        return lookup.size();
+        return id_cache.size();
     }
 
     void print_nodes(std::ostream &out) const {
-        out << "Nodes stored: " << std::endl;
-        for (auto const &kv : lookup) {
+        out << size() " nodes stored: " << std::endl;
+        for (auto const &kv : id_cache) {
             out << kv.second->to_string() << std::endl;
         }
     }
 
     // Automatically constructs the terminal node on initialization
-    NodeFactory() : lookup({{0, Node_ptr<T>(new Node<T>(0, 0, " ", {}))}}) {}
+    NodeFactory() : id_cache({{0, Node_ptr<T>(new Node<T>(0, 0, " ", {}))}}) {}
 
 private:
-    // Storage for nodes, in case no evmdd uses a node, but we may want to use
-    // them again for further evmdd construction
-    std::unordered_map<int, Node_ptr<T>> lookup;
-
     // For each new node there is an entry (level,weights,children)->node
     std::unordered_map<Sorting_key, Node_ptr<T>> id_cache;
 
