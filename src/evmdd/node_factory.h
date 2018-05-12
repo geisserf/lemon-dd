@@ -1,5 +1,5 @@
-#ifndef NODE_STORAGE_H
-#define NODE_STORAGE_H
+#ifndef NODE_FACTORY_H
+#define NODE_FACTORY_H
 
 #include <cassert>
 #include <iostream>
@@ -72,4 +72,4 @@ private:
     }
 };
 
-#endif /* NODE_STORAGE_H */
+#endif /* NODE_FACTORY_H */
