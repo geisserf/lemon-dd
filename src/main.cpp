@@ -41,8 +41,9 @@ Ordering parse_ordering(string const &ordering) {
     vector<string> variables = StringUtils::split(ordering, ' ');
     result.reserve(variables.size());
     for (string const &var : variables) {
-        result.insert(result.begin(), var);
+        result.push_back(var);
     }
+    std::reverse(result.begin(), result.end());
     return result;
 }
 
