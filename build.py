@@ -16,6 +16,9 @@ DEBUG_CONFIG_NAME = "debug32"
 CONFIGS[DEBUG_CONFIG_NAME] = ["-DCMAKE_BUILD_TYPE=Debug"]
 CONFIGS[DEFAULT_CONFIG_NAME]= ["-DCMAKE_BUILD_TYPE=Release"]
 
+# Set environment variable for compilation with clang
+os.environ["CC"] = "clang-3.8"
+os.environ["CXX"] = "clang-3.8"
 
 def get_project_root_path():
     import __main__
@@ -72,6 +75,7 @@ def main():
         if arg == "--debug":
             config_names.add(DEBUG_CONFIG_NAME)
         else: make_parameters.append(arg)
+
 
     if not config_names:
         config_names.add(DEFAULT_CONFIG_NAME)
