@@ -186,6 +186,7 @@ public:
         }
         assert(std::find(ordering.begin(), ordering.end(), var) !=
                ordering.end());
+        // Increase by 1 since index 0 is reserved for terminal node 
         auto var_pos =
             std::distance(ordering.begin(),
                           find(ordering.begin(), ordering.end(), var)) +
