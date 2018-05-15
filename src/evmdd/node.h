@@ -1,7 +1,7 @@
 #ifndef NODE_H
 #define NODE_H
 
-#include "node_storage.h"
+#include "node_factory.h"
 
 #include <cassert>
 #include <map>
@@ -65,7 +65,6 @@ private:
     std::vector<Edge<T>> children;
 
     friend NodeFactory<T>;
-    friend NodeStorage<T>;
 
 public:
     // returns "var [w1] ... [w_n]"
@@ -157,47 +156,6 @@ public:
 
     friend bool operator<(const Node<T> &l, const Node<T> &r) {
         return l.get_id() < r.get_id();
-    }
-};
-
-template <typename T>
-class NodeFactory {
-public:
-    NodeFactory() : storage(NodeStorage<T>()), node_counter(storage.size()) {}
-
-    size_t size() const {
-        return storage.size();
-    }
-
-    // Returns a pointer to the (unique) terminal node
-    Node_ptr<T> get_terminal_node() const {
-        return storage.get_node(0);
-    }
-
-    // Returns a pointer to the given node. If the node is not yet stored, it is
-    // created first.
-    Node_ptr<T> make_node(unsigned int level, std::string const &variable,
-                          std::vector<Edge<T>> const &children) {
-        assert(level != 0);
-        if (auto cached = storage.exists(level, children)) {
-            return cached;
-        }
-        Node_ptr<T> node(
-            new Node<T>(node_counter++, level, variable, children));
-        storage.add_node(node);
-        return node;
-    }
-
-private:
-    // Manages node memory
-    NodeStorage<T> storage;
-
-    // How many nodes this factory created
-    int node_counter;
-
-    // Retrieves the node with the given id
-    Node_ptr<T> get_node(int id) const {
-        return storage.get_node(id);
     }
 };
 
