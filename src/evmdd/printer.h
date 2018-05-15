@@ -116,36 +116,47 @@ private:
         }
         std::stringstream ss;
         for (auto const &effect : conditional) {
-            ss << "<tr><td align=\"center\">" << effect << "</td></tr>";
+            ss << "<tr><td align=\"center\">" << html_encode(effect)
+               << "</td></tr>";
         }
         ss << "<tr><td></td></tr>";
         std::string effects = ss.str();
-        // Html-encode string to prevent syntax errors
-        // Replace -> in string to prevent error caused by ">"
-        for (std::string::size_type pos = 0;
-             (pos = effects.find("->")) != std::string::npos; pos += 4) {
-            effects.replace(pos, 2, "&rArr;");
-        }
-        // Replace & sign with &amp if exists
-        if (effects.find("&&") != std::string::npos) {
-            effects = html_encode(effects);
-        }
         return effects;
     }
 
-    // Checks if string contains & sign which causes error in html
-    // Returns string replacing & sign with &amp if there are any.
-    std::string html_encode(std::string const &expression) const {
-        if (expression.find("&") != std::string::npos) {
-            std::string copy_expression = expression;
-            for (std::string::size_type pos = 0;
-                 (pos = copy_expression.find("&", pos)) != std::string::npos;
-                 pos += 2) {
-                copy_expression.replace(pos, 1, "&amp;");
-            }
-            return copy_expression;
+    // Checks if string contains ->, &,< or > sign which needs to be escaped in
+    // html.
+    // Returns string replacing -> with &rarr, & with &amp, < with &lt, > with &gt.
+    std::string html_encode(std::string expression) const {
+        std::string result = expression;
+        // TODO refactor with loop over escaped strings
+        // Check for & first, since otherwise we replace &lt/&gt
+        std::string::size_type pos = 0;
+        while ((pos = result.find("&", pos)) != std::string::npos) {
+            std::string replacement = "&amp;";
+            result.replace(pos, 1, replacement);
+            pos += replacement.size();
         }
-        return expression;
+        pos = 0;
+        while ((pos = result.find("->", pos)) != std::string::npos) {
+            std::string replacement = "&rarr;";
+            result.replace(pos, 2, replacement);
+            pos += replacement.size();
+        }
+
+        pos = 0;
+        while ((pos = result.find("<", pos)) != std::string::npos) {
+            std::string replacement = "&lt;";
+            result.replace(pos, 1, replacement);
+            pos += replacement.size();
+        }
+        pos = 0;
+        while ((pos = result.find(">", pos)) != std::string::npos) {
+            std::string replacement = "&gt;";
+            result.replace(pos, 1, replacement);
+            pos += replacement.size();
+        }
+        return result;
     }
 
     // Splits long expression into separate rows by <tr><td> html-tags
@@ -161,7 +172,7 @@ private:
             pos += (width + 18);
         }
         copy_text.append("</td></tr>");
-        return html_encode(copy_text);
+        return copy_text;
     }
 
     // Prints an informative header about EVMDD to the top
@@ -173,7 +184,7 @@ private:
         // Expressions
         out << "<tr><td border=\"1\" align=\"center\">";
         out << "Arithmetic Expression:</td></tr>";
-        out << format_long_expression(arithmetic, max_width);
+        out << format_long_expression(html_encode(arithmetic), max_width);
         out << "<tr><td border=\"1\" align=\"center\">";
         out << "Conditional Effects:</td></tr>";
         // Html-encode expression if it contains && operator
