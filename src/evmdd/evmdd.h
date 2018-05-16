@@ -313,6 +313,8 @@ private:
                     l, r.get_input().get_value());
 
             });
+        // Assertion for -nan edge weight
+        assert (isnan(min_weight_value) == 0);
         Monoid<M, F> min_weight{min_weight_value};
         std::vector<Edge<Monoid<M, F>>> edges;
         edges.reserve(children.size());
