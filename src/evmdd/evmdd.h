@@ -186,6 +186,12 @@ public:
         }
         assert(std::find(ordering.begin(), ordering.end(), var) !=
                ordering.end());
+        // If variable is not indicated in ordering, append it at the end
+        // Note : "ordering" is the reversed version here.
+        if(std::find(ordering.begin(), ordering.end(), var) ==
+               ordering.end()) {
+                   ordering.push_back(var);
+               }
         // Increase by 1 since index 0 is reserved for terminal node 
         auto var_pos =
             std::distance(ordering.begin(),
