@@ -151,10 +151,9 @@ private:
         string result = "<tr><td>";
         // Insert line breaks to text and format lines to html.
         // width chars per line. (Skip 18 chars to omit html tags)
-        std::string line_end = "</td></tr><tr><td>";
         for (string::size_type pos = 0; pos < text.size(); pos += width) {
             result += html_encode(text.substr(pos, width));
-            result += line_end;
+            result += "</td></tr><tr><td>";
         }
         result += "</td></tr>";
         return result;
