@@ -4,6 +4,7 @@
 #include "evmdd/printer.h"
 #include "polynomial.h"
 #include "utils/string_utils.h"
+#include "catamorph/interpreters/create_ast.h"
 
 #include <chrono>
 #include <fstream>
@@ -46,6 +47,30 @@ Ordering parse_ordering(string const &ordering) {
     return result;
 }
 
+Ordering fan_in_ordering(string &term, string const &domains) {
+    Ordering result;
+    vector<string> variables;
+    std::istringstream iss(domains);
+    vector<string> tokens{std::istream_iterator<string>{iss},
+                          std::istream_iterator<string>{}};
+    for (string const &token : tokens) {
+        vector<string> var_domain_pair = StringUtils::split(token, ':');
+        assert(var_domain_pair.size() == 2);
+        variables.push_back(var_domain_pair[0]);
+    }
+    CreateAST creator;
+    ASTNode ast_root = creator.create_ast(term,  variables);
+    vector<string> order = creator.get_fan_in_ordering(ast_root, variables.size());
+    std::cout << "Fan-in: " << std::flush;
+    int pos = 0;
+    for (auto& var : order) {
+        std::cout << var << " " << std::flush;
+        result[var] = ++pos;
+    }
+    std::cout << std::endl;
+    return result;
+}
+
 template <typename M, typename F>
 void create_dot(std::ostream &output_stream, std::string const &filename,
                 Evmdd<M, F> const &evmdd, string const &arithmetic,
@@ -82,16 +107,24 @@ int main() {
     cout << "Enter top-down ordering relation between variables in the "
             "following form: <var_i> <var_j> ... <var_k>."
          << endl;
-    cout << "Example: b c d e a" << endl;
+    cout << "Example: b c d e a (leave empty for fan-in)" << endl;
     string ordering_as_string;
     getline(cin, ordering_as_string);
-    Ordering ordering = parse_ordering(ordering_as_string);
+    Ordering ordering;
+    
+    if (!ordering_as_string.empty()) {
+      ordering = parse_ordering(ordering_as_string);
+    }
 
     cout << "Enter an arithmetic expression (press return to skip). For more "
             "information on arithmetic expressions we refer to the Wiki."
          << endl;
     string arithmetic_expression;
     getline(cin, arithmetic_expression);
+
+    if (ordering_as_string.empty()) {
+        ordering = fan_in_ordering(arithmetic_expression, domains);
+    }
 
     std::chrono::time_point<std::chrono::system_clock> start, end;
     Evmdd<double> cost_evmdd;

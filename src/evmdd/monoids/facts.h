@@ -2,6 +2,7 @@
 #define VARIABLE_ASSIGNMENT_H
 
 #include <algorithm>
+#include <string>
 #include <set>
 
 // A fact is a variable-value pair
