@@ -144,6 +144,69 @@ SCENARIO("Testing numeric EVMDDs for concrete evaluation over float",
         }
     }
 
+    GIVEN("Evmdd for term x>y with domain x=0..3, y=0..3") {
+        Polynomial p = Polynomial("x>y");
+        Domains d = {{"x", 4}, {"y", 4}};
+        Ordering o = {{"x", 1}, {"y", 2}};
+        auto evmdd = p.create_evmdd<float>(d, o);
+        THEN("Evaluation should be correct") {
+            for (unsigned int x = 0; x < d["x"]; ++x) {
+                for (unsigned int y = 0; y < d["y"]; ++y) {
+                    auto result = static_cast<int>(x > y);
+                    ConcreteState state{x, y};
+                    REQUIRE(evmdd.evaluate(state) == result);
+                }
+            }
+        }
+        THEN("Converse relation results in the same EVMDD") {
+            p = Polynomial("y<x");
+            auto evmdd2 = p.create_evmdd<float>(d, o);
+            REQUIRE(evmdd == evmdd2);
+        }
+        THEN("Negation inverts the inequality") {
+            p = Polynomial("-x < -y");
+            auto evmdd2 = p.create_evmdd<float>(d, o);
+            REQUIRE(evmdd == evmdd2);
+        }
+        THEN("Multiplicative inverse results in the same EVMDD") {
+            p = Polynomial("(1/(x+1) < 1/(y+1))");
+            auto evmdd2 = p.create_evmdd<float>(d, o);
+            REQUIRE(evmdd == evmdd2);
+        }
+    }
+
+    GIVEN("Evmdd for term x>=y with domain x=0..3, y=0..3") {
+        Polynomial p = Polynomial("x>=y");
+        Domains d = {{"x", 4}, {"y", 4}};
+        Ordering o = {{"x", 1}, {"y", 2}};
+        auto evmdd = p.create_evmdd<float>(d, o);
+        THEN("Evaluation should be correct") {
+            for (unsigned int x = 0; x < d["x"]; ++x) {
+                for (unsigned int y = 0; y < d["y"]; ++y) {
+                    auto result = static_cast<int>(x >= y);
+                    ConcreteState state{x, y};
+                    REQUIRE(evmdd.evaluate(state) == result);
+                }
+            }
+        }
+        THEN("Converse relation results in the same EVMDD") {
+            p = Polynomial("y<=x");
+            auto evmdd2 = p.create_evmdd<float>(d, o);
+            REQUIRE(evmdd == evmdd2);
+        }
+        THEN("Negation inverts the inequality") {
+            p = Polynomial("-x <= -y");
+            auto evmdd2 = p.create_evmdd<float>(d, o);
+            REQUIRE(evmdd == evmdd2);
+        }
+        THEN("Multiplicative inverse results in the same EVMDD") {
+            p = Polynomial("(1/(x+1) <= 1/(y+1))");
+            auto evmdd2 = p.create_evmdd<float>(d, o);
+            REQUIRE(evmdd == evmdd2);
+        }
+    }
+
+
     GIVEN("Evmdd for term 4*x*x+3*y+2 with domain x=0..9, y=0..4") {
         Polynomial p = Polynomial("(((4 * x) * x) + (3 * y)) + 2");
         Domains d = {{"x", 10}, {"y", 5}};

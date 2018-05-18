@@ -154,6 +154,10 @@ public:
         }
         return l.source_node < r.source_node;
     }
+
+    friend bool operator==(const Evmdd<M, F> &l, const Evmdd<M, F> &r) {
+        return ((l.source_node == r.source_node) && (l.input == r.input));
+    }
 };
 
 template <typename M, typename F>
