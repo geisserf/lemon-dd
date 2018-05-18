@@ -150,7 +150,6 @@ private:
     string format_long_expression(string const &text, int width) const {
         string result = "<tr><td>";
         // Insert line breaks to text and format lines to html.
-        // width chars per line. (Skip 18 chars to omit html tags)
         for (string::size_type pos = 0; pos < text.size(); pos += width) {
             result += html_encode(text.substr(pos, width));
             result += "</td></tr><tr><td>";
