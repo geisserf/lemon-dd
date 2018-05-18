@@ -145,19 +145,19 @@ private:
         return result;
     }
 
-    // Splits long expression into separate rows by <tr><td> html-tags
-    string format_long_expression(string text, int width) const {
-        string copy_text = text;
-        copy_text.insert(0, "<tr><td>");
-        // Insert line breaks to text.
+    // Splits long expression into separate rows by <tr><td> html-tags and
+    // encode lines into html format.
+    string format_long_expression(string const &text, int width) const {
+        string result = "<tr><td>";
+        // Insert line breaks to text and format lines to html.
         // width chars per line. (Skip 18 chars to omit html tags)
-        string::size_type pos = width + 8;
-        while (pos < copy_text.size()) {
-            copy_text.insert(pos, "</td></tr><tr><td>");
-            pos += width + 18;
+        std::string line_end = "</td></tr><tr><td>";
+        for (string::size_type pos = 0; pos < text.size(); pos += width) {
+            result += html_encode(text.substr(pos, width));
+            result += line_end;
         }
-        copy_text.append("</td></tr>");
-        return copy_text;
+        result += "</td></tr>";
+        return result;
     }
 
     // Prints an informative header about EVMDD to the top
@@ -169,7 +169,7 @@ private:
         // Expressions
         out << "<tr><td border=\"1\" align=\"center\">";
         out << "Arithmetic Expression:</td></tr>";
-        out << format_long_expression(html_encode(arithmetic), max_width);
+        out << format_long_expression(arithmetic, max_width);
         out << "<tr><td border=\"1\" align=\"center\">";
         out << "Conditional Effects:</td></tr>";
         // Html-encode expression if it contains && operator
