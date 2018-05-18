@@ -13,6 +13,80 @@
 template <typename M, typename F>
 class Evmdd;
 
+using std::string;
+
+template <typename M, typename F>
+class MermaidPrinter {
+public:
+    MermaidPrinter() = default;
+    // prints the .dot representation of an evmdd
+    void to_mermaid(std::ostream &out, string const & /*filename*/,
+                    Evmdd<M, F> const &evmdd, string const & /*arithmetic*/,
+                    std::vector<string> const & /*conditional*/,
+                    string::size_type /*max_width*/) {
+        node_count = 0;
+        edge_count = 0;
+        write_beginning(out, evmdd.get_input(), evmdd.get_source_node());
+        process_nodes(out, evmdd.get_source_node());
+        reset_internals();
+    }
+
+private:
+    string write_mermaid_node(Node_ptr<Monoid<M, F>> const &node) const {
+        string result = std::to_string(node->get_id());
+        result += "(" + node->get_variable();
+        result += ")";
+        return result;
+    }
+
+    // Prints start of dot file and the first edge connecting to the entry node
+    void write_beginning(std::ostream &out, Monoid<M, F> const &input_value,
+                         Node_ptr<Monoid<M, F>> entry_node) const {
+        out << "graph TD" << std::endl;
+        out << "dummy[ ] --> |" << input_value.to_string() << "|"
+            << write_mermaid_node(entry_node) << std::endl;
+    }
+
+    // Prints successor nodes and edges starting from entry_node
+    void process_nodes(std::ostream &out, Node_ptr<Monoid<M, F>> entry_node) {
+        if (printed_nodes.find(entry_node) != printed_nodes.end()) {
+            return;
+        }
+        printed_nodes.insert(entry_node);
+        int i = 0;
+        for (Edge<Monoid<M, F>> const &edge : entry_node->get_children()) {
+            print_edge(out, entry_node, edge.first, edge.second, i);
+            process_nodes(out, edge.second);
+            ++i;
+        }
+    }
+
+    // Prints an edge between two nodes with its weight.
+    void print_edge(std::ostream &out, Node_ptr<Monoid<M, F>> parent,
+                    Monoid<M, F> weight, Node_ptr<Monoid<M, F>> child,
+                    int domain) {
+        string weight_id = std::to_string(parent->get_id());
+        weight_id += std::to_string(domain);
+        weight_id += std::to_string(child->get_id());
+        out << write_mermaid_node(parent) << " --> |" << domain << "|"
+            << weight_id << "(" << weight.to_string() << ")" << std::endl;
+        out << weight_id << " --> " << write_mermaid_node(child) << std::endl;
+        edge_count++;
+    }
+
+    void reset_internals() {
+        same_level_nodes.clear();
+        printed_nodes.clear();
+    }
+
+    // Store which nodes lie on the same level for prettier visualization
+    std::map<int, std::vector<Node_ptr<Monoid<M, F>>>> same_level_nodes;
+    // Nodes which were already printed
+    std::unordered_set<Node_ptr<Monoid<M, F>>> printed_nodes;
+    int node_count;
+    int edge_count;
+};
+
 template <typename M, typename F>
 class DotPrinter {
 public:
