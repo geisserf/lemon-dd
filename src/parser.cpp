@@ -21,14 +21,14 @@ Token Lexer::getNextToken() {
     // trim surrounding parantheses
     StringUtils::trim(input);
 
-    std::regex addRegex("\\+(.*)");     // Regex for arithmetic +
-    std::regex subRegex("-(.*)");       // Regex for arithmetic -
-    std::regex multRegex("\\*(.*)");    // Regex for arithmetic *
-    std::regex divRegex("\\/(.*)");     // Regex for arithmetic /
-    std::regex greaterRegex("\\>(.*)"); // Regex for > comparison
-    std::regex lesserRegex("\\<(.*)"); // Regex for < comparison
+    std::regex addRegex("\\+(.*)");                // Regex for arithmetic +
+    std::regex subRegex("-(.*)");                  // Regex for arithmetic -
+    std::regex multRegex("\\*(.*)");               // Regex for arithmetic *
+    std::regex divRegex("\\/(.*)");                // Regex for arithmetic /
+    std::regex greaterRegex("\\>(.*)");            // Regex for > comparison
+    std::regex lessRegex("\\<(.*)");               // Regex for < comparison
     std::regex greater_equals_Regex("\\>\\=(.*)"); // Regex for >= comparison
-    std::regex lesser_equals_Regex("\\<\\=(.*)"); // Regex for <= comparison
+    std::regex less_equals_Regex("\\<\\=(.*)");    // Regex for <= comparison
     // Regex for constant numbers.
     // Note that we use the passive group (?:subpattern) here, so that we only
     // have one backreference for the whole constant and not multiple
@@ -37,8 +37,8 @@ Token Lexer::getNextToken() {
         "((?:[[:digit:]]+)(?:\\.(?:(?:[[:digit:]]+)?))?)(.*)");
     std::regex lParenRegex("\\((.*)"); // Regex for (
     std::regex rParenRegex("\\)(.*)"); // Regex for )
-    // Variables contain letters, numbers or "_",
-    // but must not start with a number
+    // Variables contain letters, numbers or "_" but must not start with a
+    // number
     std::regex varRegex("((?:[[:alpha:]_]+)(?:[[:alnum:]_]*))(.*)");
 
     // Iverson regex
@@ -50,9 +50,7 @@ Token Lexer::getNextToken() {
     std::regex notRegex("\\!(.*)");       // Regex for ! (Logical not)
 
     // Absolute amount function regex: abs(x)
-    // TODO variables with the word abs may be seen as absolute amount.
-    // A possible fix is to check for the paranthese after abs.
-    std::regex absRegex("abs(.*)");
+    std::regex absRegex("abs\\((.*)");
 
     Token token;
     if (std::regex_match(input, addRegex)) {
@@ -75,22 +73,23 @@ Token Lexer::getNextToken() {
         token.type = Type::OP;
         token.value = ">=";
         input = std::regex_replace(input, greater_equals_Regex, "$1");
-    } else if (std::regex_match(input, lesser_equals_Regex)) {
+    } else if (std::regex_match(input, less_equals_Regex)) {
         token.type = Type::OP;
         token.value = "<=";
-        input = std::regex_replace(input, lesser_equals_Regex, "$1");
+        input = std::regex_replace(input, less_equals_Regex, "$1");
     } else if (std::regex_match(input, greaterRegex)) {
         token.type = Type::OP;
         token.value = ">";
         input = std::regex_replace(input, greaterRegex, "$1");
-    } else if (std::regex_match(input, lesserRegex)) {
+    } else if (std::regex_match(input, lessRegex)) {
         token.type = Type::OP;
         token.value = "<";
-        input = std::regex_replace(input, lesserRegex, "$1");
+        input = std::regex_replace(input, lessRegex, "$1");
     } else if (std::regex_match(input, absRegex)) {
         token.type = Type::OP;
         token.value = "abs";
-        input = std::regex_replace(input, absRegex, "$1");
+        // While we check matches with abs( we only want to prune abs, not (
+        input = std::regex_replace(input, std::regex("abs(.*)"), "$1");
     } else if (std::regex_match(input, andRegex)) {
         token.type = Type::OP;
         token.value = "&&";
@@ -231,11 +230,11 @@ Expression Parser::parseOpExpression(Lexer &lexer) const {
     } else if (opType == ">") {
         return Factories::greater(exprs);
     } else if (opType == "<") {
-        return Factories::lesser(exprs);
+        return Factories::less(exprs);
     } else if (opType == ">=") {
         return Factories::greater_equals(exprs);
     } else if (opType == "<=") {
-        return Factories::lesser_equals(exprs);
+        return Factories::less_equals(exprs);
     } else if (opType == "&&") {
         return Factories::land(exprs);
     } else if (opType == "||") {
@@ -444,11 +443,11 @@ Expression InfixParser::createExpression(Expression const &lhs, Token op,
     } else if (op.value == ">") {
         return Factories::greater(exprs);
     } else if (op.value == "<") {
-        return Factories::lesser(exprs);
+        return Factories::less(exprs);
     } else if (op.value == ">=") {
         return Factories::greater_equals(exprs);
     } else if (op.value == "<=") {
-        return Factories::lesser_equals(exprs);
+        return Factories::less_equals(exprs);
     } else if (op.value == "&&") {
         return Factories::land(exprs);
     } else if (op.value == "||") {
