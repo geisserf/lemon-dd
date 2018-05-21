@@ -184,15 +184,15 @@ public:
             children.emplace_back(Monoid<M, F>(domain[i]),
                                   node_factory.get_terminal_node());
         }
-        assert(std::find(ordering.begin(), ordering.end(), var) !=
-               ordering.end());
         // If variable is not indicated in ordering, append it at the end
         // Note : "ordering" is the reversed version here.
-        if(std::find(ordering.begin(), ordering.end(), var) ==
-               ordering.end()) {
-                   ordering.push_back(var);
-               }
-        // Increase by 1 since index 0 is reserved for terminal node 
+        if (std::find(ordering.begin(), ordering.end(), var) ==
+            ordering.end()) {
+            ordering.push_back(var);
+        }
+        assert(std::find(ordering.begin(), ordering.end(), var) !=
+               ordering.end());
+        // Increase by 1 since index 0 is reserved for terminal node
         auto var_pos =
             std::distance(ordering.begin(),
                           find(ordering.begin(), ordering.end(), var)) +
@@ -323,7 +323,6 @@ private:
             it, children.end(), first_value, [](M l, Evmdd<M, F> const &r) {
                 return Monoid<M, F>::greatest_lower_bound(
                     l, r.get_input().get_value());
-
             });
         Monoid<M, F> min_weight{min_weight_value};
         std::vector<Edge<Monoid<M, F>>> edges;
