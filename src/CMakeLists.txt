@@ -46,7 +46,7 @@ set(SOURCE_FILES
      evmdd/evmdd_cache.h
      evmdd/abstract_factory.h
      evmdd/product_evmdd.h evmdd/product_evmdd.cpp
-     evmdd/node.h evmdd/node_factory.h
+     evmdd/node.h evmdd/node_storage.h
      evmdd/printer.h
      evmdd/monoid.h
      evmdd/monoids/product.h
