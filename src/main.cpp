@@ -14,6 +14,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <boost/algorithm/string.hpp>
 
 using std::cin;
 using std::cout;
@@ -122,7 +123,7 @@ int main() {
     string arithmetic_expression;
     getline(cin, arithmetic_expression);
 
-    if (ordering_as_string.empty()) {
+    if (!arithmetic_expression.empty() && ordering_as_string.empty()) {
         ordering = fan_in_ordering(arithmetic_expression, domains);
     }
 
@@ -152,6 +153,18 @@ int main() {
             break;
         }
         conditional_effects.push_back(conditional_effect);
+    }
+
+    if (!conditional_effects.empty() && arithmetic_expression.empty() && ordering_as_string.empty()) {
+        string full_effs = "(0";
+        for (auto c_eff : conditional_effects) {
+            boost::replace_all(c_eff, "->", "~");
+            full_effs += " + " + StringUtils::split(c_eff, '~')[0];
+            full_effs += " + [" + StringUtils::split(c_eff, '~')[1] + "]";
+        }
+        full_effs += ")";
+        std::cout << full_effs << std::endl;
+        ordering = fan_in_ordering(full_effs, domains);
     }
 
     Evmdd<Facts, Union> effect_evmdd;
