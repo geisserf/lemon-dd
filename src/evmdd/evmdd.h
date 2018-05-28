@@ -5,8 +5,8 @@
 #include "monoid.h"
 #include "node.h"
 #include "operations/logic_and.h"
-#include "operations/logic_or.h"
 #include "operations/logic_not.h"
+#include "operations/logic_or.h"
 
 #include <algorithm>
 #include <cassert>
@@ -19,7 +19,7 @@
 #include <unordered_set>
 #include <vector>
 
-using Ordering = std::map<std::string, int>;
+using Ordering = std::vector<std::string>;
 using ConcreteState = std::vector<unsigned int>;
 
 template <typename M, typename F = std::plus<M>>
@@ -184,9 +184,16 @@ public:
             children.emplace_back(Monoid<M, F>(domain[i]),
                                   node_factory.get_terminal_node());
         }
-        assert(ordering.find(var) != ordering.end());
+        // If variable is not indicated in ordering, append it at the end
+        auto var_it = std::find(ordering.begin(), ordering.end(), var);
+        if (var_it == ordering.end()) {
+            ordering.push_back(var);
+            var_it = ordering.end() - 1;
+        }
+        // Increase by 1 since index 0 is reserved for terminal node
+        auto var_pos = std::distance(ordering.begin(), var_it) + 1;
         Node_ptr<Monoid<M, F>> node =
-            node_factory.make_node(ordering[var], var, children);
+            node_factory.make_node(var_pos, var, children);
         return Evmdd<M, F>(Monoid<M, F>::neutral_element(), node);
     }
 
@@ -311,7 +318,6 @@ private:
             it, children.end(), first_value, [](M l, Evmdd<M, F> const &r) {
                 return Monoid<M, F>::greatest_lower_bound(
                     l, r.get_input().get_value());
-
             });
         Monoid<M, F> min_weight{min_weight_value};
         std::vector<Edge<Monoid<M, F>>> edges;
