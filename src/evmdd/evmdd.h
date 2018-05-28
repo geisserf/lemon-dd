@@ -186,15 +186,13 @@ public:
         }
         // If variable is not indicated in ordering, append it at the end
         // Note : "ordering" is the reversed version here.
-        if (std::find(ordering.begin(), ordering.end(), var) ==
-            ordering.end()) {
+        auto var_it = std::find(ordering.begin(), ordering.end(), var);
+        if (var_it == ordering.end()) {
             ordering.push_back(var);
+            var_it = ordering.end() - 1;
         }
         // Increase by 1 since index 0 is reserved for terminal node
-        auto var_pos =
-            std::distance(ordering.begin(),
-                          find(ordering.begin(), ordering.end(), var)) +
-            1;
+        auto var_pos = std::distance(ordering.begin(), var_it) + 1;
         Node_ptr<Monoid<M, F>> node =
             node_factory.make_node(var_pos, var, children);
         return Evmdd<M, F>(Monoid<M, F>::neutral_element(), node);
