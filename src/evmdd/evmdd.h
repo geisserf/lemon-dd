@@ -185,7 +185,6 @@ public:
                                   node_factory.get_terminal_node());
         }
         // If variable is not indicated in ordering, append it at the end
-        // Note : "ordering" is the reversed version here.
         auto var_it = std::find(ordering.begin(), ordering.end(), var);
         if (var_it == ordering.end()) {
             ordering.push_back(var);
