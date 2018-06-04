@@ -7,7 +7,7 @@
 #include <map>
 #include <memory>
 
-using Ordering = std::map<std::string, int>;
+using Ordering = std::vector<std::string>;
 
 template <typename L, typename R, typename F, typename G>
 using AbstractProductFactory =

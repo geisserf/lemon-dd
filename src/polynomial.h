@@ -5,7 +5,7 @@
 #include "catamorph/interpreters/create_evmdd.h"
 #include <string>
 
-using Ordering = std::map<std::string, int>;
+using Ordering = std::vector<std::string>;
 using Domains = std::map<std::string, unsigned int>;
 
 class Polynomial {
