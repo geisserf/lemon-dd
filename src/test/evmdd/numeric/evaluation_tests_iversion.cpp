@@ -9,7 +9,7 @@ SCENARIO(
     GIVEN("Evmdd for expression [a && b])") {
         Polynomial p = Polynomial("[a&&b]");
         Domains d = {{"a", 2}, {"b", 2}};
-        Ordering o = {{"a", 1}, {"b", 2}};
+        Ordering o = {"a", "b"};
         auto evmdd = p.create_evmdd<float>(d, o);
         THEN("Evaluation should be correct") {
             for (unsigned int a = 0; a < d["a"]; ++a) {
@@ -24,7 +24,7 @@ SCENARIO(
     GIVEN("Evmdd for expression [a && b] * 10") {
         Polynomial p = Polynomial("[a && b] * 10");
         Domains d = {{"a", 2}, {"b", 2}};
-        Ordering o = {{"a", 1}, {"b", 2}};
+        Ordering o = {"a", "b"};
         auto evmdd = p.create_evmdd<float>(d, o);
         THEN("Evaluation should be correct") {
             for (unsigned int a = 0; a < d["a"]; ++a) {
@@ -39,7 +39,7 @@ SCENARIO(
     GIVEN("Evmdd for expression [a == b]") {
         Polynomial p = Polynomial("[a == b]");
         Domains d = {{"a", 2}, {"b", 2}};
-        Ordering o = {{"a", 1}, {"b", 2}};
+        Ordering o = {"a", "b"};
         auto evmdd = p.create_evmdd<float>(d, o);
         THEN("Evaluation should be correct") {
             for (unsigned int a = 0; a < d["a"]; ++a) {
@@ -54,7 +54,7 @@ SCENARIO(
     GIVEN("Evmdd for expression [a == b] * 10") {
         Polynomial p = Polynomial("[a == b] * 10");
         Domains d = {{"a", 2}, {"b", 2}};
-        Ordering o = {{"a", 1}, {"b", 2}};
+        Ordering o = {"a", "b"};
         auto evmdd = p.create_evmdd<float>(d, o);
         THEN("Evaluation should be correct") {
             for (unsigned int a = 0; a < d["a"]; ++a) {
@@ -69,7 +69,7 @@ SCENARIO(
     GIVEN("Evmdd for expression [a || b]") {
         Polynomial p = Polynomial("[a || b]");
         Domains d = {{"a", 2}, {"b", 2}};
-        Ordering o = {{"a", 1}, {"b", 2}};
+        Ordering o = {"a", "b"};
         auto evmdd = p.create_evmdd<float>(d, o);
         THEN("Evaluation should be correct") {
             for (unsigned int a = 0; a < d["a"]; ++a) {
@@ -84,7 +84,7 @@ SCENARIO(
     GIVEN("Evmdd for expression [a || b] * 10") {
         Polynomial p = Polynomial("[a || b] * 10");
         Domains d = {{"a", 2}, {"b", 2}};
-        Ordering o = {{"a", 1}, {"b", 2}};
+        Ordering o = {"a", "b"};
         auto evmdd = p.create_evmdd<float>(d, o);
         THEN("Evaluation should be correct") {
             for (unsigned int a = 0; a < d["a"]; ++a) {
@@ -99,7 +99,7 @@ SCENARIO(
     GIVEN("Evmdd for expression [!a]") {
         Polynomial p = Polynomial("[!a]");
         Domains d = {{"a", 2}};
-        Ordering o = {{"a", 1}};
+        Ordering o = {"a"};
         auto evmdd = p.create_evmdd<float>(d, o);
         THEN("Evaluating a:= 1 should be 0") {
             ConcreteState state{1};
@@ -114,7 +114,7 @@ SCENARIO(
     GIVEN("Evmdd for expression [!a] * 10") {
         Polynomial p = Polynomial("[!a] * 10");
         Domains d = {{"a", 2}};
-        Ordering o = {{"a", 1}};
+        Ordering o = {"a"};
         auto evmdd = p.create_evmdd<float>(d, o);
         THEN("Evaluating a:= 1 should be 0") {
             ConcreteState state{1};
