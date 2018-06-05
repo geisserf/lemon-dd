@@ -22,6 +22,8 @@ Polynomial::Polynomial(std::string const &input) {
             cout << "Parser error: " << endl;
             cout << "Infix parser error: " << infix_exception.what() << endl;
             cout << "Prefix parser error: " << prefix_exception.what() << endl;
+            cout << "Terminating." << endl;
+            exit(EXIT_FAILURE);
         }
     }
 }
