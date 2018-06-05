@@ -12,6 +12,7 @@
 #include <map>
 #include <sstream>
 #include <string>
+#include <time.h>
 #include <vector>
 
 using std::cin;
@@ -136,9 +137,14 @@ int main() {
     cout << "Enter name of result file." << endl;
     string filename;
     getline(cin, filename);
-    if(filename.empty()) {
-        cout << "File name not entered. Setting to \"noname\"" << endl;
-        filename = "noname";
+    if (filename.empty()) {
+        // Set filename to current date-time
+        time_t t = time(0);
+        struct tm *now = localtime(&t);
+        char buffer[80];
+        strftime(buffer, 80, "%Y_%m_%d_%I%M%S%p", now);
+        cout << "File name not entered. Setting to " << buffer << endl;
+        filename = buffer;
     }
     filename += ".dot";
     std::ofstream dot_stream(filename);
