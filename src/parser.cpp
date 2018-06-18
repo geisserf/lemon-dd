@@ -32,15 +32,15 @@ Token Lexer::getNextToken() {
     // such that this can't happen.
 
     // Arithmetic operators
-    operator_regex_pairs.emplace_back("+", "^\\+");
-    operator_regex_pairs.emplace_back("-", "^-");
-    operator_regex_pairs.emplace_back("*", "^\\*");
-    operator_regex_pairs.emplace_back("/", "^\\/");
+    operator_regex_pairs.emplace_back("+", std::regex("^\\+"));
+    operator_regex_pairs.emplace_back("-", std::regex("^-"));
+    operator_regex_pairs.emplace_back("*", std::regex("^\\*"));
+    operator_regex_pairs.emplace_back("/", std::regex("^\\/"));
     // Logical operators
-    operator_regex_pairs.emplace_back("&&", "^\\&\\&");
-    operator_regex_pairs.emplace_back("||", "^\\|\\|");
-    operator_regex_pairs.emplace_back("==", "^\\=\\=");
-    operator_regex_pairs.emplace_back("!", "^\\!");
+    operator_regex_pairs.emplace_back("&&", std::regex("^\\&\\&"));
+    operator_regex_pairs.emplace_back("||", std::regex("^\\|\\|"));
+    operator_regex_pairs.emplace_back("==", std::regex("^\\=\\="));
+    operator_regex_pairs.emplace_back("!", std::regex("^\\!"));
 
     // Regex for constant numbers.
     // Note that we use the passive group (?:subpattern) here, so that we only
@@ -53,10 +53,10 @@ Token Lexer::getNextToken() {
     std::regex varRegex("^((?:[[:alpha:]_]+)(?:[[:alnum:]_]*))");
     // Brackets and Iverson brackets
     vector<std::pair<Type, std::regex>> bracket_regex_pairs;
-    bracket_regex_pairs.emplace_back(Type::LPAREN, "^\\(");
-    bracket_regex_pairs.emplace_back(Type::RPAREN, "^\\)");
-    bracket_regex_pairs.emplace_back(Type::LSQRBRACK, "^\\[");
-    bracket_regex_pairs.emplace_back(Type::RSQRBRACK, "^\\]");
+    bracket_regex_pairs.emplace_back(Type::LPAREN, std::regex("^\\("));
+    bracket_regex_pairs.emplace_back(Type::RPAREN, std::regex("^\\)"));
+    bracket_regex_pairs.emplace_back(Type::LSQRBRACK, std::regex("^\\["));
+    bracket_regex_pairs.emplace_back(Type::RSQRBRACK, std::regex("^\\]"));
 
     Token token;
     std::smatch match;
