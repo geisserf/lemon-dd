@@ -8,6 +8,8 @@
 #include "operations/logic_not.h"
 #include "operations/logic_or.h"
 
+#include "../utils/math_utils.h"
+
 #include <algorithm>
 #include <cassert>
 #include <functional>
@@ -169,26 +171,6 @@ public:
     size_t size() const {
         return node_factory.size();
     }
-    // Check for NaN weights
-    template <typename T>
-    bool is_nan(T) {
-        return false;
-    }
-
-    template <typename>
-    bool is_nan(int input) {
-        return std::isnan(input);
-    }
-
-    template <typename>
-    bool is_nan(double input) {
-        return std::isnan(input);
-    }
-
-    template <typename>
-    bool is_nan(float input) {
-        return std::isnan(input);
-    }
 
     // Creates an evmdd for a constant term
     Evmdd<M, F> make_const_evmdd(M const &weight) {
@@ -299,7 +281,7 @@ private:
         // of the monoid itself.
         M input =
             oper(left.get_input().get_value(), right.get_input().get_value());
-        assert(is_nan(input) == false);
+        assert(!MathUtils::is_nan(input));
         return make_const_evmdd(input);
     }
 
