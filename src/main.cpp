@@ -12,6 +12,7 @@
 #include <map>
 #include <sstream>
 #include <string>
+#include <time.h>
 #include <vector>
 
 using std::cin;
@@ -20,8 +21,8 @@ using std::endl;
 using std::string;
 using std::vector;
 
-using Ordering = std::map<string, int>;
-using Domain = std::map<string, unsigned int>;
+using Ordering = std::vector<std::string>;
+using Domain = std::map<std::string, unsigned int>;
 
 Domain parse_domains(string const &domains) {
     Domain result;
@@ -39,10 +40,11 @@ Domain parse_domains(string const &domains) {
 Ordering parse_ordering(string const &ordering) {
     Ordering result;
     vector<string> variables = StringUtils::split(ordering, ' ');
-    int position = variables.size(); // position 0 reserved for terminal
+    result.reserve(variables.size());
     for (string const &var : variables) {
-        result[var] = position--;
+        result.push_back(var);
     }
+    std::reverse(result.begin(), result.end());
     return result;
 }
 
@@ -135,6 +137,15 @@ int main() {
     cout << "Enter name of result file." << endl;
     string filename;
     getline(cin, filename);
+    if (filename.empty()) {
+        // Set filename to current date-time
+        time_t t = time(0);
+        struct tm *now = localtime(&t);
+        char buffer[80];
+        strftime(buffer, 80, "%Y_%m_%d_%I%M%S%p", now);
+        cout << "File name not entered. Setting to " << buffer << endl;
+        filename = buffer;
+    }
     filename += ".dot";
     std::ofstream dot_stream(filename);
 
