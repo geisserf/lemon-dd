@@ -153,6 +153,10 @@ public:
         }
         return l.source_node < r.source_node;
     }
+
+    friend bool operator==(const Evmdd<M, F> &l, const Evmdd<M, F> &r) {
+        return ((l.input == r.input) && (l.source_node == r.source_node));
+    }
 };
 
 template <typename M, typename F>
@@ -311,6 +315,15 @@ private:
     // lower bound.
     Evmdd<M, F> create_evmdd(int level, std::string var,
                              std::vector<Evmdd<M, F>> const &children) {
+        // Reduction requirement: if all children are equal, we can immediately
+        // return the child as new EVMDD.
+        if (std::all_of(children.begin() + 1, children.end(),
+                        [&](Evmdd<M, F> const &child) {
+                            return child == children[0];
+                        })) {
+            return children[0];
+        }
+
         // Compute greatest lower bound of all children
         auto it = std::next(children.begin());
         M const &first_value = children[0].get_input().get_value();
