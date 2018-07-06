@@ -1,6 +1,8 @@
 #ifndef MATH_UTILS_H
 #define MATH_UTILS_H
 
+#include <cmath>
+
 class MathUtils {
 public:
     static bool is_equal(float first, float second);

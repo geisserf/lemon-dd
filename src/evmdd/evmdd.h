@@ -14,7 +14,6 @@
 #include <cassert>
 #include <functional>
 #include <map>
-#include <math.h>
 #include <numeric>
 #include <ostream>
 #include <queue>
