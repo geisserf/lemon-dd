@@ -65,8 +65,18 @@ SCENARIO("Testing numeric EVMDD for construction on arithmetic input",
         WHEN("We create the evmdd and x is under y") {
             Ordering o = {"x", "y"};
             auto evmdd = p.create_evmdd<int>(d, o);
-            THEN("evmdd has the expected structure") {
+            THEN("reduced evmdd has the expected structure") {
                 std::stringstream result;
+                evmdd.print(result);
+                std::stringstream expected;
+                expected << "input: 0" << endl;
+                expected << "y 0 0" << endl;
+                expected << "x 0 5 10" << endl;
+                REQUIRE(result.str() == expected.str());
+            }
+            THEN("quasi-reduced evmdd has the expected structure") {
+                std::stringstream result;
+                evmdd.quasi_reduce();
                 evmdd.print(result);
                 std::stringstream expected;
                 expected << "input: 0" << endl;
@@ -79,8 +89,19 @@ SCENARIO("Testing numeric EVMDD for construction on arithmetic input",
         WHEN("We create the evmdd and x is over y") {
             Ordering o = {"y", "x"};
             auto evmdd = p.create_evmdd<int>(d, o);
-            THEN("evmdd has the expected structure") {
+            THEN("reduced evmdd has the expected structure") {
                 std::stringstream result;
+                evmdd.print(result);
+                std::stringstream expected;
+                expected << "input: 0" << endl;
+                expected << "x 0 0 0" << endl;
+                expected << "y 0 5" << endl;
+                expected << "y 0 10" << endl;
+                REQUIRE(result.str() == expected.str());
+            }
+            THEN("quasi-reduced evmdd has the expected structure") {
+                std::stringstream result;
+                evmdd.quasi_reduce();
                 evmdd.print(result);
                 std::stringstream expected;
                 expected << "input: 0" << endl;
@@ -99,8 +120,19 @@ SCENARIO("Testing numeric EVMDD for construction on arithmetic input",
         WHEN("We create the evmdd in order x over y over z") {
             Ordering o = {"z", "y", "x"};
             auto evmdd = p.create_evmdd<int>(d, o);
-            THEN("evmdd has the expected structure") {
+            THEN("reduced evmdd has the expected structure") {
                 std::stringstream result;
+                evmdd.print(result);
+                std::stringstream expected;
+                expected << "input: 0" << endl;
+                expected << "x 0 0" << endl;
+                expected << "z 0 1 2" << endl;
+                expected << "y 0 1" << endl;
+                REQUIRE(result.str() == expected.str());
+            }
+            THEN("quasi-reduced evmdd has the expected structure") {
+                std::stringstream result;
+                evmdd.quasi_reduce();
                 evmdd.print(result);
                 std::stringstream expected;
                 expected << "input: 0" << endl;
@@ -114,8 +146,20 @@ SCENARIO("Testing numeric EVMDD for construction on arithmetic input",
         WHEN("We create the evmdd in order x over z over y") {
             Ordering o = {"y", "z", "x"};
             auto evmdd = p.create_evmdd<int>(d, o);
-            THEN("evmdd has the expected structure") {
+            THEN("reduced evmdd has the expected structure") {
                 std::stringstream result;
+                evmdd.print(result);
+                std::stringstream expected;
+                expected << "input: 0" << endl;
+                expected << "x 0 0" << endl;
+                expected << "z 0 1 2" << endl;
+                expected << "z 0 1 2" << endl;
+                expected << "y 0 1" << endl;
+                REQUIRE(result.str() == expected.str());
+            }
+            THEN("quasi-reduced evmdd has the expected structure") {
+                std::stringstream result;
+                evmdd.quasi_reduce();
                 evmdd.print(result);
                 std::stringstream expected;
                 expected << "input: 0" << endl;
@@ -140,8 +184,19 @@ SCENARIO(
         WHEN("We create the evmdd in order x over y") {
             Ordering o = {"y", "x"};
             auto evmdd = p.create_evmdd<int>(d, o);
-            THEN("evmdd has the expected structure") {
+            THEN("reduced evmdd has the expected structure") {
                 std::stringstream result;
+                evmdd.print(result);
+                std::stringstream expected;
+                expected << "input: 0" << endl;
+                expected << "z 0 1 2" << endl;
+                expected << "x 0 0" << endl;
+                expected << "y 0 1" << endl;
+                REQUIRE(result.str() == expected.str());
+            }
+            THEN("quasi-reduced evmdd has the expected structure") {
+                std::stringstream result;
+                evmdd.quasi_reduce();
                 evmdd.print(result);
                 std::stringstream expected;
                 expected << "input: 0" << endl;
@@ -155,8 +210,19 @@ SCENARIO(
         WHEN("We create the evmdd in order y over x") {
             Ordering o = {"x", "y"};
             auto evmdd = p.create_evmdd<int>(d, o);
-            THEN("evmdd has the expected structure") {
+            THEN("reduced evmdd has the expected structure") {
                 std::stringstream result;
+                evmdd.print(result);
+                std::stringstream expected;
+                expected << "input: 0" << endl;
+                expected << "z 0 1 2" << endl;
+                expected << "y 0 0" << endl;
+                expected << "x 0 1" << endl;
+                REQUIRE(result.str() == expected.str());
+            }
+            THEN("quasi-reduced evmdd has the expected structure") {
+                std::stringstream result;
+                evmdd.quasi_reduce();
                 evmdd.print(result);
                 std::stringstream expected;
                 expected << "input: 0" << endl;
@@ -170,8 +236,19 @@ SCENARIO(
         WHEN("We create the evmdd in order x over z") {
             Ordering o = {"z", "x"};
             auto evmdd = p.create_evmdd<int>(d, o);
-            THEN("evmdd has the expected structure") {
+            THEN("reduced evmdd has the expected structure") {
                 std::stringstream result;
+                evmdd.print(result);
+                std::stringstream expected;
+                expected << "input: 0" << endl;
+                expected << "y 0 0" << endl;
+                expected << "z 0 1 2" << endl;
+                expected << "x 0 1" << endl;
+                REQUIRE(result.str() == expected.str());
+            }
+            THEN("quasi-reduced evmdd has the expected structure") {
+                std::stringstream result;
+                evmdd.quasi_reduce();
                 evmdd.print(result);
                 std::stringstream expected;
                 expected << "input: 0" << endl;
@@ -185,8 +262,20 @@ SCENARIO(
         WHEN("We create the evmdd in order z over x") {
             Ordering o = {"x", "z"};
             auto evmdd = p.create_evmdd<int>(d, o);
-            THEN("evmdd has the expected structure") {
+            THEN("reduced evmdd has the expected structure") {
                 std::stringstream result;
+                evmdd.print(result);
+                std::stringstream expected;
+                expected << "input: 0" << endl;
+                expected << "y 0 0" << endl;
+                expected << "z 0 1 2" << endl;
+                expected << "z 0 1 2" << endl;
+                expected << "x 0 1" << endl;
+                REQUIRE(result.str() == expected.str());
+            }
+            THEN("quasi-reduced evmdd has the expected structure") {
+                std::stringstream result;
+                evmdd.quasi_reduce();
                 evmdd.print(result);
                 std::stringstream expected;
                 expected << "input: 0" << endl;
@@ -201,13 +290,23 @@ SCENARIO(
         WHEN("We create the evmdd in order y over z") {
             Ordering o = {"z", "y"};
             auto evmdd = p.create_evmdd<int>(d, o);
-            THEN("evmdd has the expected structure") {
+            THEN("reduced evmdd has the expected structure") {
                 std::stringstream result;
                 evmdd.print(result);
                 std::stringstream expected;
                 expected << "input: 0" << endl;
                 expected << "x 0 0" << endl;
-                expected << "y 0 0" << endl;
+                expected << "z 0 1 2" << endl;
+                expected << "y 0 1" << endl;
+                REQUIRE(result.str() == expected.str());
+            }
+            THEN("quasi-reduced evmdd has the expected structure") {
+                std::stringstream result;
+                evmdd.quasi_reduce();
+                evmdd.print(result);
+                std::stringstream expected;
+                expected << "input: 0" << endl;
+                expected << "x 0 0" << endl;
                 expected << "y 0 1" << endl;
                 expected << "z 0 1 2" << endl;
                 REQUIRE(result.str() == expected.str());
@@ -216,8 +315,20 @@ SCENARIO(
         WHEN("We create the evmdd in order z over y") {
             Ordering o = {"y", "z"};
             auto evmdd = p.create_evmdd<int>(d, o);
-            THEN("evmdd has the expected structure") {
+            THEN("reduced evmdd has the expected structure") {
                 std::stringstream result;
+                evmdd.print(result);
+                std::stringstream expected;
+                expected << "input: 0" << endl;
+                expected << "x 0 0" << endl;
+                expected << "z 0 1 2" << endl;
+                expected << "z 0 1 2" << endl;
+                expected << "y 0 1" << endl;
+                REQUIRE(result.str() == expected.str());
+            }
+            THEN("quasi-reduced evmdd has the expected structure") {
+                std::stringstream result;
+                evmdd.quasi_reduce();
                 evmdd.print(result);
                 std::stringstream expected;
                 expected << "input: 0" << endl;

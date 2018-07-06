@@ -66,6 +66,10 @@ public:
         }
     }
 
+    // Quasi-reduce the EVMDD
+    void quasi_reduce() {
+    }
+
     // Evaluates the evmdd with the given state.
     // If the evmdd represents function E:S->M, this computes E(s).
     // Assumes state is ordered according to evmdd ordering.
