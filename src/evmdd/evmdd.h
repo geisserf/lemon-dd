@@ -268,6 +268,12 @@ private:
     bool terminal_case(Evmdd<L, G> const &left, Evmdd<R, H> const &right,
                        OP /*oper*/) {
         // TODO use oper to determine lazy termination
+        if ((left.get_source_node()->is_terminal() &&
+             (left.get_input().get_value() == OP::annihilator)) ||
+            (right.get_source_node()->is_terminal() &&
+             (right.get_input().get_value() == OP::annihilator))) {
+            return true;
+        }
         return (left.get_source_node()->is_terminal() &&
                 right.get_source_node()->is_terminal());
     }
@@ -278,6 +284,16 @@ private:
                                     Evmdd<R, H> const &right, OP oper) {
         // oper:LxR->M implies that we can apply it on the carrier types instead
         // of the monoid itself.
+        if (left.get_input().get_value() == OP::annihilator ||
+            right.get_input().get_value() == OP::annihilator) {
+            return make_const_evmdd(OP::annihilator);
+        }
+        if (left.get_input().get_value() == OP::identity) {
+            return make_const_evmdd(right);
+        }
+        if (right.get_input().get_value() == OP::identity) {
+            return make_const_evmdd(left);
+        }
         M input =
             oper(left.get_input().get_value(), right.get_input().get_value());
         assert(!MathUtils::is_nan(input));
