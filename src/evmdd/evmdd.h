@@ -7,6 +7,10 @@
 #include "operations/logic_and.h"
 #include "operations/logic_not.h"
 #include "operations/logic_or.h"
+#include "operations/plus.h"
+#include "operations/minus.h"
+#include "operations/multiplies.h"
+#include "operations/divides.h"
 
 #include "../utils/math_utils.h"
 
@@ -289,10 +293,10 @@ private:
             return make_const_evmdd(OP::annihilator);
         }
         if (left.get_input().get_value() == OP::identity) {
-            return make_const_evmdd(right);
+            return make_const_evmdd(right.get_input().get_value());
         }
         if (right.get_input().get_value() == OP::identity) {
-            return make_const_evmdd(left);
+            return make_const_evmdd(left.get_input().get_value());
         }
         M input =
             oper(left.get_input().get_value(), right.get_input().get_value());
