@@ -4,13 +4,14 @@
 #include "evmdd_cache.h"
 #include "monoid.h"
 #include "node.h"
+#include "operations/divides.h"
+#include "operations/equal_to.h"
 #include "operations/logic_and.h"
 #include "operations/logic_not.h"
 #include "operations/logic_or.h"
-#include "operations/plus.h"
 #include "operations/minus.h"
 #include "operations/multiplies.h"
-#include "operations/divides.h"
+#include "operations/plus.h"
 
 #include "../utils/math_utils.h"
 
