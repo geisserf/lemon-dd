@@ -45,19 +45,19 @@ private:
                 return factory.make_var_evmdd(name, domain);
             }
             if (auto *o = Factories::get_as_add(e)) {
-                return apply(o->rands(), std::plus<M>());
+                return apply(o->rands(), plus<M>());
             }
             if (auto *o = Factories::get_as_sub(e)) {
-                return apply(o->rands(), std::minus<M>());
+                return apply(o->rands(), minus<M>());
             }
             if (auto *o = Factories::get_as_mul(e)) {
-                return apply(o->rands(), std::multiplies<M>());
+                return apply(o->rands(), multiplies<M>());
             }
             if (auto *o = Factories::get_as_div(e)) {
-                return apply(o->rands(), std::divides<M>());
+                return apply(o->rands(), divides<M>());
             }
             if (auto *o = Factories::get_as_equals(e)) {
-                return apply(o->rands(), std::equal_to<M>());
+                return apply(o->rands(), equal_to<M>());
             }
             if (auto *o = Factories::get_as_and(e)) {
                 return apply(o->rands(), logic_and<M>());
