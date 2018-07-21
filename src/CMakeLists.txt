@@ -54,7 +54,13 @@ set(SOURCE_FILES
      evmdd/monoids/facts.h evmdd/monoids/facts.cpp
      evmdd/monoids/boolean.h evmdd/monoids/boolean.cpp
      evmdd/operations/logic_and.h
+     evmdd/operations/logic_or.h
      evmdd/operations/logic_not.h
+     evmdd/operations/plus.h
+     evmdd/operations/minus.h
+     evmdd/operations/multiplies.h
+     evmdd/operations/divides.h
+     evmdd/operations/equal_to.h
      #utils/math_utils.h utils/math_utils.cpp
      #utils/system_utils.h utils/system_utils.cpp
      utils/string_utils.h
