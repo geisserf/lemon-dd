@@ -3,13 +3,12 @@
 
 #include <functional>
 
-// Template class logic_and throws exception if parameters are
+// Template struct logic_and throws exception if parameters are
 // none of the types int, float or double.
 template <class T>
 struct logic_and {
+    static const T annihilator = 0, identity = 1;
     T operator()(const T &, const T &) const {
-        static bool annihilator = false;
-        static bool identity = true;
         throw std::logic_error("Non-boolean operands for logic_and");
     }
 };
