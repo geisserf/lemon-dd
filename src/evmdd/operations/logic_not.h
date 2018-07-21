@@ -8,7 +8,7 @@
  * This is a hack to support unary evmdd operations via apply
  */
 
-// Template class logic_or throws exception if parameters are
+// Template struct logic_not throws exception if parameters are
 // none of the types int, float or double.
 template <class T> struct logic_not {
   T operator()(const T &, const T &) const {
