@@ -31,7 +31,7 @@ SCENARIO(
                 ConditionalEffects::create_evmdd(effects, d, o);
             auto &factory =
                 AbstractProductFactory<Facts, int, Union,
-                                       std::plus<int>>::get_factory(o);
+                                       std::plus<int>>::get_factory(o, d);
             auto product = factory.product(effect_evmdd, cost_evmdd);
 
             THEN("Evmdd has the correct structure") {
@@ -87,7 +87,7 @@ SCENARIO(
                 ConditionalEffects::create_evmdd(effects, d, o);
             auto &factory =
                 AbstractProductFactory<Facts, int, Union,
-                                       std::plus<int>>::get_factory(o);
+                                       std::plus<int>>::get_factory(o, d);
             auto product = factory.product(effect_evmdd, cost_evmdd);
 
             THEN("Evmdd has the correct structure") {

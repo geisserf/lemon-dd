@@ -1,5 +1,6 @@
 #include "../../../conditional_effects.h"
 #include "../../../effect_parser.h"
+#include "../../../evmdd/abstract_factory.h"
 #include "../../../utils/string_utils.h"
 
 #include "../../Catch/include/catch.hpp"
@@ -92,8 +93,9 @@ SCENARIO("Testing EVMDDs for conditional effect",
             REQUIRE(result.str() == expected.str());
         }
         THEN("Quasi-reduced evmdd has the correct structure") {
+            auto &factory = AbstractFactory<Facts, Union>::get_factory(o, d);
+            factory.quasi_reduce(evmdd);
             std::stringstream result;
-            evmdd.quasi_reduce();
             evmdd.print(result);
             std::stringstream expected;
             expected << "input: {}" << endl;
@@ -140,8 +142,9 @@ SCENARIO("Testing EVMDDs for conditional effect",
             REQUIRE(result.str() == expected.str());
         }
         THEN("Quasi-reduced evmdd has the correct structure") {
+            auto &factory = AbstractFactory<Facts, Union>::get_factory(o, d);
+            factory.quasi_reduce(evmdd);
             std::stringstream result;
-            evmdd.quasi_reduce();
             evmdd.print(result);
             std::stringstream expected;
             expected << "input: {}" << endl;
@@ -177,8 +180,9 @@ SCENARIO("Testing EVMDDs for conditional effect",
             REQUIRE(result.str() == expected.str());
         }
         THEN("Quasi-reduced evmdd has the correct structure") {
+            auto &factory = AbstractFactory<Facts, Union>::get_factory(o, d);
+            factory.quasi_reduce(evmdd);
             std::stringstream result;
-            evmdd.quasi_reduce();
             evmdd.print(result);
             std::stringstream expected;
             expected << "input: {}" << endl;

@@ -8,6 +8,7 @@
 #include <memory>
 
 using Ordering = std::vector<std::string>;
+using Domain = std::map<std::string, unsigned int>;
 
 template <typename L, typename R, typename F, typename G>
 using AbstractProductFactory =
@@ -18,12 +19,13 @@ class AbstractFactory {
 public:
     // Returns the factory for the given Ordering. Each ordering has exactly one
     // factory which generates and stores all evmdds for this ordering.
-    static EvmddFactory<M, F> &get_factory(Ordering const &ordering) {
+    static EvmddFactory<M, F> &get_factory(Ordering const &ordering,
+                                           Domain const& domains) {
         if (cache.find(ordering) != cache.end()) {
             return *(cache.at(ordering));
         }
         cache[ordering] = std::unique_ptr<EvmddFactory<M, F>>(
-            new EvmddFactory<M, F>(ordering));
+            new EvmddFactory<M, F>(ordering, domains));
         return *(cache.at(ordering));
     }
 

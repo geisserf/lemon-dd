@@ -164,7 +164,8 @@ int main() {
     // Both EVMDDs were requested -> generate product EVMDD
     auto &factory =
         AbstractProductFactory<Facts, double, Union,
-                               std::plus<double>>::get_factory(ordering);
+                               std::plus<double>>::get_factory(ordering,
+                                                               domain);
 
     auto product_evmdd = factory.product(effect_evmdd, cost_evmdd);
     cout << "Both EVMDD types requested: Writing product EVMDD." << endl;
