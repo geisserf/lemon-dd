@@ -2,13 +2,11 @@
 #define ABSTRACT_FACTORY_H
 
 #include "evmdd.h"
+#include "../globals.h"
 
 #include <iostream>
 #include <map>
 #include <memory>
-
-using Ordering = std::vector<std::string>;
-using Domain = std::map<std::string, unsigned int>;
 
 template <typename L, typename R, typename F, typename G>
 using AbstractProductFactory =
@@ -22,8 +20,8 @@ public:
     // stores all evmdds for this pair. Note that we do not yet support dynamic
     // reordering.
     static EvmddFactory<M, F> &get_factory(Ordering const &ordering,
-                                           Domain const &domains) {
-        std::pair<Ordering, Domain> p(ordering, domains);
+                                           Domains const &domains) {
+        std::pair<Ordering, Domains> p(ordering, domains);
         if (cache.find(p) != cache.end()) {
             return *(cache.at(p));
         }

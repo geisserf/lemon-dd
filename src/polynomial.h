@@ -3,10 +3,8 @@
 
 #include "catamorph/expression.h"
 #include "catamorph/interpreters/create_evmdd.h"
+#include "globals.h"
 #include <string>
-
-using Ordering = std::vector<std::string>;
-using Domains = std::map<std::string, unsigned int>;
 
 class Polynomial {
 public:
@@ -34,7 +32,7 @@ public:
 
     template <typename M, typename F = std::plus<M>>
     Evmdd<M, F> create_evmdd(Domains const &d, Ordering const &o) const {
-        CreateEvmdd<M, F> create(o,d);
+        CreateEvmdd<M, F> create(o, d);
         return create.create_evmdd(expression, d);
     }
 

@@ -7,6 +7,7 @@
 #include "operations/logic_and.h"
 #include "operations/logic_not.h"
 #include "operations/logic_or.h"
+#include "../globals.h"
 
 #include <algorithm>
 #include <cassert>
@@ -19,9 +20,6 @@
 #include <unordered_set>
 #include <vector>
 
-using Ordering = std::vector<std::string>;
-using Domains = std::map<std::string, unsigned int>;
-using ConcreteState = std::vector<unsigned int>;
 
 template <typename M, typename F = std::plus<M>>
 class EvmddFactory;

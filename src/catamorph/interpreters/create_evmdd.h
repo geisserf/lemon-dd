@@ -3,6 +3,7 @@
 
 #include "../../evmdd/abstract_factory.h"
 #include "../../evmdd/evmdd.h"
+#include "../../globals.h"
 #include "../catamorph.h"
 #include "../expression.h"
 
@@ -10,12 +11,10 @@
 #include <string>
 #include <vector>
 
-using Domains = std::map<ID, unsigned int>;
-
 template <typename M, typename F = std::plus<M>>
 class CreateEvmdd {
 public:
-    CreateEvmdd(Ordering const &ordering, Domain const &domains)
+    CreateEvmdd(Ordering const &ordering, Domains const &domains)
         : factory(AbstractFactory<M, F>::get_factory(ordering, domains)) {}
 
     Evmdd<M, F> create_evmdd(Expression const &expr, Domains const &domains) {

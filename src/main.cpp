@@ -2,6 +2,7 @@
 #include "effect_parser.h"
 #include "evmdd/abstract_factory.h"
 #include "evmdd/printer.h"
+#include "globals.h"
 #include "polynomial.h"
 #include "utils/string_utils.h"
 
@@ -21,11 +22,8 @@ using std::endl;
 using std::string;
 using std::vector;
 
-using Ordering = std::vector<std::string>;
-using Domain = std::map<std::string, unsigned int>;
-
-Domain parse_domains(string const &domains) {
-    Domain result;
+Domains parse_domains(string const &domains) {
+    Domains result;
     std::istringstream iss(domains);
     vector<string> tokens{std::istream_iterator<string>{iss},
                           std::istream_iterator<string>{}};
@@ -57,7 +55,7 @@ void create_dot(std::ostream &output_stream, std::string const &filename,
 }
 
 Evmdd<Facts, Union> generate_effect_evmdd(vector<string> const &effects,
-                                          Domain const &domain,
+                                          Domains const &domain,
                                           Ordering const &ordering) {
     EffectParser parser;
     vector<ConditionalEffect> ce;
@@ -79,7 +77,7 @@ int main() {
     cout << "Example: a:2 b:4 c:3 d:4" << endl;
     string domains;
     getline(cin, domains);
-    Domain domain = parse_domains(domains);
+    Domains domain = parse_domains(domains);
 
     cout << "Enter top-down ordering relation between variables in the "
             "following form: <var_i> <var_j> ... <var_k>."
