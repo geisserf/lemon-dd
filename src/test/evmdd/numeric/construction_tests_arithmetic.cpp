@@ -44,6 +44,34 @@ SCENARIO("Testing numeric EVMDD for construction on arithmetic input",
         }
     }
 
+    GIVEN("Term x with D(x)=0,1,2 and D(y)=0,1") {
+        Polynomial p = Polynomial("x");
+        WHEN("We create the evmdd") {
+            Domains d = {{"x", 3}, {"y",2}};
+            Ordering o = {"x"};
+            auto evmdd = p.create_evmdd<int>(d, o);
+            THEN("evmdd has one variable node with 3 edges") {
+                std::stringstream result;
+                evmdd.print(result);
+                std::stringstream expected;
+                expected << "input: 0" << endl;
+                expected << "x 0 1 2" << endl;
+                REQUIRE(result.str() == expected.str());
+            }
+            THEN("quasi-reduced evmdd has two nodes") {
+                auto &factory = AbstractFactory<int>::get_factory(o, d);
+                evmdd = factory.quasi_reduce(evmdd);
+                std::stringstream result;
+                evmdd.print(result);
+                std::stringstream expected;
+                expected << "input: 0" << endl;
+                expected << "y 0 0" << endl;
+                expected << "x 0 1 2" << endl;
+                REQUIRE(result.str() == expected.str());
+            }
+        }
+    }
+
     GIVEN("Term 5*x with domain 0,1,2") {
         Polynomial p = Polynomial("5*x");
         WHEN("We create the evmdd") {

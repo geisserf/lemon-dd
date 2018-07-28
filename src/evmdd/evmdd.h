@@ -190,12 +190,9 @@ public:
             children.emplace_back(Monoid<M, F>(domain[i]),
                                   node_factory.get_terminal_node());
         }
-        // If variable is not indicated in ordering, append it at the end
+        // variable is always contained in the ordering
         auto var_it = std::find(ordering.begin(), ordering.end(), var);
-        if (var_it == ordering.end()) {
-            ordering.push_back(var);
-            var_it = ordering.end() - 1;
-        }
+        assert(var_it != ordering.end());
         // Increase by 1 since index 0 is reserved for terminal node
         auto var_pos = std::distance(ordering.begin(), var_it) + 1;
         Node_ptr<Monoid<M, F>> node =
@@ -267,11 +264,17 @@ public:
 
     // Return the quasi-reduced EVMDD.
     // An EVMDD is quasi-reduced if for each node, the level of all children
-    // is exactly one less, i.e. all edges span exactly one level.
+    // is exactly one less, i.e. all edges span exactly one level, and if the
+    // root node is at the top-most layer
     Evmdd<M, F> quasi_reduce(Evmdd<M, F> const &evmdd) {
         std::unordered_map<Node_ptr<Monoid<M, F>>, Node_ptr<Monoid<M, F>>>
             processed;
         auto reduced_node = quasi_reduce(evmdd.source_node, processed);
+        // If source node is not at top level fill up with quasi-reduced nodes
+        // up to top-most layer
+        if (reduced_node->get_level() != domains.size()) {
+            reduced_node = fill_layers(reduced_node, domains.size() + 1);
+        }
         return Evmdd<M, F>(evmdd.input, reduced_node);
     }
 
@@ -369,7 +372,7 @@ private:
             return it->second;
         }
         std::vector<Edge<Monoid<M, F>>> reduced_edges;
-        for (Edge<Monoid<M,F>> const &edge : node->get_children()) {
+        for (Edge<Monoid<M, F>> const &edge : node->get_children()) {
             auto reduced_child = quasi_reduce(edge.second, processed);
             reduced_child = fill_layers(reduced_child, node->get_level());
             reduced_edges.emplace_back(edge.first, reduced_child);
@@ -386,9 +389,6 @@ private:
                                        unsigned int target_level) {
         for (auto i = node->get_level() + 1; i < target_level; ++i) {
             std::vector<Edge<Monoid<M, F>>> edges;
-            // TODO What do we do with variables which are not contained the
-            // ordering, i.e. unknown to the EVMDD? These would just be
-            // appended at the top, but we require a mechanism to add these.
             // For each domain value add a new edge with neutral element as
             // weight
             for (unsigned int d = 0; d < domains[ordering[i - 1]]; ++d) {
@@ -401,7 +401,16 @@ private:
     }
 
     EvmddFactory(Ordering const &o, Domains const &d)
-        : ordering(o), domains(d) {}
+        : ordering(o), domains(d) {
+        // Fill up ordering, such that all variables given by domains are
+        // contained in the ordering
+        for (std::pair<std::string, int> const &entry : domains) {
+            if (std::find(ordering.begin(), ordering.end(), entry.first) ==
+                ordering.end()) {
+                ordering.push_back(entry.first);
+            }
+        }
+    }
 
     // variable ordering
     Ordering ordering;
