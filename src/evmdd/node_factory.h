@@ -14,7 +14,7 @@ template <typename T>
 class Node;
 
 template <typename T>
-using Node_ptr = std::shared_ptr<Node<T>>;
+using Node_ptr = std::shared_ptr<Node<T> const>;
 
 template <typename T>
 using Edge = std::pair<T, Node_ptr<T>>;

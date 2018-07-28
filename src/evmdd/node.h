@@ -97,10 +97,6 @@ public:
         return children;
     }
 
-    std::vector<Edge<T>> &modified_children() {
-        return children;
-    }
-
     std::string const &get_variable() const {
         return variable;
     }

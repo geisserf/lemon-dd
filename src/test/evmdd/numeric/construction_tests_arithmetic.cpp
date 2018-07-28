@@ -78,7 +78,7 @@ SCENARIO("Testing numeric EVMDD for construction on arithmetic input",
             }
             THEN("quasi-reduced evmdd has the expected structure") {
                 auto &factory = AbstractFactory<int>::get_factory(o, d);
-                factory.quasi_reduce(evmdd);
+                evmdd = factory.quasi_reduce(evmdd);
                 std::stringstream result;
                 evmdd.print(result);
                 std::stringstream expected;
@@ -104,7 +104,7 @@ SCENARIO("Testing numeric EVMDD for construction on arithmetic input",
             }
             THEN("quasi-reduced evmdd has the expected structure") {
                 auto &factory = AbstractFactory<int>::get_factory(o, d);
-                factory.quasi_reduce(evmdd);
+                evmdd = factory.quasi_reduce(evmdd);
                 std::stringstream result;
                 evmdd.print(result);
                 std::stringstream expected;
@@ -136,7 +136,7 @@ SCENARIO("Testing numeric EVMDD for construction on arithmetic input",
             }
             THEN("quasi-reduced evmdd has the expected structure") {
                 auto &factory = AbstractFactory<int>::get_factory(o, d);
-                factory.quasi_reduce(evmdd);
+                evmdd = factory.quasi_reduce(evmdd);
                 std::stringstream result;
                 evmdd.print(result);
                 std::stringstream expected;
@@ -164,7 +164,7 @@ SCENARIO("Testing numeric EVMDD for construction on arithmetic input",
             }
             THEN("quasi-reduced evmdd has the expected structure") {
                 auto &factory = AbstractFactory<int>::get_factory(o, d);
-                factory.quasi_reduce(evmdd);
+                evmdd = factory.quasi_reduce(evmdd);
                 std::stringstream result;
                 evmdd.print(result);
                 std::stringstream expected;
@@ -202,7 +202,7 @@ SCENARIO(
             }
             THEN("quasi-reduced evmdd has the expected structure") {
                 auto &factory = AbstractFactory<int>::get_factory(o, d);
-                factory.quasi_reduce(evmdd);
+                evmdd = factory.quasi_reduce(evmdd);
                 std::stringstream result;
                 evmdd.print(result);
                 std::stringstream expected;
@@ -229,7 +229,7 @@ SCENARIO(
             }
             THEN("quasi-reduced evmdd has the expected structure") {
                 auto &factory = AbstractFactory<int>::get_factory(o, d);
-                factory.quasi_reduce(evmdd);
+                evmdd = factory.quasi_reduce(evmdd);
                 std::stringstream result;
                 evmdd.print(result);
                 std::stringstream expected;
@@ -248,6 +248,9 @@ SCENARIO(
                 std::stringstream result;
                 evmdd.print(result);
                 std::stringstream expected;
+                // z gets printed first, since nodes are printed from left
+                // children to right children and the left x child of y is
+                // reduced away
                 expected << "input: 0" << endl;
                 expected << "y 0 0" << endl;
                 expected << "z 0 1 2" << endl;
@@ -256,7 +259,7 @@ SCENARIO(
             }
             THEN("quasi-reduced evmdd has the expected structure") {
                 auto &factory = AbstractFactory<int>::get_factory(o, d);
-                factory.quasi_reduce(evmdd);
+                evmdd = factory.quasi_reduce(evmdd);
                 std::stringstream result;
                 evmdd.print(result);
                 std::stringstream expected;
@@ -284,7 +287,7 @@ SCENARIO(
             }
             THEN("quasi-reduced evmdd has the expected structure") {
                 auto &factory = AbstractFactory<int>::get_factory(o, d);
-                factory.quasi_reduce(evmdd);
+                evmdd = factory.quasi_reduce(evmdd);
                 std::stringstream result;
                 evmdd.print(result);
                 std::stringstream expected;
@@ -304,6 +307,9 @@ SCENARIO(
                 std::stringstream result;
                 evmdd.print(result);
                 std::stringstream expected;
+                // z gets printed first, since nodes are printed from left
+                // children to right children and the left x child of y is
+                // reduced away
                 expected << "input: 0" << endl;
                 expected << "x 0 0" << endl;
                 expected << "z 0 1 2" << endl;
@@ -312,12 +318,13 @@ SCENARIO(
             }
             THEN("quasi-reduced evmdd has the expected structure") {
                 auto &factory = AbstractFactory<int>::get_factory(o, d);
-                factory.quasi_reduce(evmdd);
+                evmdd = factory.quasi_reduce(evmdd);
                 std::stringstream result;
                 evmdd.print(result);
                 std::stringstream expected;
                 expected << "input: 0" << endl;
                 expected << "x 0 0" << endl;
+                expected << "y 0 0" << endl;
                 expected << "y 0 1" << endl;
                 expected << "z 0 1 2" << endl;
                 REQUIRE(result.str() == expected.str());
@@ -339,7 +346,7 @@ SCENARIO(
             }
             THEN("quasi-reduced evmdd has the expected structure") {
                 auto &factory = AbstractFactory<int>::get_factory(o, d);
-                factory.quasi_reduce(evmdd);
+                evmdd = factory.quasi_reduce(evmdd);
                 std::stringstream result;
                 evmdd.print(result);
                 std::stringstream expected;

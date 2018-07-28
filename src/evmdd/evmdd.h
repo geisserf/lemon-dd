@@ -250,43 +250,6 @@ public:
         return result;
     }
 
-    void quasi_reduce(Evmdd<M, F> &evmdd) {
-        quasi_reduce(evmdd.source_node);
-    }
-
-    // Quasi-reduce the EVMDD. An EVMDD is quasi-reduced if for each node, the
-    // level of all children is exactly one less, i.e. all edges span exactly
-    // one level.
-    // TODO What do we do with variables which are not contained the ordering,
-    // i.e. unknown to the EVMDD? These would just be appended at the top, but
-    // we require a mechanism to add these.
-    void quasi_reduce(Node_ptr<Monoid<M, F>> node) {
-        if (node->is_terminal()) {
-            return;
-        }
-        // TODO add unknown nodes here?
-        unsigned int child_level = node->get_level() - 1;
-        for (Edge<Monoid<M, F>> &edge : node->modified_children()) {
-            if (edge.second->get_level() != child_level) {
-                // Replace child c with new node, for each edge neutral element
-                // as weight and c as successor.
-                assert(ordering.size() > child_level);
-                std::string var_name = ordering.at(child_level);
-                Monoid<M, F> n(Monoid<M, F>::neutral_element());
-                std::pair<Monoid<M, F>, Node_ptr<Monoid<M, F>>> edge{
-                    n, edge.second};
-                std::vector<Edge<Monoid<M, F>>> new_edges(domains.at(var_name),
-                                                          edge);
-
-                // TODO check if hash could become corrupted
-                Node_ptr<Monoid<M, F>> new_child =
-                    node_factory.make_node(child_level, var_name, new_edges);
-                edge.second = new_child; // redirect old edge to new child
-            }
-            quasi_reduce(edge.second);
-        }
-    }
-
     // Product of two evmdds. Only defined for ProductMonoids.
     template <typename L, typename G, typename R, typename H>
     Evmdd<M, F> product(Evmdd<L, G> const &left, Evmdd<R, H> const &right) {
@@ -300,6 +263,15 @@ public:
                       "User Error: M is not a pair of L and R. Product of two "
                       "evmdds has to be called by a ProductFactory");
         return apply(left, right, std::make_pair<L, R>);
+    }
+
+    // Return the quasi-reduced EVMDD.
+    // An EVMDD is quasi-reduced if for each node, the level of all children
+    // is exactly one less, i.e. all edges span exactly one level.
+    Evmdd<M, F> quasi_reduce(Evmdd<M, F> const &evmdd) {
+        std::unordered_set<Node_ptr<Monoid<M, F>>> processed;
+        auto reduced_node = quasi_reduce(evmdd.source_node, processed);
+        return Evmdd<M, F>(evmdd.input, reduced_node);
     }
 
 private:
@@ -381,6 +353,40 @@ private:
         Node_ptr<Monoid<M, F>> root_node =
             node_factory.make_node(level, var, edges);
         return Evmdd<M, F>(min_weight, root_node);
+    }
+
+    // Return the quasi-reduced version of a node and all of its successor nodes
+    Node_ptr<Monoid<M, F>> quasi_reduce(
+        Node_ptr<Monoid<M, F>> node,
+        std::unordered_set<Node_ptr<Monoid<M, F>>> &processed) {
+        if (node->is_terminal()) {
+            return node;
+        }
+        std::vector<Edge<Monoid<M, F>>> reduced_edges;
+        for (auto const &edge : node->get_children()) {
+            auto reduced_child = quasi_reduce(edge.second, processed);
+            // Create quasi-reduced filler nodes for missing layers
+            for (auto i = reduced_child->get_level() + 1; i < node->get_level();
+                 ++i) {
+                std::vector<Edge<Monoid<M, F>>> edges;
+                // TODO What do we do with variables which are not contained the
+                // ordering, i.e. unknown to the EVMDD? These would just be
+                // appended at the top, but we require a mechanism to add these.
+                // For each domain value add a new edge with neutral element as
+                // weight
+                for (unsigned int d = 0; d < domains[ordering[i - 1]]; ++d) {
+                    edges.emplace_back(
+                        Monoid<M, F>(Monoid<M, F>::neutral_element()),
+                        reduced_child);
+                }
+                reduced_child =
+                    node_factory.make_node(i, ordering[i - 1], edges);
+            }
+            reduced_edges.emplace_back(edge.first, reduced_child);
+        }
+        processed.insert(node);
+        return node_factory.make_node(node->get_level(), node->get_variable(),
+                                      reduced_edges);
     }
 
     EvmddFactory(Ordering const &o, Domains const &d)

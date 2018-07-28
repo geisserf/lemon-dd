@@ -7,7 +7,7 @@ using std::endl;
 
 SCENARIO("Testing abstract factory on EVMDDs", "[evmdd][abstract_factory]") {
     AbstractFactory<int>::reset();
-    Domains d = {{"a", 3}, {"b", 2}};
+    Domains d = {{"a", 2}, {"b", 3}};
     Ordering ab_ordering{"a", "b"};
     auto &ab_factory = AbstractFactory<int>::get_factory(ab_ordering, d);
     auto evmdd_a = ab_factory.make_var_evmdd("a", {0, 1});
