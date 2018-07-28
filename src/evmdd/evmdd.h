@@ -269,7 +269,8 @@ public:
     // An EVMDD is quasi-reduced if for each node, the level of all children
     // is exactly one less, i.e. all edges span exactly one level.
     Evmdd<M, F> quasi_reduce(Evmdd<M, F> const &evmdd) {
-        std::unordered_set<Node_ptr<Monoid<M, F>>> processed;
+        std::unordered_map<Node_ptr<Monoid<M, F>>, Node_ptr<Monoid<M, F>>>
+            processed;
         auto reduced_node = quasi_reduce(evmdd.source_node, processed);
         return Evmdd<M, F>(evmdd.input, reduced_node);
     }
@@ -355,38 +356,48 @@ private:
         return Evmdd<M, F>(min_weight, root_node);
     }
 
-    // Return the quasi-reduced version of a node and all of its successor nodes
+    // Return quasi-reduced version of a node with quasi-reduced successor nodes
     Node_ptr<Monoid<M, F>> quasi_reduce(
         Node_ptr<Monoid<M, F>> node,
-        std::unordered_set<Node_ptr<Monoid<M, F>>> &processed) {
+        std::unordered_map<Node_ptr<Monoid<M, F>>, Node_ptr<Monoid<M, F>>>
+            &processed) {
         if (node->is_terminal()) {
             return node;
         }
+        auto it = processed.find(node);
+        if (it != processed.end()) {
+            return it->second;
+        }
         std::vector<Edge<Monoid<M, F>>> reduced_edges;
-        for (auto const &edge : node->get_children()) {
+        for (Edge<Monoid<M,F>> const &edge : node->get_children()) {
             auto reduced_child = quasi_reduce(edge.second, processed);
-            // Create quasi-reduced filler nodes for missing layers
-            for (auto i = reduced_child->get_level() + 1; i < node->get_level();
-                 ++i) {
-                std::vector<Edge<Monoid<M, F>>> edges;
-                // TODO What do we do with variables which are not contained the
-                // ordering, i.e. unknown to the EVMDD? These would just be
-                // appended at the top, but we require a mechanism to add these.
-                // For each domain value add a new edge with neutral element as
-                // weight
-                for (unsigned int d = 0; d < domains[ordering[i - 1]]; ++d) {
-                    edges.emplace_back(
-                        Monoid<M, F>(Monoid<M, F>::neutral_element()),
-                        reduced_child);
-                }
-                reduced_child =
-                    node_factory.make_node(i, ordering[i - 1], edges);
-            }
+            reduced_child = fill_layers(reduced_child, node->get_level());
             reduced_edges.emplace_back(edge.first, reduced_child);
         }
-        processed.insert(node);
-        return node_factory.make_node(node->get_level(), node->get_variable(),
-                                      reduced_edges);
+        auto result = node_factory.make_node(
+            node->get_level(), node->get_variable(), reduced_edges);
+        processed[node] = result;
+        return result;
+    }
+
+    // Create quasi-reduced filler nodes for missing layers up to the
+    // target_level
+    Node_ptr<Monoid<M, F>> fill_layers(Node_ptr<Monoid<M, F>> node,
+                                       unsigned int target_level) {
+        for (auto i = node->get_level() + 1; i < target_level; ++i) {
+            std::vector<Edge<Monoid<M, F>>> edges;
+            // TODO What do we do with variables which are not contained the
+            // ordering, i.e. unknown to the EVMDD? These would just be
+            // appended at the top, but we require a mechanism to add these.
+            // For each domain value add a new edge with neutral element as
+            // weight
+            for (unsigned int d = 0; d < domains[ordering[i - 1]]; ++d) {
+                edges.emplace_back(
+                    Monoid<M, F>(Monoid<M, F>::neutral_element()), node);
+            }
+            node = node_factory.make_node(i, ordering[i - 1], edges);
+        }
+        return node;
     }
 
     EvmddFactory(Ordering const &o, Domains const &d)
