@@ -144,6 +144,8 @@ int main() {
         cout << "File name not entered. Setting to " << buffer << endl;
         filename = buffer;
     }
+    string quasi_reduced_filename = filename + "_quasi_reduced.dot";
+    std::ofstream quasi_reduced_dot_stream(quasi_reduced_filename);
     filename += ".dot";
     std::ofstream dot_stream(filename);
 
@@ -151,12 +153,25 @@ int main() {
         cout << "Writing conditional effect EVMDD to " << filename << endl;
         create_dot(dot_stream, filename, effect_evmdd, arithmetic_expression,
                    conditional_effects);
+        cout << "Writing quasi-reduced conditional effect EVMDD to "
+             << quasi_reduced_filename << endl;
+        auto &factory =
+            AbstractFactory<Facts, Union>::get_factory(ordering, domain);
+        auto reduced_evmdd = factory.quasi_reduce(effect_evmdd);
+        create_dot(quasi_reduced_dot_stream, quasi_reduced_filename,
+                   reduced_evmdd, arithmetic_expression, conditional_effects);
         return 0;
     }
     if (!effect_evmdd.exists()) {
         cout << "Writing arithmetic expression EVMDD to " << filename << endl;
         create_dot(dot_stream, filename, cost_evmdd, arithmetic_expression,
                    conditional_effects);
+        cout << "Writing quasi-reduced arithmetic expression EVMDD to "
+             << quasi_reduced_filename << endl;
+        auto &factory = AbstractFactory<double>::get_factory(ordering, domain);
+        auto reduced_evmdd = factory.quasi_reduce(cost_evmdd);
+        create_dot(quasi_reduced_dot_stream, quasi_reduced_filename,
+                   reduced_evmdd, arithmetic_expression, conditional_effects);
         return 0;
     }
     // Both EVMDDs were requested -> generate product EVMDD
@@ -169,4 +184,9 @@ int main() {
     cout << "Both EVMDD types requested: Writing product EVMDD." << endl;
     create_dot(dot_stream, filename, product_evmdd, arithmetic_expression,
                conditional_effects);
+    cout << "Writing quasi-reduced product EVMDD to " << quasi_reduced_filename
+         << endl;
+    auto reduced_evmdd = factory.quasi_reduce(product_evmdd);
+    create_dot(quasi_reduced_dot_stream, quasi_reduced_filename, reduced_evmdd,
+               arithmetic_expression, conditional_effects);
 }
