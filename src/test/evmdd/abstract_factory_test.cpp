@@ -9,11 +9,11 @@ SCENARIO("Testing abstract factory on EVMDDs", "[evmdd][abstract_factory]") {
     AbstractFactory<int>::reset();
     Domains d = {{"a", 2}, {"b", 3}};
     Ordering ab_ordering{"a", "b"};
-    auto &ab_factory = AbstractFactory<int>::get_factory(ab_ordering, d);
+    auto &ab_factory = AbstractFactory<int>::get_factory(d, ab_ordering);
     auto evmdd_a = ab_factory.make_var_evmdd("a", {0, 1});
     // Terminal node and "a" node
     REQUIRE(ab_factory.size() == 2);
-    auto &ab_factory2 = AbstractFactory<int>::get_factory(ab_ordering, d);
+    auto &ab_factory2 = AbstractFactory<int>::get_factory(d, ab_ordering);
     // Requests the same factory
     REQUIRE(AbstractFactory<int>::size() == 1);
     REQUIRE(ab_factory.size() == ab_factory2.size());
@@ -23,7 +23,7 @@ SCENARIO("Testing abstract factory on EVMDDs", "[evmdd][abstract_factory]") {
 
     // New ordering should result in a new factory
     Ordering ba_ordering{"b", "a"};
-    auto &ba_factory = AbstractFactory<int>::get_factory(ba_ordering, d);
+    auto &ba_factory = AbstractFactory<int>::get_factory(d, ba_ordering);
     REQUIRE(AbstractFactory<int>::size() == 2);
     REQUIRE(ba_factory.size() == 1);
 }

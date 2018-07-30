@@ -50,7 +50,7 @@ SCENARIO("Testing numeric EVMDDs for construction on iverson based input",
                 REQUIRE(result.str() == expected.str());
             }
             THEN("quasi-reduced evmdd has the expected structure") {
-                auto &factory = AbstractFactory<int>::get_factory(o, d);
+                auto &factory = AbstractFactory<int>::get_factory(d, o);
                 evmdd = factory.quasi_reduce(evmdd);
                 std::stringstream result;
                 evmdd.print(result);
@@ -117,7 +117,7 @@ SCENARIO("Testing numeric EVMDDs for construction on iverson based input",
                 REQUIRE(result.str() == expected.str());
             }
             THEN("quasi-reduced evmdd has the expected structure") {
-                auto &factory = AbstractFactory<int>::get_factory(o, d);
+                auto &factory = AbstractFactory<int>::get_factory(d, o);
                 evmdd = factory.quasi_reduce(evmdd);
                 std::stringstream result;
                 evmdd.print(result);
@@ -147,7 +147,7 @@ SCENARIO("Testing numeric EVMDDs for construction on iverson based input",
                 REQUIRE(result.str() == expected.str());
             }
             THEN("quasi-reduced evmdd has the expected structure") {
-                auto &factory = AbstractFactory<int>::get_factory(o, d);
+                auto &factory = AbstractFactory<int>::get_factory(d, o);
                 evmdd = factory.quasi_reduce(evmdd);
                 std::stringstream result;
                 evmdd.print(result);
@@ -180,7 +180,7 @@ SCENARIO("Testing numeric EVMDDs for construction on iverson based input",
                 REQUIRE(result.str() == expected.str());
             }
             THEN("quasi-reduced evmdd has the expected structure") {
-                auto &factory = AbstractFactory<int>::get_factory(o, d);
+                auto &factory = AbstractFactory<int>::get_factory(d, o);
                 evmdd = factory.quasi_reduce(evmdd);
                 std::stringstream result;
                 evmdd.print(result);
@@ -233,7 +233,7 @@ SCENARIO("Testing numeric EVMDDs for construction on iverson based input",
                 REQUIRE(result.str() == expected.str());
             }
             THEN("quasi-reduced evmdd has the expected structure") {
-                auto &factory = AbstractFactory<int>::get_factory(o, d);
+                auto &factory = AbstractFactory<int>::get_factory(d, o);
                 evmdd = factory.quasi_reduce(evmdd);
                 std::stringstream result;
                 evmdd.print(result);
@@ -369,7 +369,7 @@ SCENARIO(
                 REQUIRE(result.str() == expected.str());
             }
             THEN("quasi-reduced evmdd has the expected structure") {
-                auto &factory = AbstractFactory<int>::get_factory(o, d);
+                auto &factory = AbstractFactory<int>::get_factory(d, o);
                 evmdd = factory.quasi_reduce(evmdd);
                 std::stringstream result;
                 evmdd.print(result);
@@ -396,7 +396,7 @@ SCENARIO(
                 REQUIRE(result.str() == expected.str());
             }
             THEN("quasi-reduced evmdd has the expected structure") {
-                auto &factory = AbstractFactory<int>::get_factory(o, d);
+                auto &factory = AbstractFactory<int>::get_factory(d, o);
                 evmdd = factory.quasi_reduce(evmdd);
                 std::stringstream result;
                 evmdd.print(result);
@@ -424,7 +424,7 @@ SCENARIO(
                 REQUIRE(result.str() == expected.str());
             }
             THEN("quasi-reduced evmdd has the expected structure") {
-                auto &factory = AbstractFactory<int>::get_factory(o, d);
+                auto &factory = AbstractFactory<int>::get_factory(d, o);
                 evmdd = factory.quasi_reduce(evmdd);
                 std::stringstream result;
                 evmdd.print(result);

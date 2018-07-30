@@ -1,8 +1,8 @@
 #ifndef ABSTRACT_FACTORY_H
 #define ABSTRACT_FACTORY_H
 
-#include "evmdd.h"
 #include "../globals.h"
+#include "evmdd.h"
 
 #include <iostream>
 #include <map>
@@ -19,14 +19,14 @@ public:
     // domain/ordering pair has exactly one factory which generates and
     // stores all evmdds for this pair. Note that we do not yet support dynamic
     // reordering.
-    static EvmddFactory<M, F> &get_factory(Ordering const &ordering,
-                                           Domains const &domains) {
-        std::pair<Ordering, Domains> p(ordering, domains);
+    static EvmddFactory<M, F> &get_factory(Domains const &domains,
+                                           Ordering const &ordering) {
+        std::pair<Domains, Ordering> p(domains, ordering);
         if (cache.find(p) != cache.end()) {
             return *(cache.at(p));
         }
         cache[p] = std::unique_ptr<EvmddFactory<M, F>>(
-            new EvmddFactory<M, F>(ordering, domains));
+            new EvmddFactory<M, F>(domains, ordering));
         return *(cache.at(p));
     }
 
@@ -40,13 +40,13 @@ public:
     }
 
 private:
-    static std::map<std::pair<Ordering, Domains>,
+    static std::map<std::pair<Domains, Ordering>,
                     std::unique_ptr<EvmddFactory<M, F>>>
         cache;
 };
 
 template <typename M, typename F>
-std::map<std::pair<Ordering, Domains>, std::unique_ptr<EvmddFactory<M, F>>>
+std::map<std::pair<Domains, Ordering>, std::unique_ptr<EvmddFactory<M, F>>>
     AbstractFactory<M, F>::cache;
 
 #endif /* ABSTRACT_FACTORY_H */

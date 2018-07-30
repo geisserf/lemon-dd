@@ -156,7 +156,7 @@ int main() {
         cout << "Writing quasi-reduced conditional effect EVMDD to "
              << quasi_reduced_filename << endl;
         auto &factory =
-            AbstractFactory<Facts, Union>::get_factory(ordering, domain);
+            AbstractFactory<Facts, Union>::get_factory(domain, ordering);
         auto reduced_evmdd = factory.quasi_reduce(effect_evmdd);
         create_dot(quasi_reduced_dot_stream, quasi_reduced_filename,
                    reduced_evmdd, arithmetic_expression, conditional_effects);
@@ -168,7 +168,7 @@ int main() {
                    conditional_effects);
         cout << "Writing quasi-reduced arithmetic expression EVMDD to "
              << quasi_reduced_filename << endl;
-        auto &factory = AbstractFactory<double>::get_factory(ordering, domain);
+        auto &factory = AbstractFactory<double>::get_factory(domain, ordering);
         auto reduced_evmdd = factory.quasi_reduce(cost_evmdd);
         create_dot(quasi_reduced_dot_stream, quasi_reduced_filename,
                    reduced_evmdd, arithmetic_expression, conditional_effects);
@@ -177,8 +177,8 @@ int main() {
     // Both EVMDDs were requested -> generate product EVMDD
     auto &factory =
         AbstractProductFactory<Facts, double, Union,
-                               std::plus<double>>::get_factory(ordering,
-                                                               domain);
+                               std::plus<double>>::get_factory(domain,
+                                                               ordering);
 
     auto product_evmdd = factory.product(effect_evmdd, cost_evmdd);
     cout << "Both EVMDD types requested: Writing product EVMDD." << endl;

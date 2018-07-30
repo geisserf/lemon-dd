@@ -14,8 +14,8 @@
 template <typename M, typename F = std::plus<M>>
 class CreateEvmdd {
 public:
-    CreateEvmdd(Ordering const &ordering, Domains const &domains)
-        : factory(AbstractFactory<M, F>::get_factory(ordering, domains)) {}
+    CreateEvmdd(Domains const &domains, Ordering const &ordering)
+        : factory(AbstractFactory<M, F>::get_factory(domains, ordering)) {}
 
     Evmdd<M, F> create_evmdd(Expression const &expr, Domains const &domains) {
         return Catamorph::cata<Evmdd<M, F>>(

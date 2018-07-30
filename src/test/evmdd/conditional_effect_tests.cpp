@@ -93,7 +93,7 @@ SCENARIO("Testing EVMDDs for conditional effect",
             REQUIRE(result.str() == expected.str());
         }
         THEN("Quasi-reduced evmdd has the correct structure") {
-            auto &factory = AbstractFactory<Facts, Union>::get_factory(o, d);
+            auto &factory = AbstractFactory<Facts, Union>::get_factory(d, o);
             evmdd = factory.quasi_reduce(evmdd);
             std::stringstream result;
             evmdd.print(result);
@@ -142,7 +142,7 @@ SCENARIO("Testing EVMDDs for conditional effect",
             REQUIRE(result.str() == expected.str());
         }
         THEN("Quasi-reduced evmdd has the correct structure") {
-            auto &factory = AbstractFactory<Facts, Union>::get_factory(o, d);
+            auto &factory = AbstractFactory<Facts, Union>::get_factory(d, o);
             evmdd = factory.quasi_reduce(evmdd);
             std::stringstream result;
             evmdd.print(result);
@@ -180,7 +180,7 @@ SCENARIO("Testing EVMDDs for conditional effect",
             REQUIRE(result.str() == expected.str());
         }
         THEN("Quasi-reduced evmdd has the correct structure") {
-            auto &factory = AbstractFactory<Facts, Union>::get_factory(o, d);
+            auto &factory = AbstractFactory<Facts, Union>::get_factory(d, o);
             evmdd = factory.quasi_reduce(evmdd);
             std::stringstream result;
             evmdd.print(result);

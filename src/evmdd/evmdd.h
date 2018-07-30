@@ -1,13 +1,13 @@
 #ifndef NUMERIC_CATAMORPH_EVMDD_H
 #define NUMERIC_CATAMORPH_EVMDD_H
 
+#include "../globals.h"
 #include "evmdd_cache.h"
 #include "monoid.h"
 #include "node.h"
 #include "operations/logic_and.h"
 #include "operations/logic_not.h"
 #include "operations/logic_or.h"
-#include "../globals.h"
 
 #include <algorithm>
 #include <cassert>
@@ -19,7 +19,6 @@
 #include <string>
 #include <unordered_set>
 #include <vector>
-
 
 template <typename M, typename F = std::plus<M>>
 class EvmddFactory;
@@ -398,8 +397,8 @@ private:
         return node;
     }
 
-    EvmddFactory(Ordering const &o, Domains const &d)
-        : ordering(o), domains(d) {
+    EvmddFactory(Domains const &d, Ordering const &o)
+        : domains(d), ordering(o) {
         // Fill up ordering, such that all variables given by domains are
         // contained in the ordering
         for (std::pair<std::string, int> const &entry : domains) {
@@ -410,9 +409,8 @@ private:
         }
     }
 
-    // variable ordering
-    Ordering ordering;
     Domains domains;
+    Ordering ordering;
     NodeFactory<Monoid<M, F>> node_factory;
 
     friend AbstractFactory<M, F>;
