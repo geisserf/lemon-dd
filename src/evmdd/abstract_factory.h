@@ -1,13 +1,12 @@
 #ifndef ABSTRACT_FACTORY_H
 #define ABSTRACT_FACTORY_H
 
+#include "../globals.h"
 #include "evmdd.h"
 
 #include <iostream>
 #include <map>
 #include <memory>
-
-using Ordering = std::vector<std::string>;
 
 template <typename L, typename R, typename F, typename G>
 using AbstractProductFactory =
@@ -16,15 +15,19 @@ using AbstractProductFactory =
 template <typename M, typename F = std::plus<M>>
 class AbstractFactory {
 public:
-    // Returns the factory for the given Ordering. Each ordering has exactly one
-    // factory which generates and stores all evmdds for this ordering.
-    static EvmddFactory<M, F> &get_factory(Ordering const &ordering) {
-        if (cache.find(ordering) != cache.end()) {
-            return *(cache.at(ordering));
+    // Returns the factory for the given domains and ordering. Each
+    // domain/ordering pair has exactly one factory which generates and
+    // stores all evmdds for this pair. Note that we do not yet support dynamic
+    // reordering.
+    static EvmddFactory<M, F> &get_factory(Domains const &domains,
+                                           Ordering const &ordering) {
+        std::pair<Domains, Ordering> p(domains, ordering);
+        if (cache.find(p) != cache.end()) {
+            return *(cache.at(p));
         }
-        cache[ordering] = std::unique_ptr<EvmddFactory<M, F>>(
-            new EvmddFactory<M, F>(ordering));
-        return *(cache.at(ordering));
+        cache[p] = std::unique_ptr<EvmddFactory<M, F>>(
+            new EvmddFactory<M, F>(domains, ordering));
+        return *(cache.at(p));
     }
 
     static size_t size() {
@@ -37,11 +40,13 @@ public:
     }
 
 private:
-    static std::map<Ordering, std::unique_ptr<EvmddFactory<M, F>>> cache;
+    static std::map<std::pair<Domains, Ordering>,
+                    std::unique_ptr<EvmddFactory<M, F>>>
+        cache;
 };
 
 template <typename M, typename F>
-std::map<Ordering, std::unique_ptr<EvmddFactory<M, F>>>
+std::map<std::pair<Domains, Ordering>, std::unique_ptr<EvmddFactory<M, F>>>
     AbstractFactory<M, F>::cache;
 
 #endif /* ABSTRACT_FACTORY_H */

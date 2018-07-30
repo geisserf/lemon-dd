@@ -1,5 +1,6 @@
 #include "../../../conditional_effects.h"
 #include "../../../effect_parser.h"
+#include "../../../evmdd/abstract_factory.h"
 #include "../../../utils/string_utils.h"
 
 #include "../../Catch/include/catch.hpp"
@@ -82,7 +83,18 @@ SCENARIO("Testing EVMDDs for conditional effect",
         Evmdd<Facts, Union> evmdd =
             ConditionalEffects::create_evmdd(cond_effects, d, o);
 
-        THEN("Evmdd has the correct structure") {
+        THEN("Reduced evmdd has the correct structure") {
+            std::stringstream result;
+            evmdd.print(result);
+            std::stringstream expected;
+            expected << "input: {}" << endl;
+            expected << "y {} {z=0}" << endl;
+            expected << "x {} {z=0}" << endl;
+            REQUIRE(result.str() == expected.str());
+        }
+        THEN("Quasi-reduced evmdd has the correct structure") {
+            auto &factory = AbstractFactory<Facts, Union>::get_factory(d, o);
+            evmdd = factory.quasi_reduce(evmdd);
             std::stringstream result;
             evmdd.print(result);
             std::stringstream expected;
@@ -120,7 +132,18 @@ SCENARIO("Testing EVMDDs for conditional effect",
         Ordering o = {"v5", "v6"};
         Evmdd<Facts, Union> evmdd =
             ConditionalEffects::create_evmdd(cond_effects, d, o);
-        THEN("Evmdd has the correct structure") {
+        THEN("Reduced evmdd has the correct structure") {
+            std::stringstream result;
+            evmdd.print(result);
+            std::stringstream expected;
+            expected << "input: {}" << endl;
+            expected << "v6 {} {} {}" << endl;
+            expected << "v5 {v5=1} {}" << endl;
+            REQUIRE(result.str() == expected.str());
+        }
+        THEN("Quasi-reduced evmdd has the correct structure") {
+            auto &factory = AbstractFactory<Facts, Union>::get_factory(d, o);
+            evmdd = factory.quasi_reduce(evmdd);
             std::stringstream result;
             evmdd.print(result);
             std::stringstream expected;
@@ -146,7 +169,19 @@ SCENARIO("Testing EVMDDs for conditional effect",
         Evmdd<Facts, Union> evmdd =
             ConditionalEffects::create_evmdd(cond_effects, d, o);
 
-        THEN("Evmdd has the correct structure") {
+        THEN("Reduced evmdd has the correct structure") {
+            std::stringstream result;
+            evmdd.print(result);
+            std::stringstream expected;
+            expected << "input: {}" << endl;
+            expected << "v6 {} {} {}" << endl;
+            expected << "v5 {v5=1 v6=1} {}" << endl;
+            expected << "v5 {v5=1 v6=2} {}" << endl;
+            REQUIRE(result.str() == expected.str());
+        }
+        THEN("Quasi-reduced evmdd has the correct structure") {
+            auto &factory = AbstractFactory<Facts, Union>::get_factory(d, o);
+            evmdd = factory.quasi_reduce(evmdd);
             std::stringstream result;
             evmdd.print(result);
             std::stringstream expected;
