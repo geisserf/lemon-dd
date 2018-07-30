@@ -9,6 +9,8 @@
 #include "operations/logic_not.h"
 #include "operations/logic_or.h"
 
+#include "../utils/math_utils.h"
+
 #include <algorithm>
 #include <cassert>
 #include <functional>
@@ -294,6 +296,7 @@ private:
         // of the monoid itself.
         M input =
             oper(left.get_input().get_value(), right.get_input().get_value());
+        assert(!MathUtils::is_nan(input));
         return make_const_evmdd(input);
     }
 

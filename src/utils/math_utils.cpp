@@ -1,6 +1,5 @@
 #include "math_utils.h"
 
-#include <cmath>
 #include <limits>
 
 bool MathUtils::is_equal(float first, float second) {
