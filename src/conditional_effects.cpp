@@ -14,7 +14,7 @@ Facts keep_if_true::operator()(int first, const Facts &second) const {
 Evmdd<Facts, Union> ConditionalEffect::create_evmdd(Domains const &d,
                                                     Ordering const &o) const {
     Evmdd<int> condition_evmdd = condition.create_evmdd<int>(d, o);
-    auto &factory = AbstractFactory<Facts, Union>::get_factory(o);
+    auto &factory = AbstractFactory<Facts, Union>::get_factory(d,o);
     Evmdd<Facts, Union> effect_evmdd =
         factory.make_const_evmdd(Facts{Fact{effect, value}});
     return factory.apply(condition_evmdd, effect_evmdd, keep_if_true());
@@ -30,7 +30,7 @@ std::string ConditionalEffect::to_string() const {
 Evmdd<Facts, Union> ConditionalEffects::create_evmdd(
     std::vector<ConditionalEffect> const &effects, Domains const &d,
     Ordering const &o) {
-    auto &factory = AbstractFactory<Facts, Union>::get_factory(o);
+    auto &factory = AbstractFactory<Facts, Union>::get_factory(d,o);
     if (effects.empty()) {
         return factory.make_const_evmdd(Facts{});
     }
