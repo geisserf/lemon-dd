@@ -6,7 +6,6 @@
 #include "monoid.h"
 #include "node.h"
 #include "operations/divides.h"
-#include "operations/equal_to.h"
 #include "operations/logic_and.h"
 #include "operations/logic_not.h"
 #include "operations/logic_or.h"
@@ -26,6 +25,9 @@
 #include <string>
 #include <unordered_set>
 #include <vector>
+
+using std::cout;
+using std::endl;
 
 template <typename M, typename F = std::plus<M>>
 class EvmddFactory;
@@ -167,6 +169,16 @@ public:
 template <typename M, typename F>
 class AbstractFactory;
 
+// Structs being used for lazy termination mechanism
+// in terminal_case and make_terminal_evmdd
+struct general_ {};
+struct special_ : general_ {};
+
+template <typename T>
+struct type_ {
+    typedef T type;
+};
+
 template <typename M, typename F>
 class EvmddFactory {
 public:
@@ -210,8 +222,8 @@ public:
     template <typename L, typename G, typename R, typename H, typename OP>
     Evmdd<M, F> apply(Evmdd<L, G> const &left, Evmdd<R, H> const &right,
                       OP oper) {
-        if (terminal_case(left, right, oper)) {
-            return make_terminal_evmdd(left, right, oper);
+        if (terminal_case(left, right, oper, special_())) {
+            return make_terminal_evmdd(left, right, oper, special_());
         }
         // Check if computation is cached
         auto it = EvmddCache<Evmdd<M, F>, Evmdd<L, G>, Evmdd<R, H>, OP>::find(
@@ -285,36 +297,70 @@ public:
 private:
     // Returns true if the operation can immmediately be computed between the
     // evmdds.
+    // For operators with annihilator
+    template <typename L, typename G, typename R, typename H, typename OP,
+              typename type_<decltype(OP::annihilator)>::type = 0>
+    bool terminal_case(Evmdd<L, G> const &left, Evmdd<R, H> const &right,
+                       OP oper, special_) {
+        // Use oper to determine lazy termination
+        cout << "* terminal_case specialized method WITH annihilator"
+             << std::endl;
+        if ((left.get_source_node()->is_terminal() &&
+             (left.get_input().get_value() == oper.annihilator)) ||
+            (right.get_source_node()->is_terminal() &&
+             (right.get_input().get_value() == oper.annihilator))) {
+            return true;
+        } else {
+            return (left.get_source_node()->is_terminal() &&
+                    right.get_source_node()->is_terminal());
+        }
+    }
+    // For operators without annihilator
     template <typename L, typename G, typename R, typename H, typename OP>
     bool terminal_case(Evmdd<L, G> const &left, Evmdd<R, H> const &right,
-                       OP /*oper*/) {
-        // TODO use oper to determine lazy termination
-        if ((left.get_source_node()->is_terminal() &&
-             (left.get_input().get_value() == OP::annihilator)) ||
-            (right.get_source_node()->is_terminal() &&
-             (right.get_input().get_value() == OP::annihilator))) {
-            return true;
-        }
+                       OP /*oper*/, general_) {
+        cout << "terminal_case for operators WITHOUT annihilator" << std::endl;
         return (left.get_source_node()->is_terminal() &&
                 right.get_source_node()->is_terminal());
     }
 
     // computation of 'left oper right' if it is a terminal operation
-    template <typename L, typename G, typename R, typename H, typename OP>
+    // For operators with annihilator and identity
+    template <typename L, typename G, typename R, typename H, typename OP,
+              typename type_<decltype(OP::annihilator)>::type = 0,
+              typename type_<decltype(OP::identity)>::type = 0>
     Evmdd<M, F> make_terminal_evmdd(Evmdd<L, G> const &left,
-                                    Evmdd<R, H> const &right, OP oper) {
+                                    Evmdd<R, H> const &right, OP oper,
+                                    special_) {
         // oper:LxR->M implies that we can apply it on the carrier types instead
         // of the monoid itself.
-        if (left.get_input().get_value() == OP::annihilator ||
-            right.get_input().get_value() == OP::annihilator) {
-            return make_const_evmdd(OP::annihilator);
+        cout << "*  make_terminal_evmdd WITH annihilator and identity"
+             << std::endl;
+        if (left.get_input().get_value() == oper.annihilator ||
+            right.get_input().get_value() == oper.annihilator) {
+            return make_const_evmdd(oper.annihilator);
         }
-        if (left.get_input().get_value() == OP::identity) {
+        if (left.get_input().get_value() == oper.identity) {
             return make_const_evmdd(right.get_input().get_value());
         }
-        if (right.get_input().get_value() == OP::identity) {
+        if (right.get_input().get_value() == oper.identity) {
             return make_const_evmdd(left.get_input().get_value());
         }
+        M input =
+            oper(left.get_input().get_value(), right.get_input().get_value());
+        assert(!MathUtils::is_nan(input));
+        return make_const_evmdd(input);
+    }
+
+    // For operators without annihilator and identity
+    template <typename L, typename G, typename R, typename H, typename OP>
+    Evmdd<M, F> make_terminal_evmdd(Evmdd<L, G> const &left,
+                                    Evmdd<R, H> const &right, OP oper,
+                                    general_) {
+        cout << "make_terminal_evmdd WITHOUT annihilator and identity"
+             << std::endl;
+        // oper:LxR->M implies that we can apply it on the carrier types instead
+        // of the monoid itself.
         M input =
             oper(left.get_input().get_value(), right.get_input().get_value());
         assert(!MathUtils::is_nan(input));
