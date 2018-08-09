@@ -56,7 +56,7 @@ private:
                 return apply(o->rands(), divides<M>());
             }
             if (auto *o = Factories::get_as_equals(e)) {
-                return apply(o->rands(), equal_to<M>());
+                return apply(o->rands(), std::equal_to<M>());
             }
             if (auto *o = Factories::get_as_and(e)) {
                 return apply(o->rands(), logic_and<M>());
