@@ -5,11 +5,12 @@
 
 template <class T>
 struct divides {
-    static const T annihilator = 1, identity;
+    divides() : identity(1) {}
     T operator()(const T &lhs, const T &rhs) const {
         auto result = std::divides<T>()(lhs, rhs);
         return result;
     }
+    T identity;
 };
 
 #endif /* DIVIDES_H */

@@ -12,7 +12,6 @@
 // none of the types int, float or double.
 template <class T>
 struct logic_not {
-    static const T annihilator, identity;
     T operator()(const T &, const T &) const {
         throw std::logic_error("Non-boolean operand for logical_not");
     }

@@ -5,11 +5,13 @@
 
 template <class T>
 struct plus {
-    static const T annihilator, identity = 0;
+    plus() : identity(0) {}
     T operator()(const T &lhs, const T &rhs) const {
         auto result = std::plus<T>()(lhs, rhs);
         return result;
     }
+    T identity;
 };
+
 
 #endif /* PLUS_H */

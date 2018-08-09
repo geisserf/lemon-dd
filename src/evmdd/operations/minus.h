@@ -5,11 +5,12 @@
 
 template <class T>
 struct minus {
-    static const T annihilator, identity = 0;
+    minus() : identity(0) {}
     T operator()(const T &lhs, const T &rhs) const {
         auto result = std::minus<T>()(lhs, rhs);
         return result;
     }
+    T identity;
 };
 
 #endif /* MINUS_H */

@@ -7,10 +7,11 @@
 // none of the types int, float or double.
 template <class T>
 struct logic_and {
-    static const T annihilator = 0, identity = 1;
+    logic_and() : annihilator(0), identity(1) {}
     T operator()(const T &, const T &) const {
         throw std::logic_error("Non-boolean operands for logic_and");
     }
+    T annihilator, identity;
 };
 
 // Checks if the operands are binary

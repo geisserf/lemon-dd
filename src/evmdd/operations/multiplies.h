@@ -5,11 +5,12 @@
 
 template <class T>
 struct multiplies {
-    static const T annihilator = 0, identity = 1;
+    multiplies() : annihilator(0), identity(1) {}
     T operator()(const T &lhs, const T &rhs) const {
         auto result = std::multiplies<T>()(lhs, rhs);
         return result;
     }
+    T annihilator, identity;
 };
 
 #endif /* MULTIPLIES_H */
