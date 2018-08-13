@@ -174,9 +174,9 @@ class AbstractFactory;
 struct general_ {};
 struct special_ : general_ {};
 
-template <typename T>
+template <typename>
 struct type_ {
-    typedef T type;
+    typedef int type;
 };
 
 template <typename M, typename F>
