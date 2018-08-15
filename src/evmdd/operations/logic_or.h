@@ -7,11 +7,9 @@
 // none of the types int, float or double.
 template <class T>
 struct logic_or {
-    logic_or() : annihilator(1), identity(0) {}
     T operator()(const T &, const T &) const {
         throw std::logic_error("Non-boolean operand for logical_or");
     }
-    T annihilator, identity;
 };
 
 // Checks if the operands are binary
@@ -29,6 +27,7 @@ void domain_check_or(const T &lhs, const T &rhs) {
 // Specialization for type int
 template <>
 struct logic_or<int> {
+    logic_or() : annihilator(1), identity(0) {}
     int operator()(const int &lhs, const int &rhs) const {
 #ifndef DEBUG
         domain_check_or(lhs, rhs);
@@ -36,11 +35,13 @@ struct logic_or<int> {
         auto result = std::logical_or<int>()(lhs, rhs);
         return result;
     }
+    int annihilator, identity;
 };
 
 // Specialization for type double
 template <>
 struct logic_or<double> {
+    logic_or() : annihilator(1), identity(0) {}
     double operator()(const double &lhs, const double &rhs) const {
 #ifndef DEBUG
         domain_check_or(lhs, rhs);
@@ -48,11 +49,13 @@ struct logic_or<double> {
         auto result = std::logical_or<double>()(lhs, rhs);
         return result;
     }
+    double annihilator, identity;
 };
 
 // Specialization for type float
 template <>
 struct logic_or<float> {
+    logic_or() : annihilator(1), identity(0) {}
     float operator()(const float &lhs, const float &rhs) const {
 #ifndef DEBUG
         domain_check_or(lhs, rhs);
@@ -60,6 +63,7 @@ struct logic_or<float> {
         auto result = std::logical_or<float>()(lhs, rhs);
         return result;
     }
+    float annihilator, identity;
 };
 
 #endif /* LOGIC_NOT_H */

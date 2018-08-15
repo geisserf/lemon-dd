@@ -7,11 +7,9 @@
 // none of the types int, float or double.
 template <class T>
 struct logic_and {
-    logic_and() : annihilator(0), identity(1) {}
     T operator()(const T &, const T &) const {
         throw std::logic_error("Non-boolean operands for logic_and");
     }
-    T annihilator, identity;
 };
 
 // Checks if the operands are binary
@@ -29,18 +27,22 @@ void domain_check_and(const T &lhs, const T &rhs) {
 // Specialization for type int
 template <>
 struct logic_and<int> {
+    logic_and() : annihilator(0), identity(1) {}
     int operator()(const int &lhs, const int &rhs) const {
 #ifndef DEBUG
         domain_check_and(lhs, rhs);
 #endif
         auto result = std::logical_and<int>()(lhs, rhs);
         return result;
+
     }
+    int annihilator, identity;
 };
 
 // Specialization for type double
 template <>
 struct logic_and<double> {
+    logic_and() : annihilator(0), identity(1) {}
     double operator()(const double &lhs, const double &rhs) const {
 #ifndef DEBUG
         domain_check_and(lhs, rhs);
@@ -48,11 +50,13 @@ struct logic_and<double> {
         auto result = std::logical_and<double>()(lhs, rhs);
         return result;
     }
+    double annihilator, identity;
 };
 
 // Specialization for type float
 template <>
 struct logic_and<float> {
+    logic_and() : annihilator(0), identity(1) {}
     float operator()(const float &lhs, const float &rhs) const {
 #ifndef DEBUG
         domain_check_and(lhs, rhs);
@@ -60,6 +64,7 @@ struct logic_and<float> {
         auto result = std::logical_and<float>()(lhs, rhs);
         return result;
     }
+    float annihilator, identity;
 };
 
 #endif /* LOGIC_AND_H */
