@@ -11,6 +11,14 @@ struct divides {
         return result;
     }
     T identity;
+
+    constexpr bool has_identity() const {
+        return true;
+    }
+
+    constexpr bool has_annihilator() const {
+        return false;
+    }
 };
 
 #endif /* DIVIDES_H */

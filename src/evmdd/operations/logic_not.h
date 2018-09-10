@@ -38,6 +38,13 @@ struct logic_not<int> {
         auto result = std::logical_not<int>()(lhs);
         return result;
     }
+    constexpr bool has_identity() const {
+        return false;
+    }
+
+    constexpr bool has_annihilator() const {
+        return false;
+    }
 };
 
 // Specialization for type double
@@ -50,6 +57,13 @@ struct logic_not<double> {
         auto result = std::logical_not<double>()(lhs);
         return result;
     }
+    constexpr bool has_identity() const {
+        return false;
+    }
+
+    constexpr bool has_annihilator() const {
+        return false;
+    }
 };
 
 // Specialization for type float
@@ -61,6 +75,13 @@ struct logic_not<float> {
 #endif
         auto result = std::logical_not<float>()(lhs);
         return result;
+    }
+    constexpr bool has_identity() const {
+        return false;
+    }
+
+    constexpr bool has_annihilator() const {
+        return false;
     }
 };
 #endif /* LOGIC_NOT_H */

@@ -36,6 +36,13 @@ struct logic_or<int> {
         return result;
     }
     int annihilator, identity;
+    constexpr bool has_identity() const {
+        return true;
+    }
+
+    constexpr bool has_annihilator() const {
+        return true;
+    }
 };
 
 // Specialization for type double
@@ -50,6 +57,13 @@ struct logic_or<double> {
         return result;
     }
     double annihilator, identity;
+    constexpr bool has_identity() const {
+        return true;
+    }
+
+    constexpr bool has_annihilator() const {
+        return true;
+    }
 };
 
 // Specialization for type float
@@ -64,6 +78,13 @@ struct logic_or<float> {
         return result;
     }
     float annihilator, identity;
+    constexpr bool has_identity() const {
+        return true;
+    }
+
+    constexpr bool has_annihilator() const {
+        return true;
+    }
 };
 
 #endif /* LOGIC_NOT_H */

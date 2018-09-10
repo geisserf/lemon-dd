@@ -11,6 +11,13 @@ struct multiplies {
         return result;
     }
     T annihilator, identity;
+    constexpr bool has_identity() const {
+        return true;
+    }
+
+    constexpr bool has_annihilator() const {
+        return true;
+    }
 };
 
 #endif /* MULTIPLIES_H */

@@ -222,7 +222,7 @@ public:
     template <typename L, typename G, typename R, typename H, typename OP>
     Evmdd<M, F> apply(Evmdd<L, G> const &left, Evmdd<R, H> const &right,
                       OP oper) {
-        if (terminal_case(left, right, oper, special_())) {
+        if (terminal_case(left, right, oper)) {
             return make_terminal_evmdd(left, right, oper, special_());
         }
         // Check if computation is cached
@@ -297,8 +297,9 @@ public:
 private:
     // Returns true if the operation can immmediately be computed between the
     // evmdds.
+
     // For operators with annihilator
-    template <typename L, typename G, typename R, typename H, typename OP,
+    /*template <typename L, typename G, typename R, typename H, typename OP,
               typename type_<decltype(OP::annihilator)>::type = 0>
     bool terminal_case(Evmdd<L, G> const &left, Evmdd<R, H> const &right,
                        OP oper, special_) {
@@ -313,14 +314,29 @@ private:
             return (left.get_source_node()->is_terminal() &&
                     right.get_source_node()->is_terminal());
         }
-    }
+    }*/
+
     // For operators without annihilator
     template <typename L, typename G, typename R, typename H, typename OP>
     bool terminal_case(Evmdd<L, G> const &left, Evmdd<R, H> const &right,
-                       OP /*oper*/, general_) {
-        cout << "[-]    ANNIHILATOR [terminal_case]" << std::endl;
-        return (left.get_source_node()->is_terminal() &&
+                       OP oper) {
+
+        if constexpr (oper.has_annihilator()) {
+            cout << "[+]    ANNIHILATOR [terminal_case]" << std::endl;
+            if ((left.get_source_node()->is_terminal() &&
+                 (left.get_input().get_value() == oper.annihilator)) ||
+                (right.get_source_node()->is_terminal() &&
+                 (right.get_input().get_value() == oper.annihilator))) {
+                return true;
+            } else {
+                return (left.get_source_node()->is_terminal() &&
+                        right.get_source_node()->is_terminal());
+            }
+        } else {
+                cout << "[-]    ANNIHILATOR [terminal_case]" << std::endl;
+                return (left.get_source_node()->is_terminal() &&
                 right.get_source_node()->is_terminal());
+        }
     }
 
     // computation of 'left oper right' if it is a terminal operation

@@ -34,9 +34,16 @@ struct logic_and<int> {
 #endif
         auto result = std::logical_and<int>()(lhs, rhs);
         return result;
-
     }
     int annihilator, identity;
+
+    constexpr bool has_identity() const {
+        return true;
+    }
+
+    constexpr bool has_annihilator() const {
+        return true;
+    }
 };
 
 // Specialization for type double
@@ -51,6 +58,13 @@ struct logic_and<double> {
         return result;
     }
     double annihilator, identity;
+    constexpr bool has_identity() const {
+        return true;
+    }
+
+    constexpr bool has_annihilator() const {
+        return true;
+    }
 };
 
 // Specialization for type float
@@ -65,6 +79,13 @@ struct logic_and<float> {
         return result;
     }
     float annihilator, identity;
+    constexpr bool has_identity() const {
+        return true;
+    }
+
+    constexpr bool has_annihilator() const {
+        return true;
+    }
 };
 
 #endif /* LOGIC_AND_H */
