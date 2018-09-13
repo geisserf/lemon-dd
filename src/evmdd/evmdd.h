@@ -6,6 +6,7 @@
 #include "monoid.h"
 #include "node.h"
 #include "operations/divides.h"
+#include "operations/equal_to.h"
 #include "operations/logic_and.h"
 #include "operations/logic_not.h"
 #include "operations/logic_or.h"
@@ -320,7 +321,6 @@ private:
     template <typename L, typename G, typename R, typename H, typename OP>
     bool terminal_case(Evmdd<L, G> const &left, Evmdd<R, H> const &right,
                        OP oper) {
-
         if constexpr (oper.has_annihilator()) {
             cout << "[+]    ANNIHILATOR [terminal_case]" << std::endl;
             if ((left.get_source_node()->is_terminal() &&
@@ -333,9 +333,9 @@ private:
                         right.get_source_node()->is_terminal());
             }
         } else {
-                cout << "[-]    ANNIHILATOR [terminal_case]" << std::endl;
-                return (left.get_source_node()->is_terminal() &&
-                right.get_source_node()->is_terminal());
+            cout << "[-]    ANNIHILATOR [terminal_case]" << std::endl;
+            return (left.get_source_node()->is_terminal() &&
+                    right.get_source_node()->is_terminal());
         }
     }
 
