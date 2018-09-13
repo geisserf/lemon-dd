@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.5)
-set(CMAKE_CXX_STANDARD 14)
 
 # Respect the PATH environment variable when searching for compilers.
 find_program(CMAKE_C_COMPILER NAMES $ENV{CC} gcc PATHS ENV PATH NO_DEFAULT_PATH)
@@ -59,6 +58,7 @@ set(SOURCE_FILES
      evmdd/operations/logic_not.h
      evmdd/operations/plus.h
      evmdd/operations/minus.h
+     evmdd/operations/equal_to.h
      evmdd/operations/multiplies.h
      evmdd/operations/divides.h
      #utils/math_utils.h utils/math_utils.cpp
