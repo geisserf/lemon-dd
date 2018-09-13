@@ -28,6 +28,25 @@ void domain_check_not(const T &lhs) {
 }
 #endif
 
+// Specialization for type bool
+template <>
+struct logic_not<bool> {
+    bool operator()(const bool &lhs, const bool & /*rhs*/) const {
+#ifndef DEBUG
+        domain_check_not(lhs);
+#endif
+        auto result = std::logical_not<bool>()(lhs);
+        return result;
+    }
+    constexpr bool has_identity() const {
+        return false;
+    }
+
+    constexpr bool has_annihilator() const {
+        return false;
+    }
+};
+
 // Specialization for type int
 template <>
 struct logic_not<int> {

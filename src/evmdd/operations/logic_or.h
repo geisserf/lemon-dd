@@ -24,6 +24,27 @@ void domain_check_or(const T &lhs, const T &rhs) {
 }
 #endif
 
+// Specialization for type bool
+template <>
+struct logic_or<bool> {
+    logic_or() : annihilator(true), identity(false) {}
+    bool operator()(const bool &lhs, const bool &rhs) const {
+#ifndef DEBUG
+        domain_check_or(lhs, rhs);
+#endif
+        auto result = std::logical_or<bool>()(lhs, rhs);
+        return result;
+    }
+    bool annihilator, identity;
+    constexpr bool has_identity() const {
+        return true;
+    }
+
+    constexpr bool has_annihilator() const {
+        return true;
+    }
+};
+
 // Specialization for type int
 template <>
 struct logic_or<int> {

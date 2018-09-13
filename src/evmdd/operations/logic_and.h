@@ -24,6 +24,28 @@ void domain_check_and(const T &lhs, const T &rhs) {
 }
 #endif
 
+// Specialization for type bool
+template <>
+struct logic_and<bool> {
+    logic_and() : annihilator(false), identity(true) {}
+    bool operator()(const bool &lhs, const bool &rhs) const {
+#ifndef DEBUG
+        domain_check_and(lhs, rhs);
+#endif
+        auto result = std::logical_and<bool>()(lhs, rhs);
+        return result;
+    }
+    bool annihilator, identity;
+
+    constexpr bool has_identity() const {
+        return true;
+    }
+
+    constexpr bool has_annihilator() const {
+        return true;
+    }
+};
+
 // Specialization for type int
 template <>
 struct logic_and<int> {
