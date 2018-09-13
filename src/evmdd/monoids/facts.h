@@ -16,6 +16,9 @@ struct Union {
                        std::inserter(result, result.end()));
         return result;
     }
+    constexpr bool has_annihilator() const {
+        return false;
+    }
 };
 
 #endif /* VARIABLE_ASSIGNMENT_H */

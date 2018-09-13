@@ -16,6 +16,10 @@ class Evmdd;
 // merge the evmdd for the condition with the evmdd of the effect.
 struct keep_if_true {
     Facts operator()(int first, const Facts &second) const;
+
+    constexpr bool has_annihilator() const {
+        return false;
+    }
 };
 
 class ConditionalEffect {
