@@ -40,9 +40,14 @@ Expression Optimizations::optimize_op(op<Tag, Expression> const &e,
         }
     }
 
+    // Hack: this is a quick hack to ensure that neutral element is really
+    // neutral. At some point, we have to rewrite this function, since there
+    // is a difference between right and left neutral elements.
+    bool is_neutral = (step(neutral, 5) != 5);
+
     if (subs.empty())
         return Factories::cst(res);
-    if (res != neutral)
+    if (res != neutral || is_neutral)
         subs.push_back(Factories::cst(res));
     if (subs.size() == 1)
         return subs.front();
