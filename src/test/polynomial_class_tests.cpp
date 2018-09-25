@@ -1,6 +1,6 @@
+#include "../polynomial.h"
 #include "../catamorph/interpreters/evaluate.h"
 #include "../parser.h"
-#include "../polynomial.h"
 #include "Catch/include/catch.hpp"
 
 #include <exception>
@@ -18,6 +18,23 @@ SCENARIO("Testing Polynomial Interface Class", "[polynomial]") {
             REQUIRE("(+ a b)" == p.to_string());
         }
     }
+
+    GIVEN("An Infix Expression") {
+        std::string input = "(a-b)";
+        Polynomial p(input);
+        THEN("Polynomial is a-b") {
+            REQUIRE("(- a b)" == p.to_string());
+        }
+
+        WHEN("a takes value 0") {
+            const Env partial_env = {{"a", 0}};
+            THEN("function should be -b") {
+                Polynomial result(p.evaluate(partial_env));
+                REQUIRE("(- b)" == result.to_string());
+            }
+        }
+    }
+
     GIVEN("A Prefix Expression") {
         std::string input = "+ a b";
         Polynomial p(input);
