@@ -40,14 +40,9 @@ Expression Optimizations::optimize_op(op<Tag, Expression> const &e,
         }
     }
 
-    // Hack: this is a quick hack to ensure that neutral element is really
-    // neutral. At some point, we have to rewrite this function, since there
-    // is a difference between right and left neutral elements.
-    bool is_neutral = (step(neutral, 5) != 5);
-
     if (subs.empty())
         return Factories::cst(res);
-    if (res != neutral || is_neutral)
+    if (res != neutral)
         subs.push_back(Factories::cst(res));
     if (subs.size() == 1)
         return subs.front();
@@ -66,8 +61,8 @@ bool Optimizations::has_zero(const Range &subs) {
 Expression Optimizations::opt_add_sub_alg(expression_r<Expression> const &e) {
     if (auto *op = Factories::get_as_add(e))
         return Optimizations::optimize_op(*op, 0, std::plus<float>());
-    if (auto *op = Factories::get_as_sub(e))
-        return Optimizations::optimize_op(*op, 0, std::minus<float>());
+    //if (auto *op = Factories::get_as_sub(e))
+        //return Optimizations::optimize_op(*op, 0, std::minus<float>());
     return e;
 }
 
