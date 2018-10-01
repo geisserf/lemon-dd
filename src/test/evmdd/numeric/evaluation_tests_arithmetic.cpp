@@ -131,7 +131,7 @@ SCENARIO("Testing numeric EVMDDs for concrete evaluation over float",
     GIVEN("Evmdd for term abs(x-y) with domain x=0..3, y=0..3") {
         Polynomial p = Polynomial("abs(x-y)");
         Domains d = {{"x", 4}, {"y", 4}};
-        Ordering o = {{"x", 1}, {"y", 2}};
+        Ordering o = {"x","y"};
         auto evmdd = p.create_evmdd<int>(d, o);
         THEN("Evaluation should be correct") {
             for (unsigned int x = 0; x < d["x"]; ++x) {
@@ -147,7 +147,7 @@ SCENARIO("Testing numeric EVMDDs for concrete evaluation over float",
     GIVEN("Evmdd for term x>y with domain x=0..3, y=0..3") {
         Polynomial p = Polynomial("x>y");
         Domains d = {{"x", 4}, {"y", 4}};
-        Ordering o = {{"x", 1}, {"y", 2}};
+        Ordering o = {"x","y"};
         auto evmdd = p.create_evmdd<float>(d, o);
         THEN("Evaluation should be correct") {
             for (unsigned int x = 0; x < d["x"]; ++x) {
@@ -178,7 +178,7 @@ SCENARIO("Testing numeric EVMDDs for concrete evaluation over float",
     GIVEN("Evmdd for term x>=y with domain x=0..3, y=0..3") {
         Polynomial p = Polynomial("x>=y");
         Domains d = {{"x", 4}, {"y", 4}};
-        Ordering o = {{"x", 1}, {"y", 2}};
+        Ordering o = {"x","y"};
         auto evmdd = p.create_evmdd<float>(d, o);
         THEN("Evaluation should be correct") {
             for (unsigned int x = 0; x < d["x"]; ++x) {
