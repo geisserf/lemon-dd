@@ -111,6 +111,17 @@ SCENARIO("Testing the absolute amount function and similarly named variables",
             REQUIRE(token.type == Type::VAR);
         }
     }
+
+    GIVEN("The expression abs + abs(5)") {
+        Lexer lexer("abs + abs(5)");
+        THEN("first token is a variable, third token is an operator") {
+            Token token = lexer.getNextToken();
+            REQUIRE(token.type == Type::VAR);
+            lexer.getNextToken();
+            token = lexer.getNextToken();
+            REQUIRE(token.type == Type::OP);
+        }
+    }
 }
 
 SCENARIO("Testing the lexer on an expression with a variable", "[lexer]") {
