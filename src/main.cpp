@@ -2,6 +2,7 @@
 #include "effect_parser.h"
 #include "evmdd/abstract_factory.h"
 #include "evmdd/printer.h"
+#include "globals.h"
 #include "polynomial.h"
 #include "utils/string_utils.h"
 
@@ -12,6 +13,7 @@
 #include <map>
 #include <sstream>
 #include <string>
+#include <time.h>
 #include <vector>
 
 using std::cin;
@@ -20,11 +22,8 @@ using std::endl;
 using std::string;
 using std::vector;
 
-using Ordering = std::map<string, int>;
-using Domain = std::map<string, unsigned int>;
-
-Domain parse_domains(string const &domains) {
-    Domain result;
+Domains parse_domains(string const &domains) {
+    Domains result;
     std::istringstream iss(domains);
     vector<string> tokens{std::istream_iterator<string>{iss},
                           std::istream_iterator<string>{}};
@@ -39,10 +38,11 @@ Domain parse_domains(string const &domains) {
 Ordering parse_ordering(string const &ordering) {
     Ordering result;
     vector<string> variables = StringUtils::split(ordering, ' ');
-    int position = variables.size(); // position 0 reserved for terminal
+    result.reserve(variables.size());
     for (string const &var : variables) {
-        result[var] = position--;
+        result.push_back(var);
     }
+    std::reverse(result.begin(), result.end());
     return result;
 }
 
@@ -55,7 +55,7 @@ void create_dot(std::ostream &output_stream, std::string const &filename,
 }
 
 Evmdd<Facts, Union> generate_effect_evmdd(vector<string> const &effects,
-                                          Domain const &domain,
+                                          Domains const &domain,
                                           Ordering const &ordering) {
     EffectParser parser;
     vector<ConditionalEffect> ce;
@@ -77,7 +77,7 @@ int main() {
     cout << "Example: a:2 b:4 c:3 d:4" << endl;
     string domains;
     getline(cin, domains);
-    Domain domain = parse_domains(domains);
+    Domains domain = parse_domains(domains);
 
     cout << "Enter top-down ordering relation between variables in the "
             "following form: <var_i> <var_j> ... <var_k>."
@@ -135,6 +135,17 @@ int main() {
     cout << "Enter name of result file." << endl;
     string filename;
     getline(cin, filename);
+    if (filename.empty()) {
+        // Set filename to current date-time
+        time_t t = time(0);
+        struct tm *now = localtime(&t);
+        char buffer[80];
+        strftime(buffer, 80, "%Y_%m_%d_%I%M%S%p", now);
+        cout << "File name not entered. Setting to " << buffer << endl;
+        filename = buffer;
+    }
+    string quasi_reduced_filename = filename + "_quasi_reduced.dot";
+    std::ofstream quasi_reduced_dot_stream(quasi_reduced_filename);
     filename += ".dot";
     std::ofstream dot_stream(filename);
 
@@ -142,21 +153,40 @@ int main() {
         cout << "Writing conditional effect EVMDD to " << filename << endl;
         create_dot(dot_stream, filename, effect_evmdd, arithmetic_expression,
                    conditional_effects);
+        cout << "Writing quasi-reduced conditional effect EVMDD to "
+             << quasi_reduced_filename << endl;
+        auto &factory =
+            AbstractFactory<Facts, Union>::get_factory(domain, ordering);
+        auto reduced_evmdd = factory.quasi_reduce(effect_evmdd);
+        create_dot(quasi_reduced_dot_stream, quasi_reduced_filename,
+                   reduced_evmdd, arithmetic_expression, conditional_effects);
         return 0;
     }
     if (!effect_evmdd.exists()) {
         cout << "Writing arithmetic expression EVMDD to " << filename << endl;
         create_dot(dot_stream, filename, cost_evmdd, arithmetic_expression,
                    conditional_effects);
+        cout << "Writing quasi-reduced arithmetic expression EVMDD to "
+             << quasi_reduced_filename << endl;
+        auto &factory = AbstractFactory<double>::get_factory(domain, ordering);
+        auto reduced_evmdd = factory.quasi_reduce(cost_evmdd);
+        create_dot(quasi_reduced_dot_stream, quasi_reduced_filename,
+                   reduced_evmdd, arithmetic_expression, conditional_effects);
         return 0;
     }
     // Both EVMDDs were requested -> generate product EVMDD
     auto &factory =
         AbstractProductFactory<Facts, double, Union,
-                               std::plus<double>>::get_factory(ordering);
+                               std::plus<double>>::get_factory(domain,
+                                                               ordering);
 
     auto product_evmdd = factory.product(effect_evmdd, cost_evmdd);
     cout << "Both EVMDD types requested: Writing product EVMDD." << endl;
     create_dot(dot_stream, filename, product_evmdd, arithmetic_expression,
                conditional_effects);
+    cout << "Writing quasi-reduced product EVMDD to " << quasi_reduced_filename
+         << endl;
+    auto reduced_evmdd = factory.quasi_reduce(product_evmdd);
+    create_dot(quasi_reduced_dot_stream, quasi_reduced_filename, reduced_evmdd,
+               arithmetic_expression, conditional_effects);
 }

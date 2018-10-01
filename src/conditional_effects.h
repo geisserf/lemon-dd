@@ -6,7 +6,7 @@
 
 #include <string>
 
-using Ordering = std::map<std::string, int>;
+using Ordering = std::vector<std::string>;
 using Domains = std::map<std::string, unsigned int>;
 
 template <typename M, typename F>

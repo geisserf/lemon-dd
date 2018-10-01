@@ -11,6 +11,7 @@
 #include <vector>
 
 using std::string;
+using std::cout;
 
 template <typename M, typename F>
 class Evmdd;
@@ -35,11 +36,14 @@ public:
             information << "graph info {";
             write_header(information, arithmetic, conditional, max_width);
             write_end(information);
+            cout << "Separate info_" + filename + " generated for graph legend."
+            << std::endl;
         } else {
             write_header(out, arithmetic, conditional, max_width);
         }
 
         write_end(out);
+        cout << filename + " generated." << std::endl;
         reset_internals();
     }
 

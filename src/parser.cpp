@@ -20,112 +20,93 @@ Token Lexer::getNextToken() {
 
     // trim surrounding parantheses
     StringUtils::trim(input);
+    // Operator symbols and their regex checks. Each pair describes an operator,
+    // where the first value corresponds to the operator symbol and the second
+    // value to the regex which is used to check for the operator in the input
+    // string.
+    vector<std::pair<string, std::regex>> operator_regex_pairs;
 
-    std::regex addRegex("\\+(.*)");                // Regex for arithmetic +
-    std::regex subRegex("-(.*)");                  // Regex for arithmetic -
-    std::regex multRegex("\\*(.*)");               // Regex for arithmetic *
-    std::regex divRegex("\\/(.*)");                // Regex for arithmetic /
-    std::regex greaterRegex("\\>(.*)");            // Regex for > comparison
-    std::regex lessRegex("\\<(.*)");               // Regex for < comparison
-    std::regex greater_equals_Regex("\\>\\=(.*)"); // Regex for >= comparison
-    std::regex less_equals_Regex("\\<\\=(.*)");    // Regex for <= comparison
+    // Important: If a regex r1 is a specialization of a regex r2 (in the sense
+    // that r1 will match if r2 matches, but r2 will not match if r1 matches),
+    // then r2 should be checked before r1. Ideally, regexes should be defined
+    // such that this can't happen.
+
+    // Arithmetic operators
+    operator_regex_pairs.emplace_back("+", std::regex("^\\+"));
+    operator_regex_pairs.emplace_back("-", std::regex("^-"));
+    operator_regex_pairs.emplace_back("*", std::regex("^\\*"));
+    operator_regex_pairs.emplace_back("/", std::regex("^\\/"));
+    // Logical operators
+    operator_regex_pairs.emplace_back("&&", std::regex("^\\&\\&"));
+    operator_regex_pairs.emplace_back("||", std::regex("^\\|\\|"));
+    operator_regex_pairs.emplace_back("==", std::regex("^\\=\\="));
+    operator_regex_pairs.emplace_back("!", std::regex("^\\!"));
+    operator_regex_pairs.emplace_back(">=", std::regex("^\\>\\="));
+    operator_regex_pairs.emplace_back(">", std::regex("^\\>"));
+    operator_regex_pairs.emplace_back("<=", std::regex("^\\<\\="));
+    operator_regex_pairs.emplace_back("<", std::regex("^\\<"));
+
+    // Absolute amount function regex: abs(x)
+    // We currently have to handle the absolute amount as a special case,
+    // because we want to allow variables beginning with abs, e.g. abs(absinth).
+    // Thus, we have to check if abs is followed by a parentheses and then
+    // rewind the last parentheses.
+    std::regex absRegex("^abs\\((.*)");
+
     // Regex for constant numbers.
     // Note that we use the passive group (?:subpattern) here, so that we only
     // have one backreference for the whole constant and not multiple
     // backreferences for individual constant parts
     std::regex constantRegex(
-        "((?:[[:digit:]]+)(?:\\.(?:(?:[[:digit:]]+)?))?)(.*)");
-    std::regex lParenRegex("\\((.*)"); // Regex for (
-    std::regex rParenRegex("\\)(.*)"); // Regex for )
-    // Variables contain letters, numbers or "_" but must not start with a
-    // number
-    std::regex varRegex("((?:[[:alpha:]_]+)(?:[[:alnum:]_]*))(.*)");
-
-    // Iverson regex
-    std::regex lSqrBrackRegex("\\[(.*)"); // Regex for [
-    std::regex rSqrBrackRegex("\\](.*)"); // Regex for ]
-    std::regex andRegex("\\&\\&(.*)");    // Regex for && (Logical and)
-    std::regex orRegex("\\|\\|(.*)");     // Regex for || (Logical or)
-    std::regex equalsRegex("\\=\\=(.*)"); // Regex for == (Logical equals)
-    std::regex notRegex("\\!(.*)");       // Regex for ! (Logical not)
-
-    // Absolute amount function regex: abs(x)
-    std::regex absRegex("abs\\((.*)");
+        "^((?:[[:digit:]]+)(?:\\.(?:(?:[[:digit:]]+)?))?)");
+    // Variables contain letters, numbers or "_",
+    // but must not start with a number
+    std::regex varRegex("^((?:[[:alpha:]_]+)(?:[[:alnum:]_]*))");
+    // Brackets and Iverson brackets
+    vector<std::pair<Type, std::regex>> bracket_regex_pairs;
+    bracket_regex_pairs.emplace_back(Type::LPAREN, std::regex("^\\("));
+    bracket_regex_pairs.emplace_back(Type::RPAREN, std::regex("^\\)"));
+    bracket_regex_pairs.emplace_back(Type::LSQRBRACK, std::regex("^\\["));
+    bracket_regex_pairs.emplace_back(Type::RSQRBRACK, std::regex("^\\]"));
 
     Token token;
-    if (std::regex_match(input, addRegex)) {
-        token.type = Type::OP;
-        token.value = "+";
-        input = std::regex_replace(input, addRegex, "$1");
-    } else if (std::regex_match(input, subRegex)) {
-        token.type = Type::OP;
-        token.value = "-";
-        input = std::regex_replace(input, subRegex, "$1");
-    } else if (std::regex_match(input, multRegex)) {
-        token.type = Type::OP;
-        token.value = "*";
-        input = std::regex_replace(input, multRegex, "$1");
-    } else if (std::regex_match(input, divRegex)) {
-        token.type = Type::OP;
-        token.value = "/";
-        input = std::regex_replace(input, divRegex, "$1");
-    } else if (std::regex_match(input, greater_equals_Regex)) {
-        token.type = Type::OP;
-        token.value = ">=";
-        input = std::regex_replace(input, greater_equals_Regex, "$1");
-    } else if (std::regex_match(input, less_equals_Regex)) {
-        token.type = Type::OP;
-        token.value = "<=";
-        input = std::regex_replace(input, less_equals_Regex, "$1");
-    } else if (std::regex_match(input, greaterRegex)) {
-        token.type = Type::OP;
-        token.value = ">";
-        input = std::regex_replace(input, greaterRegex, "$1");
-    } else if (std::regex_match(input, lessRegex)) {
-        token.type = Type::OP;
-        token.value = "<";
-        input = std::regex_replace(input, lessRegex, "$1");
-    } else if (std::regex_match(input, absRegex)) {
+    std::smatch match;
+
+    // See above: we handle absolute amount as a special case
+    if (std::regex_match(input, absRegex)) {
         token.type = Type::OP;
         token.value = "abs";
         // While we check matches with abs( we only want to prune abs, not (
         input = std::regex_replace(input, std::regex("abs(.*)"), "$1");
-    } else if (std::regex_match(input, andRegex)) {
-        token.type = Type::OP;
-        token.value = "&&";
-        input = std::regex_replace(input, andRegex, "$1");
-    } else if (std::regex_match(input, orRegex)) {
-        token.type = Type::OP;
-        token.value = "||";
-        input = std::regex_replace(input, orRegex, "$1");
-    } else if (std::regex_match(input, equalsRegex)) {
-        token.type = Type::OP;
-        token.value = "==";
-        input = std::regex_replace(input, equalsRegex, "$1");
-    } else if (std::regex_match(input, notRegex)) {
-        token.type = Type::OP;
-        token.value = "!";
-        input = std::regex_replace(input, notRegex, "$1");
-    } else if (std::regex_match(input, constantRegex)) {
+        previousToken = token;
+        return token;
+    }
+
+    for (auto operator_regex_pair : operator_regex_pairs) {
+        if (std::regex_search(input, match, operator_regex_pair.second)) {
+            token.type = Type::OP;
+            token.value = operator_regex_pair.first;
+            input = input.substr(match.position() + match.length());
+            previousToken = token;
+            return token;
+        }
+    }
+    for (auto bracket_regex_pair : bracket_regex_pairs) {
+        if (std::regex_search(input, match, bracket_regex_pair.second)) {
+            token.type = bracket_regex_pair.first;
+            input = input.substr(match.position() + match.length());
+            previousToken = token;
+            return token;
+        }
+    }
+    if (std::regex_search(input, match, constantRegex)) {
         token.type = Type::CONST;
-        token.value = std::regex_replace(input, constantRegex, "$1");
-        input = std::regex_replace(input, constantRegex, "$2");
-    } else if (std::regex_match(input, lParenRegex)) {
-        token.type = Type::LPAREN;
-        input = std::regex_replace(input, lParenRegex, "$1");
-    } else if (std::regex_match(input, rParenRegex)) {
-        token.type = Type::RPAREN;
-        input = std::regex_replace(input, rParenRegex, "$1");
-    } else if (std::regex_match(input, lSqrBrackRegex)) {
-        token.type = Type::LSQRBRACK;
-        input = std::regex_replace(input, lSqrBrackRegex, "$1");
-    } else if (std::regex_match(input, rSqrBrackRegex)) {
-        token.type = Type::RSQRBRACK;
-        input = std::regex_replace(input, rSqrBrackRegex, "$1");
-    } else if (std::regex_match(input, varRegex)) {
+        token.value = input.substr(0, match.position() + match.length());
+        input = input.substr(match.position() + match.length());
+    } else if (std::regex_search(input, match, varRegex)) {
         token.type = Type::VAR;
-        token.value = std::regex_replace(input, varRegex, "$1");
-        input = std::regex_replace(input, varRegex, "$2");
+        token.value = input.substr(0, match.position() + match.length());
+        input = input.substr(match.position() + match.length());
     } else if (input.empty()) {
         token.type = Type::END;
     }

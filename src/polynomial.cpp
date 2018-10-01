@@ -22,6 +22,8 @@ Polynomial::Polynomial(std::string const &input) {
             cout << "Parser error: " << endl;
             cout << "Infix parser error: " << infix_exception.what() << endl;
             cout << "Prefix parser error: " << prefix_exception.what() << endl;
+            cout << "Terminating." << endl;
+            exit(EXIT_FAILURE);
         }
     }
 }
@@ -56,5 +58,5 @@ std::string Polynomial::to_string() const {
 }
 
 Expression Polynomial::get_expression() {
-    return this->expression;
+    return expression;
 }

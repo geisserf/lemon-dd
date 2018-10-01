@@ -28,7 +28,7 @@ add_subdirectory(boost_dependencies/libs)
 
 
 set(SOURCE_FILES
-    catamorph/catamorph.h
+     catamorph/catamorph.h
      catamorph/factories.cpp catamorph/factories.h
      catamorph/interpreters/optimizations.cpp catamorph/interpreters/optimizations.h
      catamorph/interpreters/evaluate.cpp catamorph/interpreters/evaluate.h
@@ -36,6 +36,7 @@ set(SOURCE_FILES
      catamorph/interpreters/iverson.cpp catamorph/interpreters/iverson.h
      catamorph/interpreters/create_evmdd.h
      catamorph/expression.h
+     globals.h
      polynomial.cpp polynomial.h
      logical_formula.cpp logical_formula.h
      parser.cpp parser.h
@@ -46,7 +47,7 @@ set(SOURCE_FILES
      evmdd/evmdd_cache.h
      evmdd/abstract_factory.h
      evmdd/product_evmdd.h evmdd/product_evmdd.cpp
-     evmdd/node.h evmdd/node_storage.h
+     evmdd/node.h evmdd/node_factory.h
      evmdd/printer.h
      evmdd/monoid.h
      evmdd/monoids/product.h

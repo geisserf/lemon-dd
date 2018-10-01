@@ -1,13 +1,16 @@
 #ifndef NUMERIC_CATAMORPH_EVMDD_H
 #define NUMERIC_CATAMORPH_EVMDD_H
 
+#include "../globals.h"
 #include "evmdd_cache.h"
 #include "monoid.h"
 #include "node.h"
-#include "operations/logic_and.h"
-#include "operations/logic_or.h"
-#include "operations/logic_not.h"
 #include "operations/absolute.h"
+#include "operations/logic_and.h"
+#include "operations/logic_not.h"
+#include "operations/logic_or.h"
+
+#include "../utils/math_utils.h"
 
 #include <algorithm>
 #include <cassert>
@@ -19,9 +22,6 @@
 #include <string>
 #include <unordered_set>
 #include <vector>
-
-using Ordering = std::map<std::string, int>;
-using ConcreteState = std::vector<unsigned int>;
 
 template <typename M, typename F = std::plus<M>>
 class EvmddFactory;
@@ -156,7 +156,7 @@ public:
     }
 
     friend bool operator==(const Evmdd<M, F> &l, const Evmdd<M, F> &r) {
-        return ((l.source_node == r.source_node) && (l.input == r.input));
+        return ((l.input == r.input) && (l.source_node == r.source_node));
     }
 };
 
@@ -185,13 +185,18 @@ public:
     Evmdd<M, F> make_var_evmdd(std::string const &var,
                                std::vector<M> const &domain) {
         std::vector<Edge<Monoid<M, F>>> children;
+        assert(domains[var] == domain.size());
         for (size_t i = 0; i < domain.size(); ++i) {
             children.emplace_back(Monoid<M, F>(domain[i]),
                                   node_factory.get_terminal_node());
         }
-        assert(ordering.find(var) != ordering.end());
+        // variable is always contained in the ordering
+        auto var_it = std::find(ordering.begin(), ordering.end(), var);
+        assert(var_it != ordering.end());
+        // Increase by 1 since index 0 is reserved for terminal node
+        auto var_pos = std::distance(ordering.begin(), var_it) + 1;
         Node_ptr<Monoid<M, F>> node =
-            node_factory.make_node(ordering[var], var, children);
+            node_factory.make_node(var_pos, var, children);
         return Evmdd<M, F>(Monoid<M, F>::neutral_element(), node);
     }
 
@@ -257,6 +262,22 @@ public:
         return apply(left, right, std::make_pair<L, R>);
     }
 
+    // Return the quasi-reduced EVMDD.
+    // An EVMDD is quasi-reduced if for each node, the level of all children
+    // is exactly one less, i.e. all edges span exactly one level, and if the
+    // root node is at the top-most layer
+    Evmdd<M, F> quasi_reduce(Evmdd<M, F> const &evmdd) {
+        std::unordered_map<Node_ptr<Monoid<M, F>>, Node_ptr<Monoid<M, F>>>
+            processed;
+        auto reduced_node = quasi_reduce(evmdd.source_node, processed);
+        // If source node is not at top level fill up with quasi-reduced nodes
+        // up to top-most layer
+        if (reduced_node->get_level() != domains.size()) {
+            reduced_node = fill_layers(reduced_node, domains.size() + 1);
+        }
+        return Evmdd<M, F>(evmdd.input, reduced_node);
+    }
+
 private:
     // Returns true if the operation can immmediately be computed between the
     // evmdds.
@@ -276,6 +297,7 @@ private:
         // of the monoid itself.
         M input =
             oper(left.get_input().get_value(), right.get_input().get_value());
+        assert(!MathUtils::is_nan(input));
         return make_const_evmdd(input);
     }
 
@@ -309,6 +331,15 @@ private:
     // lower bound.
     Evmdd<M, F> create_evmdd(int level, std::string var,
                              std::vector<Evmdd<M, F>> const &children) {
+        // Reduction requirement: if all children are equal, we can immediately
+        // return the child as new EVMDD.
+        if (std::all_of(children.begin() + 1, children.end(),
+                        [&](Evmdd<M, F> const &child) {
+                            return child == children[0];
+                        })) {
+            return children[0];
+        }
+
         // Compute greatest lower bound of all children
         auto it = std::next(children.begin());
         M const &first_value = children[0].get_input().get_value();
@@ -316,7 +347,6 @@ private:
             it, children.end(), first_value, [](M l, Evmdd<M, F> const &r) {
                 return Monoid<M, F>::greatest_lower_bound(
                     l, r.get_input().get_value());
-
             });
         Monoid<M, F> min_weight{min_weight_value};
         std::vector<Edge<Monoid<M, F>>> edges;
@@ -330,9 +360,60 @@ private:
         return Evmdd<M, F>(min_weight, root_node);
     }
 
-    EvmddFactory(Ordering const &o) : ordering(o) {}
+    // Return quasi-reduced version of a node with quasi-reduced successor nodes
+    Node_ptr<Monoid<M, F>> quasi_reduce(
+        Node_ptr<Monoid<M, F>> node,
+        std::unordered_map<Node_ptr<Monoid<M, F>>, Node_ptr<Monoid<M, F>>>
+            &processed) {
+        if (node->is_terminal()) {
+            return node;
+        }
+        auto it = processed.find(node);
+        if (it != processed.end()) {
+            return it->second;
+        }
+        std::vector<Edge<Monoid<M, F>>> reduced_edges;
+        for (Edge<Monoid<M, F>> const &edge : node->get_children()) {
+            auto reduced_child = quasi_reduce(edge.second, processed);
+            reduced_child = fill_layers(reduced_child, node->get_level());
+            reduced_edges.emplace_back(edge.first, reduced_child);
+        }
+        auto result = node_factory.make_node(
+            node->get_level(), node->get_variable(), reduced_edges);
+        processed[node] = result;
+        return result;
+    }
 
-    // variable ordering
+    // Create quasi-reduced filler nodes for missing layers up to the
+    // target_level
+    Node_ptr<Monoid<M, F>> fill_layers(Node_ptr<Monoid<M, F>> node,
+                                       unsigned int target_level) {
+        for (auto i = node->get_level() + 1; i < target_level; ++i) {
+            std::vector<Edge<Monoid<M, F>>> edges;
+            // For each domain value add a new edge with neutral element as
+            // weight
+            for (unsigned int d = 0; d < domains[ordering[i - 1]]; ++d) {
+                edges.emplace_back(
+                    Monoid<M, F>(Monoid<M, F>::neutral_element()), node);
+            }
+            node = node_factory.make_node(i, ordering[i - 1], edges);
+        }
+        return node;
+    }
+
+    EvmddFactory(Domains const &d, Ordering const &o)
+        : domains(d), ordering(o) {
+        // Fill up ordering, such that all variables given by domains are
+        // contained in the ordering
+        for (std::pair<std::string, int> const &entry : domains) {
+            if (std::find(ordering.begin(), ordering.end(), entry.first) ==
+                ordering.end()) {
+                ordering.push_back(entry.first);
+            }
+        }
+    }
+
+    Domains domains;
     Ordering ordering;
     NodeFactory<Monoid<M, F>> node_factory;
 
