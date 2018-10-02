@@ -19,6 +19,14 @@ std::set<ID> Dependency::dependencies_alg(expression_r<std::set<ID>> const &e) {
         return Dependency::join_sets(*o);
     if (auto *o = Factories::get_as_sub(e))
         return Dependency::join_sets(*o);
+    if (auto *o = Factories::get_as_and(e))
+        return Dependency::join_sets(*o);
+    if (auto *o = Factories::get_as_equals(e))
+        return Dependency::join_sets(*o);
+    if (auto *o = Factories::get_as_or(e))
+        return Dependency::join_sets(*o);
+    if (auto *o = Factories::get_as_not(e))
+        return Dependency::join_sets(*o);
     if (auto *v = Factories::get_as_var(e))
         return {*v};
     return {};
