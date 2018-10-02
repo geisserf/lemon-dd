@@ -54,6 +54,31 @@ SCENARIO("Testing Expression dependencies", "[expression]") {
         }
     }
 
+    GIVEN("Absolute amount over a,b") {
+        std::string input = "abs(a-b)";
+        InfixParser parser;
+        Expression e = parser.parse(input);
+        THEN("Expression depends on variables a,b") {
+            std::set<string> dependencies = Dependency::dependencies(e);
+            REQUIRE(dependencies.find("a") != dependencies.end());
+            REQUIRE(dependencies.find("b") != dependencies.end());
+        }
+    }
+
+    GIVEN("(In-)equalities over a,b,c,d,e") {
+        std::string input = "((a>b)>=(c<d)) <= e";
+        InfixParser parser;
+        Expression e = parser.parse(input);
+        THEN("Expression depends on variables a,b,c") {
+            std::set<string> dependencies = Dependency::dependencies(e);
+            REQUIRE(dependencies.find("a") != dependencies.end());
+            REQUIRE(dependencies.find("b") != dependencies.end());
+            REQUIRE(dependencies.find("c") != dependencies.end());
+            REQUIRE(dependencies.find("d") != dependencies.end());
+            REQUIRE(dependencies.find("e") != dependencies.end());
+        }
+    }
+
     GIVEN("An iverson expression over a,b,c,d") {
         std::string input = "[a==2&&b==3||c==5||!d]";
         InfixParser parser;

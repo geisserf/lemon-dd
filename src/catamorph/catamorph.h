@@ -36,6 +36,18 @@ public:
         if (auto *o = Factories::get_as_div(e))
             return Out(div_op<B>(o->rands() | transformed(map)));
 
+        if (auto *o = Factories::get_as_greater(e))
+            return Out(greater_op<B>(o->rands() | transformed(map)));
+
+        if (auto *o = Factories::get_as_less(e))
+            return Out(less_op<B>(o->rands() | transformed(map)));
+
+        if (auto *o = Factories::get_as_greater_equals(e))
+            return Out(greater_equals_op<B>(o->rands() | transformed(map)));
+
+        if (auto *o = Factories::get_as_less_equals(e))
+            return Out(less_equals_op<B>(o->rands() | transformed(map)));
+
         if (auto *o = Factories::get_as_and(e))
             return Out(and_op<B>(o->rands() | transformed(map)));
 
@@ -45,6 +57,9 @@ public:
         if (auto *o = Factories::get_as_not(e))
             return Out(not_op<B>(o->rands() | transformed(map)));
 
+        if (auto *o = Factories::get_as_abs(e))
+            return Out(abs_op<B>(o->rands() | transformed(map)));
+
         if (auto *o = Factories::get_as_equals(e))
             return Out(equals_op<B>(o->rands() | transformed(map)));
 
@@ -53,7 +68,7 @@ public:
         if (auto *v = Factories::get_as_var(e))
             return Out(*v);
 
-        throw std::logic_error("Missing case in pattern matching");
+        throw std::logic_error("Missing case in pattern matching in catamorph");
     }
 };
 

@@ -56,6 +56,7 @@ set(SOURCE_FILES
      evmdd/monoids/boolean.h evmdd/monoids/boolean.cpp
      evmdd/operations/logic_and.h
      evmdd/operations/logic_not.h
+     evmdd/operations/absolute.h
      #utils/math_utils.h utils/math_utils.cpp
      #utils/system_utils.h utils/system_utils.cpp
      utils/string_utils.h
