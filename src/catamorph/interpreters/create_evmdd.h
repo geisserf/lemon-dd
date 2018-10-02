@@ -3,6 +3,7 @@
 
 #include "../../evmdd/abstract_factory.h"
 #include "../../evmdd/evmdd.h"
+#include "../../globals.h"
 #include "../catamorph.h"
 #include "../expression.h"
 
@@ -10,13 +11,11 @@
 #include <string>
 #include <vector>
 
-using Domains = std::map<ID, unsigned int>;
-
 template <typename M, typename F = std::plus<M>>
 class CreateEvmdd {
 public:
-    CreateEvmdd(Ordering const &ordering)
-        : factory(AbstractFactory<M, F>::get_factory(ordering)) {}
+    CreateEvmdd(Domains const &domains, Ordering const &ordering)
+        : factory(AbstractFactory<M, F>::get_factory(domains, ordering)) {}
 
     Evmdd<M, F> create_evmdd(Expression const &expr, Domains const &domains) {
         return Catamorph::cata<Evmdd<M, F>>(
@@ -56,6 +55,18 @@ private:
             if (auto *o = Factories::get_as_div(e)) {
                 return apply(o->rands(), std::divides<M>());
             }
+            if (auto *o = Factories::get_as_greater(e)) {
+                return apply(o->rands(), std::greater<M>());
+            }
+            if (auto *o = Factories::get_as_less(e)) {
+                return apply(o->rands(), std::less<M>());
+            }
+            if (auto *o = Factories::get_as_greater_equals(e)) {
+                return apply(o->rands(), std::greater_equal<M>());
+            }
+            if (auto *o = Factories::get_as_less_equals(e)) {
+                return apply(o->rands(), std::less_equal<M>());
+            }
             if (auto *o = Factories::get_as_equals(e)) {
                 return apply(o->rands(), std::equal_to<M>());
             }
@@ -68,6 +79,10 @@ private:
             if (auto *o = Factories::get_as_not(e)) {
                 return apply(o->rands(), logic_not<M>());
             }
+            if (auto *o = Factories::get_as_abs(e)) {
+                return apply(o->rands(), absolute<M>());
+            }
+
             throw std::logic_error("Unknown Operator in Apply");
         };
     }

@@ -35,6 +35,14 @@ private:
             return Printer::print_op(*o, "*");
         if (auto *o = Factories::get_as_div(e))
             return Printer::print_op(*o, "/");
+        if (auto *o = Factories::get_as_greater(e))
+            return Printer::print_op(*o, ">");
+        if (auto *o = Factories::get_as_less(e))
+            return Printer::print_op(*o, "<");
+        if (auto *o = Factories::get_as_greater_equals(e))
+            return Printer::print_op(*o, ">=");
+        if (auto *o = Factories::get_as_less_equals(e))
+            return Printer::print_op(*o, "<=");
         if (auto *o = Factories::get_as_equals(e))
             return Printer::print_op(*o, "==");
         if (auto *o = Factories::get_as_and(e))
@@ -53,8 +61,10 @@ private:
             return *v;
         if (auto *o = Factories::get_as_not(e))
             return Printer::print_prefix_op(*o, "!");
+        if (auto *o = Factories::get_as_abs(e))
+            return Printer::print_prefix_op(*o, "abs");
 
-        throw std::logic_error("Missing case in pattern matching");
+        throw std::logic_error("Missing case in pattern matching in Printer");
     }
 
 public:

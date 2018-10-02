@@ -1,5 +1,7 @@
 #include "../../../polynomial.h"
 #include "../../Catch/include/catch.hpp"
+
+#include <cmath>
 #include <iostream>
 
 using std::endl;
@@ -23,7 +25,7 @@ SCENARIO("Testing numeric EVMDDs for concrete evaluation over float",
     GIVEN("Evmdd for term x with domain 0..4") {
         Polynomial p = Polynomial("x");
         Domains d = {{"x", 5}};
-        Ordering o = {{"x", 1}};
+        Ordering o = {"x"};
         auto evmdd = p.create_evmdd<float>(d, o);
         THEN("Evaluating state x:=1 should be 1") {
             ConcreteState state{1};
@@ -38,7 +40,7 @@ SCENARIO("Testing numeric EVMDDs for concrete evaluation over float",
     GIVEN("Evmdd for term x+1 with domain 0,1,2") {
         Polynomial p = Polynomial("x+1");
         Domains d = {{"x", 3}};
-        Ordering o = {{"x", 1}};
+        Ordering o = {"x"};
         auto evmdd = p.create_evmdd<float>(d, o);
         THEN("Evaluating state x:=2 should be 3") {
             ConcreteState state{2};
@@ -53,7 +55,7 @@ SCENARIO("Testing numeric EVMDDs for concrete evaluation over float",
     GIVEN("Evmdd for term x*y+2 with domain x=0,1,2 and y=0,1") {
         Polynomial p = Polynomial("(x*y) + 2");
         Domains d = {{"x", 3}, {"y", 2}};
-        Ordering o = {{"x", 1}, {"y", 2}};
+        Ordering o = {"x", "y"};
         auto evmdd = p.create_evmdd<double>(d, o);
         THEN("Evaluation should be correct") {
             for (unsigned int x = 0; x < d["x"]; ++x) {
@@ -73,7 +75,7 @@ SCENARIO("Testing numeric EVMDDs for concrete evaluation over float",
     GIVEN("Evmdd for term x+y with domain x=0..4, y=0,1") {
         Polynomial p = Polynomial("x+y");
         Domains d = {{"x", 5}, {"y", 2}};
-        Ordering o = {{"x", 1}, {"y", 2}};
+        Ordering o = {"x", "y"};
         auto evmdd = p.create_evmdd<float>(d, o);
         THEN("Evaluation should be correct") {
             for (unsigned int x = 0; x < d["x"]; ++x) {
@@ -92,7 +94,7 @@ SCENARIO("Testing numeric EVMDDs for concrete evaluation over float",
     GIVEN("Evmdd for term x - y with domain x=0..4, y=0,1,2") {
         Polynomial p = Polynomial("x-y");
         Domains d = {{"x", 5}, {"y", 3}};
-        Ordering o = {{"x", 1}, {"y", 2}};
+        Ordering o = {"x", "y"};
         auto evmdd = p.create_evmdd<float>(d, o);
 
         THEN("Evaluation should be correct") {
@@ -113,7 +115,7 @@ SCENARIO("Testing numeric EVMDDs for concrete evaluation over float",
     GIVEN("Evmdd for term x*0.3 + 0.7  with domain x=0..4") {
         Polynomial p = Polynomial("x*0.3 + 0.7");
         Domains d = {{"x", 5}};
-        Ordering o = {{"x", 1}};
+        Ordering o = {"x"};
         auto evmdd = p.create_evmdd<float>(d, o);
 
         THEN("Evaluation should be correct") {
@@ -126,10 +128,89 @@ SCENARIO("Testing numeric EVMDDs for concrete evaluation over float",
         }
     }
 
+    GIVEN("Evmdd for term abs(x-y) with domain x=0..3, y=0..3") {
+        Polynomial p = Polynomial("abs(x-y)");
+        Domains d = {{"x", 4}, {"y", 4}};
+        Ordering o = {"x","y"};
+        auto evmdd = p.create_evmdd<int>(d, o);
+        THEN("Evaluation should be correct") {
+            for (unsigned int x = 0; x < d["x"]; ++x) {
+                for (unsigned int y = 0; y < d["y"]; ++y) {
+                    ConcreteState state{x, y};
+                    int sub = static_cast<int>(x) - y;
+                    REQUIRE(evmdd.evaluate(state) == std::abs(sub));
+                }
+            }
+        }
+    }
+
+    GIVEN("Evmdd for term x>y with domain x=0..3, y=0..3") {
+        Polynomial p = Polynomial("x>y");
+        Domains d = {{"x", 4}, {"y", 4}};
+        Ordering o = {"x","y"};
+        auto evmdd = p.create_evmdd<float>(d, o);
+        THEN("Evaluation should be correct") {
+            for (unsigned int x = 0; x < d["x"]; ++x) {
+                for (unsigned int y = 0; y < d["y"]; ++y) {
+                    auto result = static_cast<int>(x > y);
+                    ConcreteState state{x, y};
+                    REQUIRE(evmdd.evaluate(state) == result);
+                }
+            }
+        }
+        THEN("Converse relation results in the same EVMDD") {
+            p = Polynomial("y<x");
+            auto evmdd2 = p.create_evmdd<float>(d, o);
+            REQUIRE(evmdd == evmdd2);
+        }
+        THEN("Negation inverts the inequality") {
+            p = Polynomial("-x < -y");
+            auto evmdd2 = p.create_evmdd<float>(d, o);
+            REQUIRE(evmdd == evmdd2);
+        }
+        THEN("Multiplicative inverse results in the same EVMDD") {
+            p = Polynomial("(1/(x+1) < 1/(y+1))");
+            auto evmdd2 = p.create_evmdd<float>(d, o);
+            REQUIRE(evmdd == evmdd2);
+        }
+    }
+
+    GIVEN("Evmdd for term x>=y with domain x=0..3, y=0..3") {
+        Polynomial p = Polynomial("x>=y");
+        Domains d = {{"x", 4}, {"y", 4}};
+        Ordering o = {"x","y"};
+        auto evmdd = p.create_evmdd<float>(d, o);
+        THEN("Evaluation should be correct") {
+            for (unsigned int x = 0; x < d["x"]; ++x) {
+                for (unsigned int y = 0; y < d["y"]; ++y) {
+                    auto result = static_cast<int>(x >= y);
+                    ConcreteState state{x, y};
+                    REQUIRE(evmdd.evaluate(state) == result);
+                }
+            }
+        }
+        THEN("Converse relation results in the same EVMDD") {
+            p = Polynomial("y<=x");
+            auto evmdd2 = p.create_evmdd<float>(d, o);
+            REQUIRE(evmdd == evmdd2);
+        }
+        THEN("Negation inverts the inequality") {
+            p = Polynomial("-x <= -y");
+            auto evmdd2 = p.create_evmdd<float>(d, o);
+            REQUIRE(evmdd == evmdd2);
+        }
+        THEN("Multiplicative inverse results in the same EVMDD") {
+            p = Polynomial("(1/(x+1) <= 1/(y+1))");
+            auto evmdd2 = p.create_evmdd<float>(d, o);
+            REQUIRE(evmdd == evmdd2);
+        }
+    }
+
+
     GIVEN("Evmdd for term 4*x*x+3*y+2 with domain x=0..9, y=0..4") {
         Polynomial p = Polynomial("(((4 * x) * x) + (3 * y)) + 2");
         Domains d = {{"x", 10}, {"y", 5}};
-        Ordering o = {{"x", 1}, {"y", 2}};
+        Ordering o = {"x", "y"};
         auto evmdd = p.create_evmdd<double>(d, o);
         THEN("Evaluation should be correct") {
             for (unsigned int x = 0; x < d["x"]; ++x) {
@@ -162,12 +243,10 @@ SCENARIO("Testing numeric EVMDDs for concrete evaluation over float",
                      {"var40", 3}, {"var41", 4}, {"var42", 4}, {"var43", 4},
                      {"var44", 4}, {"var45", 4}, {"var46", 4}, {"var47", 3},
                      {"var48", 4}, {"var49", 3}, {"var50", 3}};
-        Ordering o = {
-            {"var32", 1},  {"var33", 2},  {"var34", 3},  {"var35", 4},
-            {"var36", 5},  {"var37", 6},  {"var38", 7},  {"var39", 8},
-            {"var40", 9},  {"var41", 10}, {"var42", 11}, {"var43", 12},
-            {"var44", 13}, {"var45", 14}, {"var46", 15}, {"var47", 16},
-            {"var48", 17}, {"var49", 18}, {"var50", 19}};
+        Ordering o = {"var32", "var33", "var34", "var35", "var36",
+                      "var37", "var38", "var39", "var40", "var41",
+                      "var42", "var43", "var44", "var45", "var46",
+                      "var47", "var48", "var49", "var50"};
         auto evmdd = p.create_evmdd<double>(d, o);
         THEN("get_min should be 0 and get_max should be 5") {
             REQUIRE(evmdd.get_min() == 0);
@@ -181,7 +260,7 @@ SCENARIO("Testing numeric EVMDDs for partial evaluation over float",
     GIVEN("Evmdd for term x*y with domain x=0..4, y=0,1,2") {
         Polynomial p = Polynomial("x*y");
         Domains d = {{"x", 5}, {"y", 3}};
-        Ordering o = {{"x", 1}, {"y", 2}};
+        Ordering o = {"x", "y"};
         auto evmdd = p.create_evmdd<float>(d, o);
 
         WHEN("We evaluate the max of partial state x={1,2,3}, y={1,2} ") {

@@ -7,6 +7,7 @@ target_include_directories(Catch INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/Catch/inc
 set(TEST_SOURCES
         test_main.cpp
         polynomial_class_tests.cpp
+        expression_tests.cpp
         monoid_tests.cpp
         evmdd/numeric/evaluation_tests_arithmetic.cpp
         evmdd/numeric/construction_tests_arithmetic.cpp

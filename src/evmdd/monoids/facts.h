@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <string>
 #include <set>
+#include <string>
 
 // A fact is a variable-value pair
 using Fact = std::pair<std::string, int>;

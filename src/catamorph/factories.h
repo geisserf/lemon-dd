@@ -11,10 +11,16 @@ public:
     static Expression sub(std::vector<Expression> const &rands);
     static Expression mul(std::vector<Expression> const &rands);
     static Expression div(std::vector<Expression> const &rands);
+    static Expression greater(std::vector<Expression> const &rands);
+    static Expression less(std::vector<Expression> const &rands);
+    static Expression greater_equals(std::vector<Expression> const &rands);
+    static Expression less_equals(std::vector<Expression> const &rands);
     static Expression land(std::vector<Expression> const &rands);
     static Expression equals(std::vector<Expression> const &rands);
     static Expression lor(std::vector<Expression> const &rands);
+    // TODO can we implement not and abs as unary operators?
     static Expression lnot(std::vector<Expression> const &rands);
+    static Expression abs(std::vector<Expression> const &rands);
 
     template <typename T>
     static float const *get_as_cst(expression_r<T> const &e) {
@@ -47,6 +53,28 @@ public:
     }
 
     template <typename T>
+    static greater_op<T> const *get_as_greater(expression_r<T> const &e) {
+        return boost::get<greater_op<T>>(&e);
+    }
+
+    template <typename T>
+    static less_op<T> const *get_as_less(expression_r<T> const &e) {
+        return boost::get<less_op<T>>(&e);
+    }
+
+    template <typename T>
+    static greater_equals_op<T> const *get_as_greater_equals(
+        expression_r<T> const &e) {
+        return boost::get<greater_equals_op<T>>(&e);
+    }
+
+    template <typename T>
+    static less_equals_op<T> const *get_as_less_equals(
+        expression_r<T> const &e) {
+        return boost::get<less_equals_op<T>>(&e);
+    }
+
+    template <typename T>
     static and_op<T> const *get_as_and(expression_r<T> const &e) {
         return boost::get<and_op<T>>(&e);
     }
@@ -64,6 +92,11 @@ public:
     template <typename T>
     static not_op<T> const *get_as_not(expression_r<T> const &e) {
         return boost::get<not_op<T>>(&e);
+    }
+
+    template <typename T>
+    static abs_op<T> const *get_as_abs(expression_r<T> const &e) {
+        return boost::get<abs_op<T>>(&e);
     }
 };
 

@@ -18,7 +18,7 @@ SCENARIO(
     "[evmdd][construction][evaluation][numeric][conditional_effect]") {
     GIVEN("CE: x=x+1, Cost x+1, Domain x=0..4") {
         Domains d = {{"x", 5}};
-        Ordering o = {{"x", 1}};
+        Ordering o = {"x"};
         std::string ce_string =
             "([x==0]->x==1) & ([x==1]->x==2) & ([x==2]->x==3) & ([x==3]->x==4)";
         EffectParser parser;
@@ -31,7 +31,7 @@ SCENARIO(
                 ConditionalEffects::create_evmdd(effects, d, o);
             auto &factory =
                 AbstractProductFactory<Facts, int, Union,
-                                       std::plus<int>>::get_factory(o);
+                                       std::plus<int>>::get_factory(d, o);
             auto product = factory.product(effect_evmdd, cost_evmdd);
 
             THEN("Evmdd has the correct structure") {
@@ -74,7 +74,7 @@ SCENARIO(
     // Example 3 from ICAPS paper
     GIVEN("Cost x+2y+1, effects: (!x -> !v), (x->u), ((x|y)->!z), (True->w)") {
         Domains d = {{"x", 2}, {"y", 2}};
-        Ordering o = {{"y", 1}, {"x", 2}};
+        Ordering o = {"y", "x"};
         Polynomial cost = Polynomial("x+2*y+1");
         std::string ce_string =
             "([!x]->!v) & (x->u) & ([x || y] ->!z) & ([1]->w)";
@@ -87,7 +87,7 @@ SCENARIO(
                 ConditionalEffects::create_evmdd(effects, d, o);
             auto &factory =
                 AbstractProductFactory<Facts, int, Union,
-                                       std::plus<int>>::get_factory(o);
+                                       std::plus<int>>::get_factory(d, o);
             auto product = factory.product(effect_evmdd, cost_evmdd);
 
             THEN("Evmdd has the correct structure") {

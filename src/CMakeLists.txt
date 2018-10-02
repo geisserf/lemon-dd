@@ -29,7 +29,7 @@ add_subdirectory(boost_dependencies/libs)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -Werror -Wfatal-errors")
 
 set(SOURCE_FILES
-    catamorph/catamorph.h
+     catamorph/catamorph.h
      catamorph/factories.cpp catamorph/factories.h
      catamorph/interpreters/optimizations.cpp catamorph/interpreters/optimizations.h
      catamorph/interpreters/evaluate.cpp catamorph/interpreters/evaluate.h
@@ -38,6 +38,7 @@ set(SOURCE_FILES
      catamorph/interpreters/create_evmdd.h
      catamorph/interpreters/create_ast.cpp catamorph/interpreters/create_ast.h 
      catamorph/expression.h
+     globals.h
      polynomial.cpp polynomial.h
      logical_formula.cpp logical_formula.h
      parser.cpp parser.h
@@ -57,6 +58,7 @@ set(SOURCE_FILES
      evmdd/monoids/boolean.h evmdd/monoids/boolean.cpp
      evmdd/operations/logic_and.h
      evmdd/operations/logic_not.h
+     evmdd/operations/absolute.h
      #utils/math_utils.h utils/math_utils.cpp
      #utils/system_utils.h utils/system_utils.cpp
      utils/string_utils.h
