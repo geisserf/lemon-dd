@@ -1,5 +1,6 @@
 #include "variable_ordering.h"
 #include "../../parser.h"
+#include "dependencies.h"
 #include <iomanip>
 #include <iostream>
 #include <stack>
@@ -28,41 +29,10 @@ ASTNode::ASTNode(const std::string &value, const std::vector<ASTNode> &children)
     }
 }
 
-ASTNode VariableOrdering::create_ast(
-    const std::string &term, const std::vector<std::string> &variables) {
-    Expression expression;
-    try {
-        std::string full_term = "(+ ";
-        for (auto &var : variables) {
-            full_term += var + " ";
-        }
-        full_term += term + ")";
-        Parser prefix_parser;
-        expression = prefix_parser.parse(full_term);
-    } catch (std::exception const &infix_exception) {
-        try {
-            std::string full_term = "(0";
-            for (auto &var : variables) {
-                full_term += " + " + var;
-            }
-            full_term += " + " + term + ")";
-            InfixParser infix_parser;
-            expression = infix_parser.parse(full_term);
-        } catch (std::exception const &prefix_exception) {
-            std::cout << "Parser error: " << std::endl;
-            std::cout << "Infix parser error: " << infix_exception.what()
-                      << std::endl;
-            std::cout << "Prefix parser error: " << prefix_exception.what()
-                      << std::endl;
-            throw std::invalid_argument("Invalid argument for parser.");
-        }
-    }
-    return create_ast(expression);
-}
-
 std::vector<std::string> VariableOrdering::get_fan_in_ordering(
-    const std::string &term, const std::vector<std::string> &variables) {
-    auto node = create_ast(term, variables);
+    const Expression &expr) {
+    size_t num_supp_vars = Dependency::dependencies(expr).size();
+    auto node = create_ast(expr);
     std::vector<std::string> var_order;
 
     std::stack<ASTNode> Q;
@@ -74,7 +44,7 @@ std::vector<std::string> VariableOrdering::get_fan_in_ordering(
         ASTNode cur = Q.top();
         Q.pop();
 
-        if (var_order.size() == variables.size())
+        if (var_order.size() == num_supp_vars)
             return var_order;
 
         // Is variable root node and not already contained in var_order
@@ -91,6 +61,7 @@ std::vector<std::string> VariableOrdering::get_fan_in_ordering(
             Q.push(children[i]);
         }
     }
+
     std::reverse(var_order.begin(), var_order.end());
     return var_order;
 }

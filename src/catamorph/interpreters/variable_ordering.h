@@ -70,16 +70,16 @@ protected:
             if (auto *o = Factories::get_as_div(e)) {
                 return ASTNode("/", o->rands());
             }
-            if (auto* o = Factories::get_as_abs(e)) {
+            if (auto *o = Factories::get_as_abs(e)) {
                 return ASTNode("abs", o->rands());
             }
-            if (auto* o = Factories::get_as_greater_equals(e)) {
+            if (auto *o = Factories::get_as_greater_equals(e)) {
                 return ASTNode(">=", o->rands());
             }
-            if (auto* o = Factories::get_as_greater(e)) {
+            if (auto *o = Factories::get_as_greater(e)) {
                 return ASTNode(">", o->rands());
             }
-            if (auto* o = Factories::get_as_less_equals(e)) {
+            if (auto *o = Factories::get_as_less_equals(e)) {
                 return ASTNode("<=", o->rands());
             }
             if (auto *o = Factories::get_as_less(e)) {
@@ -110,16 +110,10 @@ protected:
             expr);
     }
 
-    ASTNode create_ast(const std::string &term,
-                       const std::vector<std::string> &variables);
-
 public:
-    // All variables of the current problem can be passed. At least all
-    // variables of occuring in the term should be passed. Returns variable
     // importance in increasing order
     // => [a, c, b] means a < c < b (regarding importance)
     // => level(b) > level(c) > level(a) if terminal t has level(t) = 0
-    std::vector<std::string> get_fan_in_ordering(
-        const std::string &term, const std::vector<std::string> &variables);
+    std::vector<std::string> get_fan_in_ordering(const Expression &expr);
 };
 #endif // VARIABLE_ORDERING_H_
