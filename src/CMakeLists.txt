@@ -36,7 +36,7 @@ set(SOURCE_FILES
      catamorph/interpreters/dependencies.cpp catamorph/interpreters/dependencies.h
      catamorph/interpreters/iverson.cpp catamorph/interpreters/iverson.h
      catamorph/interpreters/create_evmdd.h
-     catamorph/interpreters/create_ast.cpp catamorph/interpreters/create_ast.h 
+     catamorph/interpreters/variable_ordering.cpp catamorph/interpreters/variable_ordering.h 
      catamorph/expression.h
      globals.h
      polynomial.cpp polynomial.h

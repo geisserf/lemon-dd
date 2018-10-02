@@ -5,7 +5,6 @@
 #include "globals.h"
 #include "polynomial.h"
 #include "utils/string_utils.h"
-#include "catamorph/interpreters/create_ast.h"
 
 #include <chrono>
 #include <fstream>
@@ -16,7 +15,6 @@
 #include <string>
 #include <time.h>
 #include <vector>
-#include <boost/algorithm/string.hpp>
 
 using std::cin;
 using std::cout;
@@ -45,30 +43,6 @@ Ordering parse_ordering(string const &ordering) {
         result.push_back(var);
     }
     std::reverse(result.begin(), result.end());
-    return result;
-}
-
-Ordering fan_in_ordering(string &term, string const &domains) {
-    Ordering result;
-    vector<string> variables;
-    std::istringstream iss(domains);
-    vector<string> tokens{std::istream_iterator<string>{iss},
-                          std::istream_iterator<string>{}};
-    for (string const &token : tokens) {
-        vector<string> var_domain_pair = StringUtils::split(token, ':');
-        assert(var_domain_pair.size() == 2);
-        variables.push_back(var_domain_pair[0]);
-    }
-    CreateAST creator;
-    ASTNode ast_root = creator.create_ast(term,  variables);
-    vector<string> order = creator.get_fan_in_ordering(ast_root, variables.size());
-    std::cout << "Fan-in: " << std::flush;
-    int pos = 0;
-    for (auto& var : order) {
-        std::cout << var << " " << std::flush;
-        result[var] = ++pos;
-    }
-    std::cout << std::endl;
     return result;
 }
 
@@ -108,24 +82,16 @@ int main() {
     cout << "Enter top-down ordering relation between variables in the "
             "following form: <var_i> <var_j> ... <var_k>."
          << endl;
-    cout << "Example: b c d e a (leave empty for fan-in)" << endl;
+    cout << "Example: b c d e a" << endl;
     string ordering_as_string;
     getline(cin, ordering_as_string);
-    Ordering ordering;
-    
-    if (!ordering_as_string.empty()) {
-      ordering = parse_ordering(ordering_as_string);
-    }
+    Ordering ordering = parse_ordering(ordering_as_string);
 
     cout << "Enter an arithmetic expression (press return to skip). For more "
             "information on arithmetic expressions we refer to the Wiki."
          << endl;
     string arithmetic_expression;
     getline(cin, arithmetic_expression);
-
-    if (!arithmetic_expression.empty() && ordering_as_string.empty()) {
-        ordering = fan_in_ordering(arithmetic_expression, domains);
-    }
 
     std::chrono::time_point<std::chrono::system_clock> start, end;
     Evmdd<double> cost_evmdd;
@@ -153,18 +119,6 @@ int main() {
             break;
         }
         conditional_effects.push_back(conditional_effect);
-    }
-
-    if (!conditional_effects.empty() && arithmetic_expression.empty() && ordering_as_string.empty()) {
-        string full_effs = "(0";
-        for (auto c_eff : conditional_effects) {
-            boost::replace_all(c_eff, "->", "~");
-            full_effs += " + " + StringUtils::split(c_eff, '~')[0];
-            full_effs += " + [" + StringUtils::split(c_eff, '~')[1] + "]";
-        }
-        full_effs += ")";
-        std::cout << full_effs << std::endl;
-        ordering = fan_in_ordering(full_effs, domains);
     }
 
     Evmdd<Facts, Union> effect_evmdd;
@@ -236,3 +190,4 @@ int main() {
     create_dot(quasi_reduced_dot_stream, quasi_reduced_filename, reduced_evmdd,
                arithmetic_expression, conditional_effects);
 }
+

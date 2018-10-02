@@ -1,8 +1,5 @@
-// Copyright 16.04.2018, University of Freiburg,
-// Author: David Speck <speckd@informatik.uni-freiburg.de>.
-
-#ifndef CREATE_AST_H_
-#define CREATE_AST_H_
+#ifndef VARIABLE_ORDERING_H_
+#define VARIABLE_ORDERING_H_
 
 #include "../catamorph.h"
 #include "../expression.h"
@@ -13,6 +10,8 @@
 #include <string>
 #include <vector>
 
+// AST Node which can be used to compute variable oderings
+
 class ASTNode {
     std::string value;             // Var, Const or operator string
     int topo_order;                // Topological order
@@ -22,11 +21,11 @@ class ASTNode {
 public:
     ASTNode();
 
-    ASTNode(std::string value); // Note: pass by value for rvalues support
+    ASTNode(const std::string &value);
 
     ASTNode(double value);
 
-    ASTNode(std::string value, const std::vector<ASTNode>& children);
+    ASTNode(const std::string &value, const std::vector<ASTNode> &children);
 
     std::string get_value() const {
         return value;
@@ -49,50 +48,47 @@ public:
     }
 };
 
-class CreateAST {
-private:
-    ASTNode root_node; // Root node of the AST
-
+class VariableOrdering {
+protected:
     auto create_ast_alg() {
-        return [this](expression_r<ASTNode> const& e) -> ASTNode {
-
-            if (const NBR* cst = Factories::get_as_cst(e)) {
+        return [this](expression_r<ASTNode> const &e) -> ASTNode {
+            if (const NBR *cst = Factories::get_as_cst(e)) {
                 return ASTNode(*cst);
             }
-            if (auto* var = Factories::get_as_var(e)) {
+            if (auto *var = Factories::get_as_var(e)) {
                 return ASTNode(*var);
             }
-            if (auto* o = Factories::get_as_add(e)) {
+            if (auto *o = Factories::get_as_add(e)) {
                 return ASTNode("+", o->rands());
             }
-            if (auto* o = Factories::get_as_sub(e)) {
+            if (auto *o = Factories::get_as_sub(e)) {
                 return ASTNode("-", o->rands());
             }
-            if (auto* o = Factories::get_as_mul(e)) {
+            if (auto *o = Factories::get_as_mul(e)) {
                 return ASTNode("*", o->rands());
             }
-            if (auto* o = Factories::get_as_div(e)) {
+            if (auto *o = Factories::get_as_div(e)) {
                 return ASTNode("/", o->rands());
             }
-            //if (auto* o = Factories::get_as_pow(e)) {
+            // if (auto* o = Factories::get_as_pow(e)) {
             //    return ASTNode("^", o->rands());
             //}
-            //if (auto* o = Factories::get_as_greater(e)) {
+            // if (auto* o = Factories::get_as_greater(e)) {
             //    return ASTNode(">", o->rands());
             //}
-            //if (auto* o = Factories::get_as_greater_equals(e)) {
+            // if (auto* o = Factories::get_as_greater_equals(e)) {
             //    return ASTNode(">=", o->rands());
             //}
-            if (auto* o = Factories::get_as_and(e)) {
+            if (auto *o = Factories::get_as_and(e)) {
                 return ASTNode("&", o->rands());
             }
-            if (auto* o = Factories::get_as_equals(e)) {
+            if (auto *o = Factories::get_as_equals(e)) {
                 return ASTNode("==", o->rands());
             }
-            if (auto* o = Factories::get_as_or(e)) {
+            if (auto *o = Factories::get_as_or(e)) {
                 return ASTNode("|", o->rands());
             }
-            if (auto* o = Factories::get_as_not(e)) {
+            if (auto *o = Factories::get_as_not(e)) {
                 assert(o->rands().size() == 1);
                 return ASTNode("!", o->rands());
             }
@@ -100,27 +96,24 @@ private:
         };
     }
 
-    ASTNode create_ast(Expression const& expr) {
-        root_node = Catamorph::cata<ASTNode>(
-            [this](expression_r<ASTNode> const& expr_r) -> ASTNode {
+    ASTNode create_ast(Expression const &expr) {
+        return Catamorph::cata<ASTNode>(
+            [this](expression_r<ASTNode> const &expr_r) -> ASTNode {
                 return create_ast_alg()(expr_r);
             },
             expr);
-        return root_node;
     }
 
+    ASTNode create_ast(const std::string &term,
+                       const std::vector<std::string> &variables);
+
 public:
-    CreateAST();
-
-    ASTNode create_ast(std::string& term, std::vector<std::string>& variables);
-
-    void dump(const ASTNode& node, std::string indent = "");
-    void dump();
-
-    // Returns variable importance in increasing order
+    // All variables of the current problem can be passed. At least all
+    // variables of occuring in the term should be passed. Returns variable
+    // importance in increasing order
     // => [a, c, b] means a < c < b (regarding importance)
     // => level(b) > level(c) > level(a) if terminal t has level(t) = 0
-    std::vector<std::string> get_fan_in_ordering(const ASTNode& node,
-                                                 int numvars = -1);
+    std::vector<std::string> get_fan_in_ordering(
+        const std::string &term, const std::vector<std::string> &variables);
 };
-#endif // CREATE_AST_H_
+#endif // VARIABLE_ORDERING_H_
