@@ -69,4 +69,16 @@ SCENARIO("Testing Variable Ordering", "[expression]") {
             REQUIRE((order[3] == "c"));
         }
     }
+    GIVEN("An inequality term") {
+        std::vector<string> vars = {"a", "b", "c", "d", "e", "f", "g", "h"};
+        std::string input = "(a>b)+(c>=d)+(e<f)+(g<=h)";
+        VariableOrdering ordering;
+        auto order = ordering.get_fan_in_ordering(input, vars);
+        THEN("Variable Ordering should be ...") {
+            REQUIRE((order[0] == "a" || order[0] == "b"));
+            REQUIRE((order[2] == "c" || order[2] == "d"));
+            REQUIRE((order[4] == "e" || order[4] == "f"));
+            REQUIRE((order[6] == "g" || order[6] == "h"));
+        }
+    }
 }
