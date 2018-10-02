@@ -70,20 +70,26 @@ protected:
             if (auto *o = Factories::get_as_div(e)) {
                 return ASTNode("/", o->rands());
             }
-            // if (auto* o = Factories::get_as_pow(e)) {
-            //    return ASTNode("^", o->rands());
-            //}
-            // if (auto* o = Factories::get_as_greater(e)) {
-            //    return ASTNode(">", o->rands());
-            //}
-            // if (auto* o = Factories::get_as_greater_equals(e)) {
-            //    return ASTNode(">=", o->rands());
-            //}
-            if (auto *o = Factories::get_as_and(e)) {
-                return ASTNode("&", o->rands());
+            if (auto* o = Factories::get_as_abs(e)) {
+                return ASTNode("abs", o->rands());
+            }
+            if (auto* o = Factories::get_as_greater_equals(e)) {
+                return ASTNode(">=", o->rands());
+            }
+            if (auto* o = Factories::get_as_greater(e)) {
+                return ASTNode(">", o->rands());
+            }
+            if (auto* o = Factories::get_as_less_equals(e)) {
+                return ASTNode("<=", o->rands());
+            }
+            if (auto *o = Factories::get_as_less(e)) {
+                return ASTNode("<", o->rands());
             }
             if (auto *o = Factories::get_as_equals(e)) {
                 return ASTNode("==", o->rands());
+            }
+            if (auto *o = Factories::get_as_and(e)) {
+                return ASTNode("&", o->rands());
             }
             if (auto *o = Factories::get_as_or(e)) {
                 return ASTNode("|", o->rands());

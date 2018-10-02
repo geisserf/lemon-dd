@@ -36,9 +36,9 @@ SCENARIO("Testing Variable Ordering", "[expression]") {
             REQUIRE(order[2] == "c");
         }
     }
-    GIVEN("the term (c*d)+(a*b)") {
+    GIVEN("the term (a*b)+(2*(c*d))") {
         std::vector<string> vars = {"a", "b", "c", "d"};
-        std::string input = "(c*d)+(a*b)";
+        std::string input = "(a*b)+(2*(c*d))";
         VariableOrdering ordering;
         auto order = ordering.get_fan_in_ordering(input, vars);
         THEN("Variable Ordering should be ...") {
@@ -58,27 +58,27 @@ SCENARIO("Testing Variable Ordering", "[expression]") {
         }
     }
     GIVEN("An iverson term") {
-        std::vector<string> vars = {"a", "b", "c"};
-        std::string input = "[d||(a&&b)||!c]";
+        std::vector<string> vars = {"a", "b", "c", "d"};
+        std::string input = "[d||[![a&&b]]||!c]";
         VariableOrdering ordering;
         auto order = ordering.get_fan_in_ordering(input, vars);
         THEN("Variable Ordering should be ...") {
             REQUIRE((order[0] == "a" || order[0] == "b"));
             REQUIRE((order[1] == "a" || order[1] == "b"));
-            REQUIRE((order[2] == "d"));
-            REQUIRE((order[3] == "c"));
+            REQUIRE((order[2] == "c"));
+            REQUIRE((order[3] == "d"));
         }
     }
     GIVEN("An inequality term") {
         std::vector<string> vars = {"a", "b", "c", "d", "e", "f", "g", "h"};
-        std::string input = "(a>b)+(c>=d)+(e<f)+(g<=h)";
+        std::string input = "(a>b)+((c>=d)*(e<f)*(g<=h))";
         VariableOrdering ordering;
         auto order = ordering.get_fan_in_ordering(input, vars);
         THEN("Variable Ordering should be ...") {
-            REQUIRE((order[0] == "a" || order[0] == "b"));
-            REQUIRE((order[2] == "c" || order[2] == "d"));
-            REQUIRE((order[4] == "e" || order[4] == "f"));
-            REQUIRE((order[6] == "g" || order[6] == "h"));
+            REQUIRE((order[0] == "g" || order[0] == "h"));
+            REQUIRE((order[2] == "e" || order[2] == "f"));
+            REQUIRE((order[4] == "c" || order[4] == "d"));
+            REQUIRE((order[6] == "a" || order[6] == "b"));
         }
     }
 }
