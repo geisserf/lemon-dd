@@ -2,7 +2,6 @@
 #define VARIABLE_ASSIGNMENT_H
 
 #include <algorithm>
-#include <string>
 #include <set>
 #include <string>
 
