@@ -61,8 +61,9 @@ bool Optimizations::has_zero(const Range &subs) {
 Expression Optimizations::opt_add_sub_alg(expression_r<Expression> const &e) {
     if (auto *op = Factories::get_as_add(e))
         return Optimizations::optimize_op(*op, 0, std::plus<float>());
-    if (auto *op = Factories::get_as_sub(e))
-        return Optimizations::optimize_op(*op, 0, std::minus<float>());
+    // TODO optimization of subtraction currently does not work, see issue-40.
+    //if (auto *op = Factories::get_as_sub(e))
+    //    return Optimizations::optimize_op(*op, 0, std::minus<float>());
     return e;
 }
 
