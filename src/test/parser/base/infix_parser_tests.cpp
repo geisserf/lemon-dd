@@ -98,6 +98,20 @@ SCENARIO("Testing the infixparser on valid arithmetic expressions",
         }
     }
 
+    GIVEN("The expression abs(a)") {
+        string s = "abs(a)";
+        InfixParser parser;
+        WHEN("We parse the expression") {
+            Expression expr = parser.parse(s);
+            AND_WHEN("We print the expression") {
+                string result = Printer::as_string(expr);
+                THEN("the result is abs(a)") {
+                    REQUIRE(result == "abs(a)");
+                }
+            }
+        }
+    }
+
     GIVEN("The expression (Var82*((Var0*((Var95/Var68)*((12 - Var21))))*32))") {
         string s = "(Var82*((Var0*((Var95/Var68)*((12 - Var21))))*32))";
         InfixParser parser;

@@ -40,13 +40,42 @@ SCENARIO("Testing parsing infix to prefix",
         }
     }
 
-    GIVEN("The expression ((a+b*c/(d+3))*[a==1])") {
-        std::string e = "((((a+b)*c)/(d-13))*[a==1])";
+    GIVEN("The expression a > b") {
+        std::string e = "a>b";
         Polynomial p = Polynomial(e);
         WHEN("No evaluation") {
-            THEN("Result should be ") {
-                REQUIRE(p.to_string() ==
-                        "(* (/ (* (+ a b) c) (- d 13)) (== a 1))");
+            THEN("Result should be") {
+                REQUIRE(p.to_string() == "(> a b)");
+            }
+        }
+    }
+
+    GIVEN("The expression a < b") {
+        std::string e = "a < b";
+        Polynomial p = Polynomial(e);
+        WHEN("No evaluation") {
+            THEN("Result should be") {
+                REQUIRE(p.to_string() == "(< a b)");
+            }
+        }
+    }
+
+    GIVEN("The expression a <= b") {
+        std::string e = "a <= b";
+        Polynomial p = Polynomial(e);
+        WHEN("No evaluation") {
+            THEN("Result should be") {
+                REQUIRE(p.to_string() == "(<= a b)");
+            }
+        }
+    }
+
+    GIVEN("The expression a >= b") {
+        std::string e = "a >= b";
+        Polynomial p = Polynomial(e);
+        WHEN("No evaluation") {
+            THEN("Result should be") {
+                REQUIRE(p.to_string() == "(>= a b)");
             }
         }
     }
@@ -116,6 +145,17 @@ SCENARIO("Testing parsing infix to prefix",
         WHEN("No evaluation") {
             THEN("Result should be") {
                 REQUIRE(p.to_string() == "(^ !((|| (+ a 1) c)) b)");
+            }
+        }
+    }
+
+    GIVEN("The expression ((a+b*c/(d+3))*[a==1])") {
+        std::string e = "((((a+b)*c)/(d-13))*[a==1])";
+        Polynomial p = Polynomial(e);
+        WHEN("No evaluation") {
+            THEN("Result should be ") {
+                REQUIRE(p.to_string() ==
+                        "(* (/ (* (+ a b) c) (- d 13)) (== a 1))");
             }
         }
     }

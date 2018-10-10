@@ -41,6 +41,17 @@ Token Lexer::getNextToken() {
     operator_regex_pairs.emplace_back("||", std::regex("^\\|\\|"));
     operator_regex_pairs.emplace_back("==", std::regex("^\\=\\="));
     operator_regex_pairs.emplace_back("!", std::regex("^\\!"));
+    operator_regex_pairs.emplace_back(">=", std::regex("^\\>\\="));
+    operator_regex_pairs.emplace_back(">", std::regex("^\\>"));
+    operator_regex_pairs.emplace_back("<=", std::regex("^\\<\\="));
+    operator_regex_pairs.emplace_back("<", std::regex("^\\<"));
+
+    // Absolute amount function regex: abs(x)
+    // We currently have to handle the absolute amount as a special case,
+    // because we want to allow variables beginning with abs, e.g. abs(absinth).
+    // Thus, we have to check if abs is followed by a parentheses and then
+    // rewind the last parentheses.
+    std::regex absRegex("^abs\\((.*)");
 
     // Regex for constant numbers.
     // Note that we use the passive group (?:subpattern) here, so that we only
@@ -60,6 +71,17 @@ Token Lexer::getNextToken() {
 
     Token token;
     std::smatch match;
+
+    // See above: we handle absolute amount as a special case
+    if (std::regex_match(input, absRegex)) {
+        token.type = Type::OP;
+        token.value = "abs";
+        // While we check matches with abs( we only want to prune abs, not (
+        input = std::regex_replace(input, std::regex("abs(.*)"), "$1");
+        previousToken = token;
+        return token;
+    }
+
     for (auto operator_regex_pair : operator_regex_pairs) {
         if (std::regex_search(input, match, operator_regex_pair.second)) {
             token.type = Type::OP;
@@ -97,6 +119,10 @@ Token Lexer::getNextToken() {
     previousToken = token;
     return token;
 }
+
+/*
+ * PREFIX PARSER
+ */
 
 Expression Parser::parse(string const &input) const {
     // For user convenience we surround the input string with parantheses
@@ -182,6 +208,14 @@ Expression Parser::parseOpExpression(Lexer &lexer) const {
         return Factories::sub(exprs);
     } else if (opType == "*") {
         return Factories::mul(exprs);
+    } else if (opType == ">") {
+        return Factories::greater(exprs);
+    } else if (opType == "<") {
+        return Factories::less(exprs);
+    } else if (opType == ">=") {
+        return Factories::greater_equals(exprs);
+    } else if (opType == "<=") {
+        return Factories::less_equals(exprs);
     } else if (opType == "&&") {
         return Factories::land(exprs);
     } else if (opType == "||") {
@@ -195,13 +229,18 @@ Expression Parser::parseOpExpression(Lexer &lexer) const {
     }
 }
 
+/*
+ * INFIX PARSER
+ */
+
 bool InfixParser::isBinaryOperator(Token const &token) {
     return (token.value == "+" || token.value == "-" || token.value == "*" ||
-            token.value == "/");
+            token.value == "/" || token.value == ">" || token.value == ">=" ||
+            token.value == "<" || token.value == "<=");
 }
 
 bool InfixParser::isUnaryOperator(Token const &token) {
-    return token.value == "-";
+    return (token.value == "-" || token.value == "abs");
 }
 
 bool InfixParser::hasHigherPrecedence(Token const &first, Token const &second) {
@@ -234,7 +273,6 @@ void InfixParser::expect(Type type, Lexer &lexer) {
 }
 
 void InfixParser::popOperator() {
-    // TODO FG: double check expression?
     if ((isBinaryOperator(operators.top()) ||
          isLogicalBinaryOperator(operators.top())) &&
         operators.top().binary) {
@@ -383,6 +421,14 @@ Expression InfixParser::createExpression(Expression const &lhs, Token op,
         return Factories::mul(exprs);
     } else if (op.value == "/") {
         return Factories::div(exprs);
+    } else if (op.value == ">") {
+        return Factories::greater(exprs);
+    } else if (op.value == "<") {
+        return Factories::less(exprs);
+    } else if (op.value == ">=") {
+        return Factories::greater_equals(exprs);
+    } else if (op.value == "<=") {
+        return Factories::less_equals(exprs);
     } else if (op.value == "&&") {
         return Factories::land(exprs);
     } else if (op.value == "||") {
@@ -397,11 +443,12 @@ Expression InfixParser::createExpression(Expression const &lhs, Token op,
 Expression InfixParser::createUnaryExpression(Expression const &exp,
                                               Token op) const {
     if (op.value == "!") {
-        vector<Expression> exprs{exp};
-        return Factories::lnot(exprs);
+        return Factories::lnot({exp});
     } else if (op.value == "-") {
         vector<Expression> exprs{Factories::cst(0), exp};
         return Factories::sub(exprs);
+    } else if (op.value == "abs") {
+        return Factories::abs({exp});
     } else {
         throw std::invalid_argument("Unknown unary operator:" + op.value);
     }

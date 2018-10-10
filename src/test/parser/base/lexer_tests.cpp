@@ -45,6 +45,15 @@ SCENARIO("Testing the lexer on single expressions", "[lexer]") {
             }
         }
     }
+    WHEN("We parse abs") {
+        Lexer lexer("abs(");
+        THEN("We get a token representing an operand") {
+            Token token = lexer.getNextToken();
+            REQUIRE(token.type == Type::OP);
+            token = lexer.getNextToken();
+            REQUIRE(token.type == Type::LPAREN);
+        }
+    }
 }
 
 SCENARIO("Testing the lexer on an expression with no variables", "[lexer]") {
@@ -76,6 +85,41 @@ SCENARIO("Testing the lexer on an expression with no variables", "[lexer]") {
         token = lexer.getNextToken();
         THEN("Third token is a variable") {
             REQUIRE(token.type == Type::VAR);
+        }
+    }
+}
+
+SCENARIO("Testing the absolute amount function and similarly named variables",
+         "[lexer]") {
+    GIVEN("The expression abs(absinth)") {
+        Lexer lexer("abs(absinth)");
+        THEN("first token is an operand, third token is a variable") {
+            Token token = lexer.getNextToken();
+            REQUIRE(token.type == Type::OP);
+            lexer.getNextToken();
+            token = lexer.getNextToken();
+            REQUIRE(token.type == Type::VAR);
+        }
+    }
+    GIVEN("The expression absinth + absolute") {
+        Lexer lexer("absinth + absolute");
+        THEN("first token is a variable, third token is a variable") {
+            Token token = lexer.getNextToken();
+            REQUIRE(token.type == Type::VAR);
+            lexer.getNextToken();
+            token = lexer.getNextToken();
+            REQUIRE(token.type == Type::VAR);
+        }
+    }
+
+    GIVEN("The expression abs + abs(5)") {
+        Lexer lexer("abs + abs(5)");
+        THEN("first token is a variable, third token is an operator") {
+            Token token = lexer.getNextToken();
+            REQUIRE(token.type == Type::VAR);
+            lexer.getNextToken();
+            token = lexer.getNextToken();
+            REQUIRE(token.type == Type::OP);
         }
     }
 }

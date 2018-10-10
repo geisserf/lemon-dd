@@ -10,6 +10,7 @@
 #include <unordered_set>
 #include <vector>
 
+using std::string;
 using std::cout;
 
 template <typename M, typename F>
@@ -20,10 +21,10 @@ class DotPrinter {
 public:
     DotPrinter() = default;
     // prints the .dot representation of an evmdd
-    void to_dot(std::ostream &out, std::string const &filename,
-                Evmdd<M, F> const &evmdd, std::string const &arithmetic,
-                std::vector<std::string> const &conditional,
-                std::string::size_type max_width) {
+    void to_dot(std::ostream &out, string const &filename,
+                Evmdd<M, F> const &evmdd, string const &arithmetic,
+                std::vector<string> const &conditional,
+                string::size_type max_width) {
         node_count = 0;
         edge_count = 0;
         write_beginning(out, evmdd.get_input(), evmdd.get_source_node());
@@ -114,64 +115,56 @@ private:
     }
 
     // Returns conditional effects as html-encoded string
-    std::string encode_cond_effects(
-        std::vector<std::string> const &conditional) const {
+    string encode_cond_effects(std::vector<string> const &conditional) const {
         if (conditional.empty()) {
             return "<tr><td>none</td></tr>";
         }
         std::stringstream ss;
         for (auto const &effect : conditional) {
-            ss << "<tr><td align=\"center\">" << effect << "</td></tr>";
+            ss << "<tr><td align=\"center\">" << html_encode(effect)
+               << "</td></tr>";
         }
         ss << "<tr><td></td></tr>";
-        std::string effects = ss.str();
-        // Html-encode string to prevent syntax errors
-        // Replace -> in string to prevent error caused by ">"
-        for (std::string::size_type pos = 0;
-             (pos = effects.find("->")) != std::string::npos; pos += 4) {
-            effects.replace(pos, 2, "&rArr;");
-        }
-        // Replace & sign with &amp if exists
-        if (effects.find("&&") != std::string::npos) {
-            effects = html_encode(effects);
-        }
-        return effects;
+        return ss.str();
     }
 
-    // Checks if string contains & sign which causes error in html
-    // Returns string replacing & sign with &amp if there are any.
-    std::string html_encode(std::string const &expression) const {
-        if (expression.find("&") != std::string::npos) {
-            std::string copy_expression = expression;
-            for (std::string::size_type pos = 0;
-                 (pos = copy_expression.find("&", pos)) != std::string::npos;
-                 pos += 2) {
-                copy_expression.replace(pos, 1, "&amp;");
+    // Checks if string contains signgs which need to be escaped in html.
+    // Returns string replacing the signs with their html encodings.
+    string html_encode(string expression) const {
+        // html-encoding of symbols
+        std::map<string, string> replacements = {
+            {"&", "&amp;"}, {"->", "&rarr;"}, {"<", "&lt;"}, {">", "&gt;"}};
+        // Order of the strings we replace. & has to be replaced before other
+        // strings, otherwise we replace the & in the html encoding.
+        std::vector<string> ordered_symbols = {"&", "->", "<", ">"};
+        string result = expression;
+        for (auto const &symbol : ordered_symbols) {
+            string::size_type pos = 0;
+            while ((pos = result.find(symbol, pos)) != string::npos) {
+                // Replace symbol with its replacement and move position index
+                result.replace(pos, symbol.size(), replacements[symbol]);
+                pos += replacements[symbol].size();
             }
-            return copy_expression;
         }
-        return expression;
+        return result;
     }
 
-    // Splits long expression into separate rows by <tr><td> html-tags
-    std::string format_long_expression(std::string const &text,
-                                       int &width) const {
-        std::string copy_text = text;
-        copy_text.insert(0, "<tr><td>");
-        // Insert line breaks to text.
-        // 30 chars per line. (Skip 18 chars to omit html tags)
-        std::string::size_type pos = (width + 8);
-        while (pos < copy_text.size()) {
-            copy_text.insert(pos, "</td></tr><tr><td>");
-            pos += (width + 18);
+    // Splits long expression into separate rows by <tr><td> html-tags and
+    // encode lines into html format.
+    string format_long_expression(string const &text, int width) const {
+        string result = "<tr><td>";
+        // Insert line breaks to text and format lines to html.
+        for (string::size_type pos = 0; pos < text.size(); pos += width) {
+            result += html_encode(text.substr(pos, width));
+            result += "</td></tr><tr><td>";
         }
-        copy_text.append("</td></tr>");
-        return html_encode(copy_text);
+        result += "</td></tr>";
+        return result;
     }
 
     // Prints an informative header about EVMDD to the top
-    void write_header(std::ostream &out, std::string const &arithmetic,
-                      std::vector<std::string> const &conditional,
+    void write_header(std::ostream &out, string const &arithmetic,
+                      std::vector<string> const &conditional,
                       int max_width) const {
         out << "labelloc=\"t\";" << std::endl;
         out << "label=<<table cellborder=\"0\">";

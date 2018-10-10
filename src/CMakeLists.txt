@@ -61,6 +61,7 @@ set(SOURCE_FILES
      evmdd/operations/equal_to.h
      evmdd/operations/multiplies.h
      evmdd/operations/divides.h
+     evmdd/operations/absolute.h
      #utils/math_utils.h utils/math_utils.cpp
      #utils/system_utils.h utils/system_utils.cpp
      utils/string_utils.h

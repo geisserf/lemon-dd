@@ -58,5 +58,5 @@ std::string Polynomial::to_string() const {
 }
 
 Expression Polynomial::get_expression() {
-    return this->expression;
+    return expression;
 }

@@ -1,5 +1,5 @@
-#ifndef GLOBALS_H
-#define GLOBALS_H 
+#ifndef NUMERIC_GLOBALS_H
+#define NUMERIC_GLOBALS_H 
 
 #include <vector>
 #include <string>
@@ -11,4 +11,4 @@ using Domains = std::map<std::string, unsigned int>;
 using ConcreteState = std::vector<unsigned int>;
 
 
-#endif /* GLOBALS_H */
+#endif /* NUMERIC_GLOBALS_H */

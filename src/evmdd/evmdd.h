@@ -7,6 +7,7 @@
 #include "node.h"
 #include "operations/divides.h"
 #include "operations/equal_to.h"
+#include "operations/absolute.h"
 #include "operations/logic_and.h"
 #include "operations/logic_not.h"
 #include "operations/logic_or.h"
@@ -110,14 +111,9 @@ public:
         return source_result + input;
     }
 
-    // Computes min_{s \in S} E(s)
+    // By construction, the input value corresponds to the minimum
     M get_min() const {
-        auto complete_state = std::map<std::string, std::vector<int>>();
-        auto eval = [](std::vector<Monoid<M, F>> const &vec) {
-            return *std::min_element(vec.begin(), vec.end());
-        };
-        auto min = evaluate_partial<Monoid<M, F>>(complete_state, eval);
-        return min.get_value();
+        return input.get_value();
     }
 
     // Computes max_{s \in S} E(s)
