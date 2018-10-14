@@ -33,9 +33,9 @@ SCENARIO("Testing Variable Ordering", "[expression]") {
         VariableOrdering ordering;
         auto order = ordering.get_fan_in_ordering(e);
         THEN("Variable Ordering should be ...") {
-            REQUIRE(order[0] == "c");
+            REQUIRE(order[2] == "c");
+            REQUIRE((order[0] == "a" || order[0] == "b"));
             REQUIRE((order[1] == "a" || order[1] == "b"));
-            REQUIRE((order[2] == "a" || order[2] == "b"));
         }
     }
     GIVEN("the term (a*b)+(2*(c*d))") {
@@ -45,10 +45,10 @@ SCENARIO("Testing Variable Ordering", "[expression]") {
         VariableOrdering ordering;
         auto order = ordering.get_fan_in_ordering(e);
         THEN("Variable Ordering should be ...") {
-            REQUIRE((order[0] == "a" || order[0] == "b"));
-            REQUIRE((order[1] == "a" || order[1] == "b"));
-            REQUIRE((order[2] == "c" || order[2] == "d"));
-            REQUIRE((order[3] == "c" || order[3] == "d"));
+            REQUIRE((order[3] == "a" || order[3] == "b"));
+            REQUIRE((order[2] == "a" || order[2] == "b"));
+            REQUIRE((order[1] == "c" || order[1] == "d"));
+            REQUIRE((order[0] == "c" || order[0] == "d"));
         }
     }
     GIVEN("an absolute amount term") {
@@ -68,10 +68,10 @@ SCENARIO("Testing Variable Ordering", "[expression]") {
         VariableOrdering ordering;
         auto order = ordering.get_fan_in_ordering(e);
         THEN("Variable Ordering should be ...") {
-            REQUIRE((order[0] == "d"));
-            REQUIRE((order[1] == "c"));
-            REQUIRE((order[2] == "a" || order[2] == "b"));
-            REQUIRE((order[3] == "a" || order[3] == "b"));
+            REQUIRE((order[3] == "d"));
+            REQUIRE((order[2] == "c"));
+            REQUIRE((order[1] == "a" || order[1] == "b"));
+            REQUIRE((order[0] == "a" || order[0] == "b"));
         }
     }
     GIVEN("An inequality term") {
@@ -81,10 +81,10 @@ SCENARIO("Testing Variable Ordering", "[expression]") {
         VariableOrdering ordering;
         auto order = ordering.get_fan_in_ordering(e);
         THEN("Variable Ordering should be ...") {
-            REQUIRE((order[0] == "a" || order[0] == "b"));
-            REQUIRE((order[2] == "c" || order[2] == "d"));
-            REQUIRE((order[4] == "e" || order[4] == "f"));
-            REQUIRE((order[6] == "g" || order[6] == "h"));
+            REQUIRE((order[6] == "a" || order[6] == "b"));
+            REQUIRE((order[4] == "c" || order[4] == "d"));
+            REQUIRE((order[2] == "e" || order[2] == "f"));
+            REQUIRE((order[0] == "g" || order[0] == "h"));
         }
     }
 }

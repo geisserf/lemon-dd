@@ -1,8 +1,10 @@
 #ifndef VARIABLE_ORDERING_H_
 #define VARIABLE_ORDERING_H_
 
+#include "../../globals.h"
 #include "../catamorph.h"
 #include "../expression.h"
+
 #include <experimental/type_traits>
 #include <functional>
 #include <iostream>
@@ -114,6 +116,6 @@ public:
     // importance in increasing order
     // => [a, c, b] means a < c < b (regarding importance)
     // => level(b) > level(c) > level(a) if terminal t has level(t) = 0
-    std::vector<std::string> get_fan_in_ordering(const Expression &expr);
+    Ordering get_fan_in_ordering(const Expression &expr);
 };
 #endif // VARIABLE_ORDERING_H_

@@ -1,6 +1,7 @@
 #include "variable_ordering.h"
 #include "../../parser.h"
 #include "dependencies.h"
+
 #include <iomanip>
 #include <iostream>
 #include <stack>
@@ -29,11 +30,10 @@ ASTNode::ASTNode(const std::string &value, const std::vector<ASTNode> &children)
     }
 }
 
-std::vector<std::string> VariableOrdering::get_fan_in_ordering(
-    const Expression &expr) {
+Ordering VariableOrdering::get_fan_in_ordering(const Expression &expr) {
     size_t num_supp_vars = Dependency::dependencies(expr).size();
     auto node = create_ast(expr);
-    std::vector<std::string> var_order;
+    Ordering var_order;
 
     std::stack<ASTNode> Q;
     std::vector<ASTNode> children;
@@ -62,6 +62,5 @@ std::vector<std::string> VariableOrdering::get_fan_in_ordering(
         }
     }
 
-    std::reverse(var_order.begin(), var_order.end());
     return var_order;
 }

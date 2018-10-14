@@ -1,4 +1,5 @@
 #include "conditional_effects.h"
+#include "catamorph/interpreters/variable_ordering.h"
 #include "effect_parser.h"
 #include "evmdd/abstract_factory.h"
 #include "evmdd/printer.h"
@@ -80,7 +81,8 @@ int main() {
     Domains domain = parse_domains(domains);
 
     cout << "Enter top-down ordering relation between variables in the "
-            "following form: <var_i> <var_j> ... <var_k>."
+            "following form: <var_i> <var_j> ... <var_k>. Leave empty to "
+            "determine ordering heuristically."
          << endl;
     cout << "Example: b c d e a" << endl;
     string ordering_as_string;
@@ -100,6 +102,10 @@ int main() {
              << arithmetic_expression << endl;
         start = std::chrono::system_clock::now();
         Polynomial p = Polynomial(arithmetic_expression);
+        if (ordering.empty()) {
+            VariableOrdering heuristic;
+            ordering = heuristic.get_fan_in_ordering(p.get_expression());
+        }
         cost_evmdd = p.create_evmdd<double>(domain, ordering);
         end = std::chrono::system_clock::now();
         int elapsed_seconds =
@@ -190,4 +196,3 @@ int main() {
     create_dot(quasi_reduced_dot_stream, quasi_reduced_filename, reduced_evmdd,
                arithmetic_expression, conditional_effects);
 }
-
