@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.2)
 project(NumericCatamorph_tests)
 
 add_library(Catch INTERFACE)
@@ -9,6 +9,7 @@ set(TEST_SOURCES
         polynomial_class_tests.cpp
         expression_tests.cpp
         monoid_tests.cpp
+        variable_ordering_tests.cpp
         evmdd/numeric/evaluation_tests_arithmetic.cpp
         evmdd/numeric/construction_tests_arithmetic.cpp
         evmdd/numeric/evaluation_tests_iversion.cpp
@@ -16,11 +17,11 @@ set(TEST_SOURCES
         evmdd/conditional_effect_tests.cpp 
         evmdd/product_tests.cpp 
         evmdd/abstract_factory_test.cpp
-	parser/base/infix_parser_tests.cpp
-	parser/base/prefix_parser_tests.cpp
-	parser/base/infix_to_prefix_tests.cpp
-	parser/base/lexer_tests.cpp
-	parser/complex/effect_parser_test.cpp
+        parser/base/infix_parser_tests.cpp
+        parser/base/prefix_parser_tests.cpp
+        parser/base/infix_to_prefix_tests.cpp
+        parser/base/lexer_tests.cpp
+        parser/complex/effect_parser_test.cpp
         )
 
 add_executable(Test ${TEST_SOURCES})

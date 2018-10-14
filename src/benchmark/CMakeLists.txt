@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5) 
+cmake_minimum_required(VERSION 3.2) 
 project(NumericCatamorph_benchmark)
 
 set(BENCHMARK_SOURCES benchmark.cpp)

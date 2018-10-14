@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.2)
 set(CMAKE_CXX_STANDARD 14)
 
 # Respect the PATH environment variable when searching for compilers.
@@ -35,6 +35,7 @@ set(SOURCE_FILES
      catamorph/interpreters/dependencies.cpp catamorph/interpreters/dependencies.h
      catamorph/interpreters/iverson.cpp catamorph/interpreters/iverson.h
      catamorph/interpreters/create_evmdd.h
+     catamorph/interpreters/variable_ordering.cpp catamorph/interpreters/variable_ordering.h 
      catamorph/expression.h
      globals.h
      polynomial.cpp polynomial.h
