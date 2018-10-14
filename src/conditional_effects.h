@@ -2,12 +2,10 @@
 #define NUMERIC_CATAMORPH_CONDITIONALEFFECTS_H
 
 #include "evmdd/monoids/facts.h"
+#include "globals.h"
 #include "polynomial.h"
 
 #include <string>
-
-using Ordering = std::vector<std::string>;
-using Domains = std::map<std::string, unsigned int>;
 
 template <typename M, typename F>
 class Evmdd;

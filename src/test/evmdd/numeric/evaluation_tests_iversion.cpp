@@ -12,8 +12,8 @@ SCENARIO(
         Ordering o = {"a", "b"};
         auto evmdd = p.create_evmdd<float>(d, o);
         THEN("Evaluation should be correct") {
-            for (unsigned int a = 0; a < d["a"]; ++a) {
-                for (unsigned int b = 0; b < d["b"]; ++b) {
+            for (int a = 0; a < d["a"]; ++a) {
+                for (int b = 0; b < d["b"]; ++b) {
                     ConcreteState state{a, b};
                     REQUIRE(evmdd.evaluate(state) == (a && b));
                 }
@@ -27,8 +27,8 @@ SCENARIO(
         Ordering o = {"a", "b"};
         auto evmdd = p.create_evmdd<float>(d, o);
         THEN("Evaluation should be correct") {
-            for (unsigned int a = 0; a < d["a"]; ++a) {
-                for (unsigned int b = 0; b < d["b"]; ++b) {
+            for (int a = 0; a < d["a"]; ++a) {
+                for (int b = 0; b < d["b"]; ++b) {
                     ConcreteState state{a, b};
                     REQUIRE(evmdd.evaluate(state) == (a && b) * 10);
                 }
@@ -42,8 +42,8 @@ SCENARIO(
         Ordering o = {"a", "b"};
         auto evmdd = p.create_evmdd<float>(d, o);
         THEN("Evaluation should be correct") {
-            for (unsigned int a = 0; a < d["a"]; ++a) {
-                for (unsigned int b = 0; b < d["b"]; ++b) {
+            for (int a = 0; a < d["a"]; ++a) {
+                for (int b = 0; b < d["b"]; ++b) {
                     ConcreteState state{a, b};
                     REQUIRE(evmdd.evaluate(state) == (a == b));
                 }
@@ -57,8 +57,8 @@ SCENARIO(
         Ordering o = {"a", "b"};
         auto evmdd = p.create_evmdd<float>(d, o);
         THEN("Evaluation should be correct") {
-            for (unsigned int a = 0; a < d["a"]; ++a) {
-                for (unsigned int b = 0; b < d["b"]; ++b) {
+            for (int a = 0; a < d["a"]; ++a) {
+                for (int b = 0; b < d["b"]; ++b) {
                     ConcreteState state{a, b};
                     REQUIRE(evmdd.evaluate(state) == (a == b) * 10);
                 }
@@ -72,8 +72,8 @@ SCENARIO(
         Ordering o = {"a", "b"};
         auto evmdd = p.create_evmdd<float>(d, o);
         THEN("Evaluation should be correct") {
-            for (unsigned int a = 0; a < d["a"]; ++a) {
-                for (unsigned int b = 0; b < d["b"]; ++b) {
+            for (int a = 0; a < d["a"]; ++a) {
+                for (int b = 0; b < d["b"]; ++b) {
                     ConcreteState state{a, b};
                     REQUIRE(evmdd.evaluate(state) == (a || b));
                 }
@@ -87,8 +87,8 @@ SCENARIO(
         Ordering o = {"a", "b"};
         auto evmdd = p.create_evmdd<float>(d, o);
         THEN("Evaluation should be correct") {
-            for (unsigned int a = 0; a < d["a"]; ++a) {
-                for (unsigned int b = 0; b < d["b"]; ++b) {
+            for (int a = 0; a < d["a"]; ++a) {
+                for (int b = 0; b < d["b"]; ++b) {
                     ConcreteState state{a, b};
                     REQUIRE(evmdd.evaluate(state) == (a || b) * 10);
                 }

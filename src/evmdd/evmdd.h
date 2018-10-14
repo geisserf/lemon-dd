@@ -180,7 +180,7 @@ public:
     Evmdd<M, F> make_var_evmdd(std::string const &var,
                                std::vector<M> const &domain) {
         std::vector<Edge<Monoid<M, F>>> children;
-        assert(domains[var] == domain.size());
+        assert(domains[var] == static_cast<int>(domain.size()));
         for (size_t i = 0; i < domain.size(); ++i) {
             children.emplace_back(Monoid<M, F>(domain[i]),
                                   node_factory.get_terminal_node());
@@ -387,7 +387,7 @@ private:
             std::vector<Edge<Monoid<M, F>>> edges;
             // For each domain value add a new edge with neutral element as
             // weight
-            for (unsigned int d = 0; d < domains[ordering[i - 1]]; ++d) {
+            for (int d = 0; d < domains[ordering[i - 1]]; ++d) {
                 edges.emplace_back(
                     Monoid<M, F>(Monoid<M, F>::neutral_element()), node);
             }

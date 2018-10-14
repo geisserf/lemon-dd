@@ -7,8 +7,8 @@
 
 // Global using directives
 using Ordering = std::vector<std::string>;
-using Domains = std::map<std::string, unsigned int>;
-using ConcreteState = std::vector<unsigned int>;
+using Domains = std::map<std::string, int>;
+using ConcreteState = std::vector<int>;
 
 
 #endif /* NUMERIC_GLOBALS_H */
