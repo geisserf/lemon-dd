@@ -58,8 +58,8 @@ SCENARIO("Testing numeric EVMDDs for concrete evaluation over float",
         Ordering o = {"x", "y"};
         auto evmdd = p.create_evmdd<double>(d, o);
         THEN("Evaluation should be correct") {
-            for (unsigned int x = 0; x < d["x"]; ++x) {
-                for (unsigned int y = 0; y < d["y"]; ++y) {
+            for (int x = 0; x < d["x"]; ++x) {
+                for (int y = 0; y < d["y"]; ++y) {
                     ConcreteState state{x, y};
                     REQUIRE(evmdd.evaluate(state) == x * y + 2);
                 }
@@ -78,8 +78,8 @@ SCENARIO("Testing numeric EVMDDs for concrete evaluation over float",
         Ordering o = {"x", "y"};
         auto evmdd = p.create_evmdd<float>(d, o);
         THEN("Evaluation should be correct") {
-            for (unsigned int x = 0; x < d["x"]; ++x) {
-                for (unsigned int y = 0; y < d["y"]; ++y) {
+            for (int x = 0; x < d["x"]; ++x) {
+                for (int y = 0; y < d["y"]; ++y) {
                     ConcreteState state{x, y};
                     REQUIRE(evmdd.evaluate(state) == x + y);
                 }
@@ -98,8 +98,8 @@ SCENARIO("Testing numeric EVMDDs for concrete evaluation over float",
         auto evmdd = p.create_evmdd<float>(d, o);
 
         THEN("Evaluation should be correct") {
-            for (unsigned int x = 0; x < d["x"]; ++x) {
-                for (unsigned int y = 0; y < d["y"]; ++y) {
+            for (int x = 0; x < d["x"]; ++x) {
+                for (int y = 0; y < d["y"]; ++y) {
                     ConcreteState state{x, y};
                     int result = x - y;
                     REQUIRE(evmdd.evaluate(state) == result);
@@ -119,8 +119,8 @@ SCENARIO("Testing numeric EVMDDs for concrete evaluation over float",
         auto evmdd = p.create_evmdd<float>(d, o);
 
         THEN("Evaluation should be correct") {
-            for (unsigned int x = 0; x < d["x"]; ++x) {
-                for (unsigned int y = 0; y < d["y"]; ++y) {
+            for (int x = 0; x < d["x"]; ++x) {
+                for (int y = 0; y < d["y"]; ++y) {
                     ConcreteState state{x, y};
                     REQUIRE(evmdd.evaluate(state) == x * 0.3 + 0.7);
                 }
@@ -134,8 +134,8 @@ SCENARIO("Testing numeric EVMDDs for concrete evaluation over float",
         Ordering o = {"x","y"};
         auto evmdd = p.create_evmdd<int>(d, o);
         THEN("Evaluation should be correct") {
-            for (unsigned int x = 0; x < d["x"]; ++x) {
-                for (unsigned int y = 0; y < d["y"]; ++y) {
+            for (int x = 0; x < d["x"]; ++x) {
+                for (int y = 0; y < d["y"]; ++y) {
                     ConcreteState state{x, y};
                     int sub = static_cast<int>(x) - y;
                     REQUIRE(evmdd.evaluate(state) == std::abs(sub));
@@ -150,8 +150,8 @@ SCENARIO("Testing numeric EVMDDs for concrete evaluation over float",
         Ordering o = {"x","y"};
         auto evmdd = p.create_evmdd<float>(d, o);
         THEN("Evaluation should be correct") {
-            for (unsigned int x = 0; x < d["x"]; ++x) {
-                for (unsigned int y = 0; y < d["y"]; ++y) {
+            for (int x = 0; x < d["x"]; ++x) {
+                for (int y = 0; y < d["y"]; ++y) {
                     auto result = static_cast<int>(x > y);
                     ConcreteState state{x, y};
                     REQUIRE(evmdd.evaluate(state) == result);
@@ -181,8 +181,8 @@ SCENARIO("Testing numeric EVMDDs for concrete evaluation over float",
         Ordering o = {"x","y"};
         auto evmdd = p.create_evmdd<float>(d, o);
         THEN("Evaluation should be correct") {
-            for (unsigned int x = 0; x < d["x"]; ++x) {
-                for (unsigned int y = 0; y < d["y"]; ++y) {
+            for (int x = 0; x < d["x"]; ++x) {
+                for (int y = 0; y < d["y"]; ++y) {
                     auto result = static_cast<int>(x >= y);
                     ConcreteState state{x, y};
                     REQUIRE(evmdd.evaluate(state) == result);
@@ -213,8 +213,8 @@ SCENARIO("Testing numeric EVMDDs for concrete evaluation over float",
         Ordering o = {"x", "y"};
         auto evmdd = p.create_evmdd<double>(d, o);
         THEN("Evaluation should be correct") {
-            for (unsigned int x = 0; x < d["x"]; ++x) {
-                for (unsigned int y = 0; y < d["y"]; ++y) {
+            for (int x = 0; x < d["x"]; ++x) {
+                for (int y = 0; y < d["y"]; ++y) {
                     ConcreteState state{x, y};
                     REQUIRE(evmdd.evaluate(state) ==
                             (((4 * x) * x) + (3 * y)) + 2);
