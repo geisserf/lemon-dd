@@ -5,14 +5,16 @@ set(CMAKE_CXX_STANDARD 14)
 find_program(CMAKE_C_COMPILER NAMES $ENV{CC} gcc PATHS ENV PATH NO_DEFAULT_PATH)
 find_program(CMAKE_CXX_COMPILER NAMES $ENV{CXX} g++ PATHS ENV PATH NO_DEFAULT_PATH)
 
-
-project(lemon_lib)
-
+project(lemon)
 
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release;Profile"
         CACHE STRING "Reset the configurations to what we need" FORCE)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin)
+
+include_directories(boost_dependencies)
+add_subdirectory(boost_dependencies/libs)
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -Werror -Wfatal-errors")
@@ -22,10 +24,6 @@ set(CMAKE_EXE_LINKER_FLAGS_PROFILE "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -pg")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG -fomit-frame-pointer")
 set(CMAKE_CXX_FLAGS_DEBUG "-O1")
 set(CMAKE_CXX_FLAGS_PROFILE "-O3 -pg")
-
-include_directories(boost_dependencies)
-add_subdirectory(boost_dependencies/libs)
-
 
 set(SOURCE_FILES
      catamorph/catamorph.h
@@ -66,8 +64,9 @@ set(SOURCE_FILES
 add_library(lemon_lib ${SOURCE_FILES})
 target_link_libraries(lemon_lib MiniBoost)
 
-add_executable(Parser parser_main.cpp ${SOURCE_FILES})
-add_executable(lemon main.cpp ${SOURCE_FILES})
+add_executable(Parser parser_main.cpp)
+target_link_libraries(Parser lemon_lib)
+add_executable(lemon main.cpp)
 target_link_libraries(lemon lemon_lib)
 
 add_subdirectory(test)

@@ -25,5 +25,5 @@ set(TEST_SOURCES
         )
 
 add_executable(Test ${TEST_SOURCES})
-target_link_libraries(Test lemon_tests Catch)
+target_link_libraries(Test lemon_lib Catch)
 add_test(NAME MyTest COMMAND Test)
