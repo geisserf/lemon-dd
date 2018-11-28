@@ -1,9 +1,9 @@
-# lemon-dd
+# LEMON-DD
 Library for Edge-valued MONoid-based decision diagrams.
 
 # Description
-LeMON is a decision diagram library with a focus on providing the ability to define edge-valued decision diagrams.
-This README is only a very brief overview. For more information please refer to the (wiki)[https://github.com/geisserf/lemon-dd/wiki/Overview].
+LEMON is a decision diagram library with a focus on providing the ability to define edge-valued decision diagrams.
+This README is only a very brief overview. For more information please refer to the [wiki](https://github.com/geisserf/lemon-dd/wiki/Overview).
 
 # Running the library
 ## Supported platforms
@@ -36,4 +36,4 @@ We recommend to execute all unit tests in debug mode at least one time, to make 
 This is currenlty being worked on. See issue #1.
 
 ## Running lemon
-For basic instructions on how to run lemon, see [Usage](Usage).
+For basic instructions on how to run lemon, see [Usage](https://github.com/geisserf/lemon-dd/wiki/Usage).
