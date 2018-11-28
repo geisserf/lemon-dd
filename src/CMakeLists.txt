@@ -6,7 +6,7 @@ find_program(CMAKE_C_COMPILER NAMES $ENV{CC} gcc PATHS ENV PATH NO_DEFAULT_PATH)
 find_program(CMAKE_CXX_COMPILER NAMES $ENV{CXX} g++ PATHS ENV PATH NO_DEFAULT_PATH)
 
 
-project(NumericCatamorph_lib)
+project(lemon_lib)
 
 
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release;Profile"
@@ -63,11 +63,11 @@ set(SOURCE_FILES
      utils/string_utils.h
     )
 
-add_library(NumericCatamorph_lib ${SOURCE_FILES})
-target_link_libraries(NumericCatamorph_lib MiniBoost)
+add_library(lemon_lib ${SOURCE_FILES})
+target_link_libraries(lemon_lib MiniBoost)
 
 add_executable(Parser parser_main.cpp ${SOURCE_FILES})
-add_executable(NumericCatamorph main.cpp ${SOURCE_FILES})
-target_link_libraries(NumericCatamorph NumericCatamorph_lib)
+add_executable(lemon main.cpp ${SOURCE_FILES})
+target_link_libraries(lemon lemon_lib)
 
 add_subdirectory(test)
