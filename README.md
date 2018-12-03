@@ -33,7 +33,7 @@ The lemon executable allows to generate decision diagrams for given functions. T
 We recommend to execute all unit tests in debug mode at least one time, to make sure that everything works.
 
 ## Adding lemon as a library to external projects
-This is currenlty being worked on. See issue #1.
+This is currenlty being worked on. See issue #1. For now, we recommend to just include the necessary headers into your project.
 
 ## Running lemon
 For basic instructions on how to run lemon, see [Usage](https://github.com/geisserf/lemon-dd/wiki/Usage).
