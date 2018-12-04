@@ -5,6 +5,21 @@ Library for Edge-valued MONoid-based decision diagrams.
 LEMON is a decision diagram library with a focus on providing the ability to define edge-valued decision diagrams.
 This README is only a very brief overview. For more information please refer to the [wiki](https://github.com/geisserf/lemon-dd/wiki/Overview).
 
+# Credits
+## Contributors
+- [Florian Geißer](https://cecs.anu.edu.au/people/florian-geisser) (core developer 2017-2019)
+- [Benedict Wright](http://www2.informatik.uni-freiburg.de/~bwright/) (core developer 2017-2019)
+- [David Speck](http://www2.informatik.uni-freiburg.de/~speckd/) (implemented variable ordering heuristic support, 2018)
+- Ece Tavaslı (HiWi 2018)
+
+## References
+- For unit tests we rely on the [Catch](https://github.com/catchorg/Catch2) unit test framework
+- Some parts of the code make use of the [Boost](https://www.boost.org/) library (see also LICENSE.txt)
+- The underlying code for expressions (see also 'src/catamorph/') is based on the [deque.blog tutorial on catamorphisms](https://deque.blog/2017/01/30/catamorph-your-dsl-c-port/)
+
+If you have contributed to LEMON as well and your name is not in this list (we apologize sincerely in this case, there surely was no harm intended!) please let us know via [e-mail](mailto:florian.geisser@anu.edu.au).
+ 
+
 # Running the library
 ## Supported platforms
 
