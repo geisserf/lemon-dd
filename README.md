@@ -3,7 +3,7 @@ Library for Edge-valued MONoid-based decision diagrams.
 
 # Description
 LEMON is a decision diagram library with a focus on providing the ability to define edge-valued decision diagrams.
-This README is only a very brief overview. For more information please refer to the [wiki](https://github.com/geisserf/lemon-dd/wiki/Overview).
+This README is only a very brief overview. For more information please refer to the [wiki](https://github.com/geisserf/lemon-dd/wiki).
 
 # Credits
 ## Contributors
